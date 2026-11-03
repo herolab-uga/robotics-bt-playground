@@ -7,133 +7,175 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@300;400;500;600&display=swap');
 :root{
-  --bg:#0c0f14;--sf:#131820;--s2:#1a2130;--border:#252e3f;--border2:#2e3f58;
-  --acc:#4ade80;--acc2:#22d3ee;--acc3:#a78bfa;--acc4:#fb923c;
-  --warn:#f59e0b;--danger:#ef4444;--text:#dde4ef;--text2:#7a8fa8;--text3:#4a5a72;
+  --bg:#080b10;--sf:#0f1520;--s2:#151e2e;--s3:#1a2540;
+  --border:#1e2d45;--border2:#263858;
+  --acc:#00ff88;--acc2:#00d4ff;--acc3:#b06aff;--acc4:#ff8c00;
+  --warn:#ffb800;--danger:#ff3d5a;
+  --text:#cdd9f0;--text2:#6b85a8;--text3:#3a506b;
+  /* tick path highlight colors */
+  --tick-run:#ffb800;--tick-ok:#00ff88;--tick-fail:#ff3d5a;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;font-size:13px;background:var(--bg);color:var(--text)}
+html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;font-size:12px;background:var(--bg);color:var(--text)}
 #app{display:flex;flex-direction:column;height:100vh}
 
-/* TOPBAR */
-#topbar{display:flex;align-items:center;gap:8px;padding:5px 12px;background:var(--sf);border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap}
-.logo{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--acc)}
-.logo em{color:var(--text3);font-style:normal;font-weight:400}
-.vsep{width:1px;height:16px;background:var(--border);flex-shrink:0}
-.tbl{font-size:10px;color:var(--text3)}
-select.ts{background:var(--s2);border:1px solid var(--border2);color:var(--text);padding:3px 7px;border-radius:4px;font:11px 'Inter',sans-serif;cursor:pointer}
-input[type=range]{accent-color:var(--acc);width:68px;vertical-align:middle}
-.trb{margin-left:auto;display:flex;gap:5px;align-items:center}
-.btn{display:inline-flex;align-items:center;gap:3px;padding:4px 10px;border-radius:4px;font:500 11px 'Inter',sans-serif;cursor:pointer;border:1px solid transparent;transition:all .12s;white-space:nowrap;line-height:1.4}
-.bp{background:var(--acc);color:#0c0f14;border-color:var(--acc)}.bp:hover{background:#86efac}
+/* ── TOPBAR ── */
+#topbar{display:flex;align-items:center;gap:7px;padding:4px 10px;background:var(--sf);border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap;min-height:36px}
+.logo{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--acc);letter-spacing:-.3px}
+.logo em{color:var(--text3);font-style:normal}
+.vsep{width:1px;height:14px;background:var(--border);flex-shrink:0}
+.tbl{font-size:9px;color:var(--text3);white-space:nowrap}
+select.ts{background:var(--s2);border:1px solid var(--border2);color:var(--text);padding:2px 6px;border-radius:3px;font:11px 'Inter',sans-serif;cursor:pointer}
+input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;cursor:pointer}
+.trb{margin-left:auto;display:flex;gap:4px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:3px;font:500 10px 'Inter',sans-serif;cursor:pointer;border:1px solid transparent;transition:all .1s;white-space:nowrap}
+.bp{background:var(--acc);color:#080b10;border-color:var(--acc)}.bp:hover{background:#33ffaa}
 .bg{background:transparent;color:var(--text2);border-color:var(--border)}.bg:hover{background:var(--s2);color:var(--text)}
-.bd{background:transparent;color:var(--danger);border-color:var(--danger)}.bd:hover{background:#ef444415}
-.bsm{padding:3px 7px;font-size:10px}
+.bd{background:transparent;color:var(--danger);border-color:var(--danger)}.bd:hover{background:#ff3d5a18}
+.bsm{padding:2px 7px;font-size:9px}
+.slrow{display:flex;align-items:center;gap:4px}
+.slval{font-size:9px;color:var(--acc);font-family:'JetBrains Mono',monospace;min-width:28px}
 
-/* MAIN */
+/* ── MAIN ── */
 #main{display:flex;flex:1;overflow:hidden;min-height:0}
 
-/* PALETTE */
-#pal{width:185px;flex-shrink:0;background:var(--sf);border-right:1px solid var(--border);overflow-y:auto}
-.pgh{font-size:9px;font-weight:600;letter-spacing:.07em;color:var(--text3);padding:7px 8px 3px;text-transform:uppercase}
-.pn{display:flex;align-items:center;gap:6px;padding:4px 7px;border-radius:5px;cursor:grab;border:1px solid transparent;margin:1px 5px;transition:background .1s;user-select:none}
+/* ── PALETTE ── */
+#pal{width:178px;flex-shrink:0;background:var(--sf);overflow-y:auto;min-width:80px;max-width:360px}
+.pgh{font-size:8px;font-weight:600;letter-spacing:.08em;color:var(--text3);padding:7px 8px 2px;text-transform:uppercase}
+.pn{display:flex;align-items:center;gap:5px;padding:3px 6px;border-radius:4px;cursor:grab;border:1px solid transparent;margin:1px 4px;transition:background .1s;user-select:none}
 .pn:hover{background:var(--s2);border-color:var(--border2)}.pn:active{cursor:grabbing}
-.pi{width:20px;height:20px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;flex-shrink:0}
-.pnm{font-size:11px;color:var(--text);line-height:1.2}.pds{font-size:9px;color:var(--text3)}
+.pi{width:18px;height:18px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;flex-shrink:0}
+.pnm{font-size:10px;color:var(--text);line-height:1.2}.pds{font-size:8px;color:var(--text3)}
 
-/* CENTER */
+/* ── CENTER ── */
 #center{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
 
-/* CANVAS */
-#cwrap{flex:1;position:relative;overflow:hidden;background:var(--bg);min-height:0}
-#cgrid{position:absolute;inset:0;background-image:linear-gradient(var(--s2) 1px,transparent 1px),linear-gradient(90deg,var(--s2) 1px,transparent 1px);background-size:28px 28px;opacity:.4;pointer-events:none}
+/* ── CANVAS WRAP (resizable) ── */
+#cwrap{flex:1;position:relative;overflow:hidden;background:var(--bg);min-height:80px}
+#cgrid{position:absolute;inset:0;background-image:linear-gradient(var(--s2) 1px,transparent 1px),linear-gradient(90deg,var(--s2) 1px,transparent 1px);background-size:28px 28px;opacity:.35;pointer-events:none}
 #canvas{position:absolute;inset:0}
 #esvg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
-#cprompt{position:absolute;top:8px;left:50%;transform:translateX(-50%);background:rgba(19,24,32,.92);border:1px solid var(--border2);border-radius:6px;padding:5px 13px;font-size:11px;color:var(--text2);pointer-events:none;z-index:40;max-width:480px;text-align:center;backdrop-filter:blur(4px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#cprompt{position:absolute;top:6px;left:50%;transform:translateX(-50%);background:rgba(15,21,32,.95);border:1px solid var(--border2);border-radius:5px;padding:4px 12px;font-size:10px;color:var(--text2);pointer-events:none;z-index:40;max-width:460px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* BT NODES */
-.btn-node{position:absolute;border-radius:7px;border:2px solid;cursor:move;user-select:none;min-width:106px;z-index:10;transition:box-shadow .12s}
-.btn-node:hover{box-shadow:0 0 0 2px rgba(74,222,128,.28)}
-.btn-node.sel{box-shadow:0 0 0 3px var(--acc)!important}
-.btn-node.st-running{animation:npulse .65s ease-in-out infinite alternate}
-.btn-node.st-success{box-shadow:0 0 0 3px var(--acc),0 0 14px rgba(74,222,128,.2)}
-.btn-node.st-failure{box-shadow:0 0 0 3px var(--danger),0 0 14px rgba(239,68,68,.2)}
-@keyframes npulse{from{box-shadow:0 0 0 2px var(--warn)}to{box-shadow:0 0 0 4px var(--warn),0 0 12px rgba(245,158,11,.3)}}
-.nh{display:flex;align-items:center;gap:5px;padding:4px 8px;border-radius:5px 5px 0 0}
-.nt{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:600;opacity:.7;text-transform:uppercase;letter-spacing:.04em}
-.nl{padding:3px 8px 5px;font-size:11px;font-weight:500;color:var(--text);line-height:1.3}
-.nst{position:absolute;top:3px;right:5px;font-size:9px;font-family:'JetBrains Mono',monospace;font-weight:700}
-.nrb{position:absolute;bottom:3px;right:5px;font-size:8px;font-family:'JetBrains Mono',monospace}
-.port{position:absolute;width:10px;height:10px;border-radius:50%;border:2px solid var(--bg);cursor:crosshair;z-index:20;transition:transform .1s}
-.po{bottom:-6px;left:50%;transform:translateX(-50%);background:var(--acc2)}.po:hover{transform:translateX(-50%) scale(1.5)}
-.pi2{top:-6px;left:50%;transform:translateX(-50%);background:var(--acc3)}.pi2:hover{transform:translateX(-50%) scale(1.5)}
-.ndl{position:absolute;top:-7px;right:-7px;width:15px;height:15px;border-radius:50%;background:var(--danger);color:#fff;font-size:9px;display:none;align-items:center;justify-content:center;cursor:pointer;z-index:30;border:none;line-height:1}
+/* BT NODES — high-contrast tick path colors */
+.btn-node{position:absolute;border-radius:6px;border:2px solid;cursor:move;user-select:none;min-width:104px;z-index:10;transition:border-color .08s,box-shadow .08s,opacity .08s}
+.btn-node.dimmed{opacity:.35}
+.btn-node:hover{box-shadow:0 0 0 2px rgba(0,255,136,.25)}
+.btn-node.sel{box-shadow:0 0 0 3px var(--acc)!important;opacity:1!important}
+/* tick path states — override base colors completely */
+.btn-node.st-running{border-color:var(--tick-run)!important;box-shadow:0 0 0 3px var(--tick-run),0 0 20px rgba(255,184,0,.5)!important;opacity:1!important;animation:npulse .5s ease-in-out infinite alternate}
+.btn-node.st-success{border-color:var(--tick-ok)!important;box-shadow:0 0 0 3px var(--tick-ok),0 0 16px rgba(0,255,136,.4)!important;opacity:1!important}
+.btn-node.st-failure{border-color:var(--tick-fail)!important;box-shadow:0 0 0 3px var(--tick-fail),0 0 16px rgba(255,61,90,.4)!important;opacity:1!important}
+@keyframes npulse{from{box-shadow:0 0 0 2px var(--tick-run),0 0 8px rgba(255,184,0,.3)}to{box-shadow:0 0 0 4px var(--tick-run),0 0 24px rgba(255,184,0,.6)}}
+/* inner header brightens on active state */
+.btn-node.st-running .nh,.btn-node.st-success .nh,.btn-node.st-failure .nh{filter:brightness(1.5)}
+.nh{display:flex;align-items:center;gap:4px;padding:3px 7px;border-radius:4px 4px 0 0;transition:filter .1s}
+.nt{font-family:'JetBrains Mono',monospace;font-size:7px;font-weight:600;opacity:.65;text-transform:uppercase;letter-spacing:.04em}
+.nl{padding:2px 7px 4px;font-size:10px;font-weight:500;color:var(--text);line-height:1.3}
+.nutility{padding:1px 7px 3px;font-size:9px;color:var(--warn);font-family:'JetBrains Mono',monospace;display:none}
+.btn-node.has-utility .nutility{display:block}
+.nst{position:absolute;top:2px;right:4px;font-size:8px;font-family:'JetBrains Mono',monospace;font-weight:700}
+.nrb{position:absolute;bottom:2px;right:4px;font-size:7px;font-family:'JetBrains Mono',monospace}
+.port{position:absolute;width:9px;height:9px;border-radius:50%;border:2px solid var(--bg);cursor:crosshair;z-index:20;transition:transform .1s}
+.po{bottom:-5px;left:50%;transform:translateX(-50%);background:var(--acc2)}.po:hover{transform:translateX(-50%) scale(1.5)}
+.pi2{top:-5px;left:50%;transform:translateX(-50%);background:var(--acc3)}.pi2:hover{transform:translateX(-50%) scale(1.5)}
+.ndl{position:absolute;top:-6px;right:-6px;width:14px;height:14px;border-radius:50%;background:var(--danger);color:#fff;font-size:8px;display:none;align-items:center;justify-content:center;cursor:pointer;z-index:30;border:none;line-height:1}
 .btn-node:hover .ndl,.btn-node.sel .ndl{display:flex}
 #tempedge{stroke:var(--acc2);stroke-width:2;stroke-dasharray:4,3;fill:none;pointer-events:none}
 
-/* SIM PANEL */
-#smpanel{height:225px;flex-shrink:0;border-top:1px solid var(--border);display:flex;overflow:hidden}
-#scwrap{position:relative;overflow:hidden;flex:1;background:#060a10}
-#simcv{display:block;width:100%;height:100%}
-#envbar{position:absolute;top:5px;left:5px;display:flex;gap:3px;z-index:50}
-#robbar{position:absolute;top:5px;right:5px;display:flex;gap:3px;z-index:50;flex-wrap:wrap;max-width:160px;justify-content:flex-end}
-.rsbtn{padding:2px 7px;border-radius:3px;font:500 9px 'JetBrains Mono',monospace;cursor:pointer;border:1px solid;transition:all .1s}
+/* ── RESIZE HANDLES ── */
+/* vertical (canvas ↕ sim) */
+#resize-handle{height:5px;background:var(--border);cursor:ns-resize;flex-shrink:0;transition:background .1s;z-index:30}
+#resize-handle:hover,#resize-handle.dragging{background:var(--acc2)}
+/* horizontal (palette ↔ center ↔ right panel) */
+.hrz-handle{width:5px;flex-shrink:0;background:var(--border);cursor:ew-resize;transition:background .1s;z-index:30;position:relative}
+.hrz-handle:hover,.hrz-handle.dragging{background:var(--acc2)}
+.hrz-handle::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:3px;height:28px;border-radius:2px;background:var(--border2);pointer-events:none}
+/* robot drag */
+#simcv.rob-drag{cursor:grabbing!important}
 
-/* SIM SIDE */
-#smside{width:245px;flex-shrink:0;background:var(--sf);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
-.tabbar{display:flex;border-bottom:1px solid var(--border);flex-shrink:0}
-.tab{flex:1;padding:5px 3px;text-align:center;font-size:10px;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:all .1s}
+/* ── SIM PANEL ── */
+#smpanel{flex-shrink:0;border-top:1px solid var(--border);display:flex;overflow:hidden;min-height:120px}
+#scwrap{position:relative;overflow:hidden;flex:1;background:#040810}
+#simcv{display:block;width:100%;height:100%}
+#envbar{position:absolute;top:4px;left:4px;display:flex;gap:3px;z-index:50;flex-wrap:wrap;max-width:380px}
+#robbar{position:absolute;top:4px;right:4px;display:flex;gap:3px;z-index:50;flex-wrap:wrap;max-width:150px;justify-content:flex-end}
+.rsbtn{padding:1px 6px;border-radius:3px;font:500 8px 'JetBrains Mono',monospace;cursor:pointer;border:1px solid;transition:all .1s}
+
+/* ── SIM SIDE ── */
+#smside{width:240px;flex-shrink:0;background:var(--sf);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;min-width:100px;max-width:450px}
+.tabbar{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto}
+.tab{flex:1;padding:4px 2px;text-align:center;font-size:9px;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:all .1s;white-space:nowrap;min-width:36px}
 .tab.on{color:var(--acc);border-bottom-color:var(--acc)}
 .tc{display:none;flex-direction:column;flex:1;overflow:hidden;min-height:0}
 .tc.on{display:flex}
-#logwrap{flex:1;overflow-y:auto;padding:6px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text2);line-height:1.8;min-height:0}
+#logwrap{flex:1;overflow-y:auto;padding:5px;font-family:'JetBrains Mono',monospace;font-size:8.5px;color:var(--text2);line-height:1.8;min-height:0}
 .ls{color:var(--acc)}.lf{color:var(--danger)}.lr{color:var(--warn)}.li{color:var(--acc2)}.lc{color:var(--acc3)}
-#smctrl{padding:6px;border-top:1px solid var(--border);display:flex;gap:4px;flex-shrink:0}
-#bbwrap{flex:1;overflow-y:auto;padding:6px;min-height:0}
-.bbr{display:flex;justify-content:space-between;padding:2px 0;font-family:'JetBrains Mono',monospace;font-size:9px;border-bottom:1px solid var(--border)}
+#smctrl{padding:5px;border-top:1px solid var(--border);display:flex;gap:3px;flex-shrink:0;flex-wrap:wrap}
+#bbwrap{flex:1;overflow-y:auto;padding:5px;min-height:0}
+.bbr{display:flex;justify-content:space-between;padding:2px 0;font-family:'JetBrains Mono',monospace;font-size:8.5px;border-bottom:1px solid var(--border)}
 .bbk{color:var(--acc2)}.bbv{color:var(--acc)}
-#commwrap{flex:1;overflow-y:auto;padding:5px;min-height:0}
-.ce{padding:3px 5px;border-radius:3px;margin-bottom:2px;font-size:9px;font-family:'JetBrains Mono',monospace;border-left:2px solid}
+#commwrap{flex:1;overflow-y:auto;padding:4px;min-height:0}
+.ce{padding:2px 5px;border-radius:3px;margin-bottom:2px;font-size:8.5px;font-family:'JetBrains Mono',monospace;border-left:2px solid}
+/* explainability tab */
+#expwrap{flex:1;overflow-y:auto;padding:6px;min-height:0}
+.exp-card{background:var(--s2);border:1px solid var(--border2);border-radius:5px;padding:7px 9px;margin-bottom:5px;font-size:10px;line-height:1.6;color:var(--text)}
+.exp-card b{color:var(--acc2)}
+.exp-card .exp-why{font-size:9px;color:var(--text2);margin-top:3px;padding-top:3px;border-top:1px solid var(--border)}
+.exp-card.exp-run{border-color:var(--warn)}.exp-card.exp-ok{border-color:var(--acc)}.exp-card.exp-fail{border-color:var(--danger)}
+/* metrics tab */
+#metricswrap{flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+#metricscv{width:100%;flex:1}
+.metric-row{display:flex;justify-content:space-between;padding:2px 6px;font-family:'JetBrains Mono',monospace;font-size:8px;border-bottom:1px solid var(--border)}
+.mk{color:var(--text3)}.mv{color:var(--acc2)}
+/* sensor tab */
+#sensorwrap{flex:1;overflow-y:auto;padding:5px;min-height:0}
+.sensor-row{display:flex;align-items:center;gap:5px;padding:2px 0;font-size:9px;border-bottom:1px solid var(--border)}
+.sensor-bar{flex:1;height:4px;background:var(--border);border-radius:2px}
+.sensor-fill{height:100%;border-radius:2px;transition:width .2s}
+#fovcanvas{width:100%;height:110px;background:var(--bg);border-radius:4px;margin-top:4px}
 
-/* RIGHT PANEL */
-#rpanel{width:210px;flex-shrink:0;background:var(--sf);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
-.pr{padding:5px 9px;border-bottom:1px solid var(--border)}
-.prl{font-size:9px;color:var(--text3);margin-bottom:3px;font-weight:500}
-.prv{font-size:11px;color:var(--text)}
-.pri{width:100%;background:var(--s2);border:1px solid var(--border2);color:var(--text);padding:3px 6px;border-radius:4px;font:11px 'Inter',sans-serif}
+/* ── RIGHT PANEL ── */
+#rpanel{width:205px;flex-shrink:0;background:var(--sf);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;min-width:120px;max-width:420px}
+.pr{padding:4px 8px;border-bottom:1px solid var(--border)}
+.prl{font-size:8px;color:var(--text3);margin-bottom:2px;font-weight:500}
+.prv{font-size:10px;color:var(--text)}
+.pri{width:100%;background:var(--s2);border:1px solid var(--border2);color:var(--text);padding:2px 6px;border-radius:3px;font:11px 'Inter',sans-serif}
 .pri:focus{outline:none;border-color:var(--acc)}
-.tplb{display:block;width:100%;text-align:left;padding:5px 7px;border-radius:4px;font:11px 'Inter',sans-serif;background:transparent;color:var(--text2);border:1px solid var(--border);margin-bottom:3px;cursor:pointer;transition:all .1s}
+.tplb{display:block;width:100%;text-align:left;padding:4px 6px;border-radius:3px;font:10px 'Inter',sans-serif;background:transparent;color:var(--text2);border:1px solid var(--border);margin-bottom:2px;cursor:pointer;transition:all .1s}
 .tplb:hover{background:var(--s2);color:var(--text)}
-.hbx{background:var(--s2);border:1px solid var(--border);border-radius:5px;padding:7px;font-size:10px;color:var(--text2);line-height:1.6;margin:7px}
-.hbx code{font-family:'JetBrains Mono',monospace;color:var(--acc2);font-size:9px}
+.hbx{background:var(--s2);border:1px solid var(--border);border-radius:4px;padding:6px;font-size:9px;color:var(--text2);line-height:1.6;margin:5px}
+.hbx code{font-family:'JetBrains Mono',monospace;color:var(--acc2);font-size:8px}
 .hbx b{color:var(--text)}
 
-/* STATUSBAR */
-#sbar{display:flex;align-items:center;gap:8px;padding:3px 10px;background:var(--sf);border-top:1px solid var(--border);font:10px 'JetBrains Mono',monospace;color:var(--text3);flex-shrink:0}
-.sdot{width:6px;height:6px;border-radius:50%;background:var(--text3);flex-shrink:0}
+/* ── STATUSBAR ── */
+#sbar{display:flex;align-items:center;gap:7px;padding:2px 10px;background:var(--sf);border-top:1px solid var(--border);font:9px 'JetBrains Mono',monospace;color:var(--text3);flex-shrink:0}
+.sdot{width:5px;height:5px;border-radius:50%;background:var(--text3);flex-shrink:0}
 .sdot.ok{background:var(--acc)}.sdot.run{background:var(--warn);animation:bl .5s ease infinite alternate}.sdot.fail{background:var(--danger)}
 @keyframes bl{from{opacity:.3}to{opacity:1}}
 
-/* MODAL */
-#moverlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:500;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+/* ── MODAL ── */
+#moverlay{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:500;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
 #moverlay.show{display:flex}
-.modal{background:var(--sf);border:1px solid var(--border2);border-radius:9px;padding:18px;min-width:320px;max-width:460px;max-height:80vh;overflow-y:auto}
-.modal h3{font-size:13px;margin-bottom:10px;color:var(--acc2)}
-.modal textarea{width:100%;height:170px;background:var(--s2);border:1px solid var(--border2);color:var(--text);padding:7px;border-radius:4px;font:10px 'JetBrains Mono',monospace;resize:vertical}
-.mbtns{display:flex;gap:7px;margin-top:10px;justify-content:flex-end}
-::-webkit-scrollbar{width:4px;height:4px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.modal{background:var(--sf);border:1px solid var(--border2);border-radius:8px;padding:16px;min-width:300px;max-width:440px;max-height:80vh;overflow-y:auto}
+.modal h3{font-size:12px;margin-bottom:9px;color:var(--acc2)}
+.modal textarea{width:100%;height:160px;background:var(--s2);border:1px solid var(--border2);color:var(--text);padding:6px;border-radius:4px;font:9.5px 'JetBrains Mono',monospace;resize:vertical}
+.mbtns{display:flex;gap:6px;margin-top:9px;justify-content:flex-end}
+
+/* wp edit overlay */
+#wpoverlay{position:absolute;background:var(--sf);border:1px solid var(--acc2);border-radius:6px;padding:8px 10px;z-index:200;font-size:10px;display:none;min-width:140px}
+#wpoverlay input{width:80px;background:var(--s2);border:1px solid var(--border2);color:var(--text);padding:2px 5px;border-radius:3px;font:11px 'JetBrains Mono',monospace}
+
+::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 </style>
 </head>
 <body>
 <div id="app">
 
-<!-- TOPBAR -->
 <div id="topbar">
-  <div class="logo">BT<em>playground</em> <span style="color:var(--acc4);font-size:10px;margin-left:2px">PRO</span></div>
+  <div class="logo">BT<em>playground</em><span style="color:var(--acc4);font-size:9px;margin-left:3px">PRO</span></div>
   <div class="vsep"></div>
-  <span class="tbl">Challenge:</span>
+  <span class="tbl">Scene:</span>
   <select class="ts" id="chalsel" onchange="loadChallenge(this.value)">
     <option value="patrol">Patrol & Recharge</option>
     <option value="delivery">Package Delivery</option>
@@ -142,67 +184,75 @@ input[type=range]{accent-color:var(--acc);width:68px;vertical-align:middle}
     <option value="blank">— Blank —</option>
   </select>
   <div class="vsep"></div>
-  <span class="tbl">Speed:</span>
-  <input type="range" id="speedsl" min="150" max="2500" value="850" oninput="updateSpeed()">
+  <span class="tbl">Tick Hz:</span>
+  <div class="slrow">
+    <input type="range" id="tickhz" min="1" max="20" value="2" step="1" oninput="updateTickHz()">
+    <span class="slval" id="tickhzval">2</span>
+  </div>
+  <div class="vsep"></div>
+  <span class="tbl">Rob speed:</span>
+  <div class="slrow">
+    <input type="range" id="robspeed" min="1" max="10" value="3" step="1" oninput="updateRobSpeed()">
+    <span class="slval" id="robspeedval">3</span>
+  </div>
   <div class="vsep"></div>
   <span class="tbl">Robot:</span>
   <select class="ts" id="robsel" onchange="setActiveRobot(parseInt(this.value))"></select>
-  <button class="btn bg bsm" onclick="addRobot()">+ Robot</button>
-  <button class="btn bg bsm" onclick="removeRobot()">− Robot</button>
+  <button class="btn bg bsm" onclick="addRobot()">+R</button>
+  <button class="btn bg bsm" onclick="removeRobot()">−R</button>
   <div class="trb">
-    <button class="btn bg bsm" onclick="openImport()">⬆ Import</button>
-    <button class="btn bg bsm" onclick="exportBT()">⬇ Export</button>
-    <button class="btn bg bsm" onclick="clearAll()">✕ Clear</button>
+    <button class="btn bg bsm" onclick="openImport()">⬆</button>
+    <button class="btn bg bsm" onclick="exportBT()">⬇</button>
+    <button class="btn bg bsm" onclick="clearAll()">✕</button>
     <button class="btn bp" id="runbtn" onclick="toggleRun()">▶ Run</button>
   </div>
 </div>
 
-<!-- MAIN -->
 <div id="main">
 
 <!-- PALETTE -->
 <div id="pal">
   <div class="pgh">Composite</div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'sequence')" onclick="addCenter('sequence')"><div class="pi" style="background:#1e3a8a;color:#93c5fd">→</div><div><div class="pnm">Sequence</div><div class="pds">All must succeed</div></div></div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'selector')" onclick="addCenter('selector')"><div class="pi" style="background:#4c1d95;color:#c4b5fd">?</div><div><div class="pnm">Selector</div><div class="pds">First success wins</div></div></div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'parallel')" onclick="addCenter('parallel')"><div class="pi" style="background:#134e4a;color:#6ee7b7">∥</div><div><div class="pnm">Parallel</div><div class="pds">Run concurrently</div></div></div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'random_sel')" onclick="addCenter('random_sel')"><div class="pi" style="background:#2d1b69;color:#a78bfa">⚄</div><div><div class="pnm">Random Sel.</div><div class="pds">Shuffle &amp; select</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'sequence')" onclick="addCenter('sequence')"><div class="pi" style="background:#0d2a5e;color:#60a5fa">→</div><div><div class="pnm">Sequence</div><div class="pds">All must succeed</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'selector')" onclick="addCenter('selector')"><div class="pi" style="background:#2e1065;color:#c084fc">?</div><div><div class="pnm">Selector</div><div class="pds">First success wins</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'parallel')" onclick="addCenter('parallel')"><div class="pi" style="background:#064e3b;color:#34d399">∥</div><div><div class="pnm">Parallel</div><div class="pds">Run concurrently</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'utility_sel')" onclick="addCenter('utility_sel')"><div class="pi" style="background:#1c1917;color:#fb923c">U?</div><div><div class="pnm">Utility Selector</div><div class="pds">Highest score wins</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'utility_seq')" onclick="addCenter('utility_seq')"><div class="pi" style="background:#1c1917;color:#fbbf24">U→</div><div><div class="pnm">Utility Sequence</div><div class="pds">Priority by score</div></div></div>
 
   <div class="pgh">Decorator</div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'inverter')" onclick="addCenter('inverter')"><div class="pi" style="background:#7f1d1d;color:#fca5a5">¬</div><div><div class="pnm">Inverter</div><div class="pds">Flip result</div></div></div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'repeat')" onclick="addCenter('repeat')"><div class="pi" style="background:#713f12;color:#fde68a">↺</div><div><div class="pnm">Repeat N</div><div class="pds">Loop N times</div></div></div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'retry')" onclick="addCenter('retry')"><div class="pi" style="background:#7c2d12;color:#fdba74">⟳</div><div><div class="pnm">Retry</div><div class="pds">Retry on failure</div></div></div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'timeout')" onclick="addCenter('timeout')"><div class="pi" style="background:#172554;color:#60a5fa">⏱</div><div><div class="pnm">Timeout</div><div class="pds">Fail after N ticks</div></div></div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'cooldown')" onclick="addCenter('cooldown')"><div class="pi" style="background:#172554;color:#38bdf8">❄</div><div><div class="pnm">Cooldown</div><div class="pds">Skip until ready</div></div></div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'mem_seq')" onclick="addCenter('mem_seq')"><div class="pi" style="background:#312e81;color:#818cf8">M→</div><div><div class="pnm">Mem. Sequence</div><div class="pds">Resume after run</div></div></div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'mem_sel')" onclick="addCenter('mem_sel')"><div class="pi" style="background:#312e81;color:#a5b4fc">M?</div><div><div class="pnm">Mem. Selector</div><div class="pds">Skip past success</div></div></div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'force_ok')" onclick="addCenter('force_ok')"><div class="pi" style="background:#14532d;color:#86efac">✓!</div><div><div class="pnm">Force Success</div><div class="pds">Always succeed</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'inverter')" onclick="addCenter('inverter')"><div class="pi" style="background:#450a0a;color:#fca5a5">¬</div><div><div class="pnm">Inverter</div><div class="pds">Flip result</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'repeat')" onclick="addCenter('repeat')"><div class="pi" style="background:#431407;color:#fdba74">↺</div><div><div class="pnm">Repeat N</div><div class="pds">Loop N times</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'retry')" onclick="addCenter('retry')"><div class="pi" style="background:#431407;color:#fde68a">⟳</div><div><div class="pnm">Retry</div><div class="pds">Retry on failure</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'timeout')" onclick="addCenter('timeout')"><div class="pi" style="background:#0c1a3d;color:#60a5fa">⏱</div><div><div class="pnm">Timeout</div><div class="pds">Fail after N ticks</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'cooldown')" onclick="addCenter('cooldown')"><div class="pi" style="background:#0c1a3d;color:#38bdf8">❄</div><div><div class="pnm">Cooldown</div><div class="pds">Skip after success</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'mem_seq')" onclick="addCenter('mem_seq')"><div class="pi" style="background:#1e1b4b;color:#818cf8">M→</div><div><div class="pnm">Mem. Sequence</div><div class="pds">Resume after run</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'mem_sel')" onclick="addCenter('mem_sel')"><div class="pi" style="background:#1e1b4b;color:#a5b4fc">M?</div><div><div class="pnm">Mem. Selector</div><div class="pds">Skip succeeded</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'force_ok')" onclick="addCenter('force_ok')"><div class="pi" style="background:#052e16;color:#86efac">✓!</div><div><div class="pnm">Force Success</div><div class="pds">Always succeed</div></div></div>
 
   <div class="pgh">Condition</div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'c_battery')" onclick="addCenter('c_battery')"><div class="pi" style="background:#451a03;color:#fcd34d">⚡</div><div><div class="pnm">Battery OK?</div><div class="pds">&gt; threshold</div></div></div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'c_obstacle')" onclick="addCenter('c_obstacle')"><div class="pi" style="background:#451a03;color:#fcd34d">⚠</div><div><div class="pnm">Obstacle?</div><div class="pds">Proximity sensor</div></div></div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'c_atgoal')" onclick="addCenter('c_atgoal')"><div class="pi" style="background:#451a03;color:#fcd34d">◎</div><div><div class="pnm">At Goal?</div><div class="pds">Position check</div></div></div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'c_package')" onclick="addCenter('c_package')"><div class="pi" style="background:#451a03;color:#fcd34d">📦</div><div><div class="pnm">Package Found?</div><div class="pds">Sensor detect</div></div></div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'c_clear')" onclick="addCenter('c_clear')"><div class="pi" style="background:#451a03;color:#fcd34d">🔍</div><div><div class="pnm">Area Clear?</div><div class="pds">No nearby obstacle</div></div></div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'c_ally')" onclick="addCenter('c_ally')"><div class="pi" style="background:#451a03;color:#fcd34d">🤝</div><div><div class="pnm">Ally Near?</div><div class="pds">Robot in range</div></div></div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'c_msg')" onclick="addCenter('c_msg')"><div class="pi" style="background:#451a03;color:#fcd34d">📨</div><div><div class="pnm">Msg Received?</div><div class="pds">Check inbox</div></div></div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'c_zone')" onclick="addCenter('c_zone')"><div class="pi" style="background:#451a03;color:#fcd34d">🏠</div><div><div class="pnm">Zone Occupied?</div><div class="pds">Other robot in zone</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'c_battery')" onclick="addCenter('c_battery')"><div class="pi" style="background:#3a1a00;color:#fbbf24">⚡</div><div><div class="pnm">Battery OK?</div><div class="pds">&gt; threshold</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'c_obstacle')" onclick="addCenter('c_obstacle')"><div class="pi" style="background:#3a1a00;color:#fbbf24">⚠</div><div><div class="pnm">Obstacle?</div><div class="pds">In sensor range</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'c_atgoal')" onclick="addCenter('c_atgoal')"><div class="pi" style="background:#3a1a00;color:#fbbf24">◎</div><div><div class="pnm">At Goal?</div><div class="pds">Position check</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'c_package')" onclick="addCenter('c_package')"><div class="pi" style="background:#3a1a00;color:#fbbf24">📦</div><div><div class="pnm">Package Found?</div><div class="pds">In sensor range</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'c_ally')" onclick="addCenter('c_ally')"><div class="pi" style="background:#3a1a00;color:#fbbf24">🤝</div><div><div class="pnm">Ally Near?</div><div class="pds">Robot in comm range</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'c_msg')" onclick="addCenter('c_msg')"><div class="pi" style="background:#3a1a00;color:#fbbf24">📨</div><div><div class="pnm">Msg Received?</div><div class="pds">Check inbox key</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'c_in_range')" onclick="addCenter('c_in_range')"><div class="pi" style="background:#3a1a00;color:#fbbf24">👁</div><div><div class="pnm">In FOV?</div><div class="pds">Target in sensor FOV</div></div></div>
 
   <div class="pgh">Action</div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_move')" onclick="addCenter('a_move')"><div class="pi" style="background:#052e16;color:#86efac">➤</div><div><div class="pnm">Move To</div><div class="pds">Navigate waypoint</div></div></div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_charge')" onclick="addCenter('a_charge')"><div class="pi" style="background:#052e16;color:#86efac">🔌</div><div><div class="pnm">Charge</div><div class="pds">Recharge battery</div></div></div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_avoid')" onclick="addCenter('a_avoid')"><div class="pi" style="background:#052e16;color:#86efac">↪</div><div><div class="pnm">Avoid</div><div class="pds">Reroute obstacle</div></div></div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_pickup')" onclick="addCenter('a_pickup')"><div class="pi" style="background:#052e16;color:#86efac">✋</div><div><div class="pnm">Pick Up</div><div class="pds">Grasp object</div></div></div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_dropoff')" onclick="addCenter('a_dropoff')"><div class="pi" style="background:#052e16;color:#86efac">📥</div><div><div class="pnm">Drop Off</div><div class="pds">Release at dest.</div></div></div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_scan')" onclick="addCenter('a_scan')"><div class="pi" style="background:#052e16;color:#86efac">📡</div><div><div class="pnm">Scan</div><div class="pds">360° sensor sweep</div></div></div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_broadcast')" onclick="addCenter('a_broadcast')"><div class="pi" style="background:#052e16;color:#86efac">📢</div><div><div class="pnm">Broadcast</div><div class="pds">Send to all robots</div></div></div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_sendmsg')" onclick="addCenter('a_sendmsg')"><div class="pi" style="background:#052e16;color:#86efac">✉</div><div><div class="pnm">Send Msg</div><div class="pds">Point-to-point</div></div></div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_help')" onclick="addCenter('a_help')"><div class="pi" style="background:#052e16;color:#86efac">🆘</div><div><div class="pnm">Request Help</div><div class="pds">Ask nearest ally</div></div></div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_guard')" onclick="addCenter('a_guard')"><div class="pi" style="background:#052e16;color:#86efac">🛡</div><div><div class="pnm">Guard Zone</div><div class="pds">Hold position</div></div></div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_wait')" onclick="addCenter('a_wait')"><div class="pi" style="background:#052e16;color:#86efac">⏳</div><div><div class="pnm">Wait</div><div class="pds">Idle N ticks</div></div></div>
-  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_setbb')" onclick="addCenter('a_setbb')"><div class="pi" style="background:#052e16;color:#86efac">✎</div><div><div class="pnm">Set Blackboard</div><div class="pds">Write key=value</div></div></div>
-</div><!-- end palette -->
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_move')" onclick="addCenter('a_move')"><div class="pi" style="background:#021d10;color:#4ade80">➤</div><div><div class="pnm">Move To</div><div class="pds">Navigate waypoint</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_charge')" onclick="addCenter('a_charge')"><div class="pi" style="background:#021d10;color:#4ade80">🔌</div><div><div class="pnm">Charge</div><div class="pds">Recharge at base</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_avoid')" onclick="addCenter('a_avoid')"><div class="pi" style="background:#021d10;color:#4ade80">↪</div><div><div class="pnm">Avoid</div><div class="pds">Reroute obstacle</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_pickup')" onclick="addCenter('a_pickup')"><div class="pi" style="background:#021d10;color:#4ade80">✋</div><div><div class="pnm">Pick Up</div><div class="pds">Grasp object</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_dropoff')" onclick="addCenter('a_dropoff')"><div class="pi" style="background:#021d10;color:#4ade80">📥</div><div><div class="pnm">Drop Off</div><div class="pds">Release at dest.</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_scan')" onclick="addCenter('a_scan')"><div class="pi" style="background:#021d10;color:#4ade80">📡</div><div><div class="pnm">Scan</div><div class="pds">Sensor sweep</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_broadcast')" onclick="addCenter('a_broadcast')"><div class="pi" style="background:#021d10;color:#4ade80">📢</div><div><div class="pnm">Broadcast</div><div class="pds">Send to all robots</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_sendmsg')" onclick="addCenter('a_sendmsg')"><div class="pi" style="background:#021d10;color:#4ade80">✉</div><div><div class="pnm">Send Msg</div><div class="pds">Point-to-point</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_wait')" onclick="addCenter('a_wait')"><div class="pi" style="background:#021d10;color:#4ade80">⏳</div><div><div class="pnm">Wait</div><div class="pds">Idle N ticks</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_setutil')" onclick="addCenter('a_setutil')"><div class="pi" style="background:#021d10;color:#fb923c">U=</div><div><div class="pnm">Set Utility</div><div class="pds">Write score to parent</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_setbb')" onclick="addCenter('a_setbb')"><div class="pi" style="background:#021d10;color:#4ade80">✎</div><div><div class="pnm">Set Blackboard</div><div class="pds">Write key=value</div></div></div>
+</div>
 
+<div class="hrz-handle" id="pal-handle"></div>
 <!-- CENTER -->
 <div id="center">
   <div id="cwrap" ondragover="event.preventDefault()" ondrop="onDrop(event)">
@@ -210,51 +260,93 @@ input[type=range]{accent-color:var(--acc);width:68px;vertical-align:middle}
     <div id="cprompt"></div>
     <svg id="esvg">
       <defs>
-        <marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-          <path d="M0,0 L0,6 L6,3 Z" fill="#4ade8060"/>
-        </marker>
+        <marker id="arr-idle" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 Z" fill="#263858"/></marker>
+        <marker id="arr-run"  markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 Z" fill="#ffb800"/></marker>
+        <marker id="arr-ok"   markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 Z" fill="#00ff88"/></marker>
+        <marker id="arr-fail" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 Z" fill="#ff3d5a"/></marker>
       </defs>
       <path id="tempedge" d="" style="display:none"/>
     </svg>
     <div id="canvas"></div>
   </div>
-
-  <!-- SIM -->
+  <div id="resize-handle"></div>
   <div id="smpanel">
     <div id="scwrap">
       <canvas id="simcv"></canvas>
       <div id="envbar">
         <button class="btn bg bsm" id="eb-view" onclick="setEnvMode('view')" style="color:var(--acc)">👁 View</button>
         <button class="btn bg bsm" id="eb-wall" onclick="setEnvMode('wall')">🧱 Wall</button>
-        <button class="btn bg bsm" id="eb-wp"   onclick="setEnvMode('wp')">📍 Waypoint</button>
-        <button class="btn bg bsm" id="eb-pkg"  onclick="setEnvMode('pkg')">📦 Package</button>
-        <button class="btn bg bsm" id="eb-erase" onclick="setEnvMode('erase')">✕ Erase</button>
+        <button class="btn bg bsm" id="eb-wp"   onclick="setEnvMode('wp')">📍 WP</button>
+        <button class="btn bg bsm" id="eb-pkg"  onclick="setEnvMode('pkg')">📦 Pkg</button>
+        <button class="btn bg bsm" id="eb-erase" onclick="setEnvMode('erase')">✕</button>
         <button class="btn bg bsm" onclick="resetEnv()">↺</button>
+        <div class="vsep"></div>
+        <span class="tbl">FOV°:</span>
+        <input type="range" id="fovsl" min="30" max="360" value="180" step="10" oninput="updateFOV()" style="width:48px">
+        <span class="slval" id="fovval">180</span>
+        <div class="vsep"></div>
+        <span class="tbl">Sensor:</span>
+        <input type="range" id="sensorsl" min="20" max="200" value="80" step="5" oninput="updateSensor()" style="width:48px">
+        <span class="slval" id="sensorval">80</span>
+        <div class="vsep"></div>
+        <span class="tbl">Comm:</span>
+        <input type="range" id="commsl" min="30" max="300" value="120" step="10" oninput="updateComm()" style="width:48px">
+        <span class="slval" id="commval">120</span>
       </div>
       <div id="robbar"></div>
+      <!-- waypoint edit overlay -->
+      <div id="wpoverlay">
+        <div style="font-size:9px;color:var(--acc2);margin-bottom:4px">Edit Waypoint</div>
+        <div style="display:flex;gap:4px;align-items:center;margin-bottom:3px">
+          <span class="tbl">ID:</span><input id="wp-id-input" type="text" maxlength="4" style="width:50px">
+        </div>
+        <div style="display:flex;gap:5px;margin-top:4px">
+          <button class="btn bg bsm" onclick="confirmWpEdit()">OK</button>
+          <button class="btn bg bsm" onclick="cancelWpEdit()">Cancel</button>
+          <button class="btn bd bsm" onclick="deleteWpEdit()">Del</button>
+        </div>
+      </div>
     </div>
+    <div class="hrz-handle" id="smside-handle"></div>
     <div id="smside">
       <div class="tabbar">
         <div class="tab on" onclick="stab(this,'log')">Log</div>
-        <div class="tab" onclick="stab(this,'bb')">Blackboard</div>
+        <div class="tab" onclick="stab(this,'bb')">BB</div>
         <div class="tab" onclick="stab(this,'comms')">Comms</div>
+        <div class="tab" onclick="stab(this,'explain')">Explain</div>
+        <div class="tab" onclick="stab(this,'sensor')">Sensor</div>
+        <div class="tab" onclick="stab(this,'metrics')">Metrics</div>
       </div>
       <div id="tc-log" class="tc on"><div id="logwrap"></div></div>
       <div id="tc-bb" class="tc">
-        <div style="padding:4px 6px;font-size:9px;color:var(--text3);flex-shrink:0">
-          Robot: <select class="ts" id="bbrobsel" style="font-size:9px;padding:1px 4px" onchange="renderBB()"></select>
+        <div style="padding:3px 5px;font-size:8px;color:var(--text3);flex-shrink:0">
+          <select class="ts" id="bbrobsel" style="font-size:8px;padding:1px 4px" onchange="renderBB()"></select>
         </div>
-        <div id="bbwrap"></div>
+        <div id="bbwrap" style="flex:1;overflow-y:auto;min-height:0"></div>
       </div>
       <div id="tc-comms" class="tc"><div id="commwrap"></div></div>
+      <div id="tc-explain" class="tc"><div id="expwrap"></div></div>
+      <div id="tc-sensor" class="tc">
+        <div id="sensorwrap">
+          <canvas id="fovcanvas"></canvas>
+          <div id="sensorrows" style="padding:4px"></div>
+        </div>
+      </div>
+      <div id="tc-metrics" class="tc">
+        <div id="metricswrap">
+          <div id="metricsrows" style="padding:4px;flex-shrink:0"></div>
+          <canvas id="metricscv" style="flex:1;min-height:0;width:100%;display:block"></canvas>
+        </div>
+      </div>
       <div id="smctrl">
         <button class="btn bg bsm" onclick="stepOnce()">⏭ Step</button>
         <button class="btn bg bsm" onclick="resetSim()">⏮ Reset</button>
       </div>
     </div>
   </div>
-</div><!-- end center -->
+</div>
 
+<div class="hrz-handle" id="rpanel-handle"></div>
 <!-- RIGHT PANEL -->
 <div id="rpanel">
   <div class="tabbar">
@@ -263,71 +355,63 @@ input[type=range]{accent-color:var(--acc);width:68px;vertical-align:middle}
     <div class="tab" onclick="rtab(this,'help')">Help</div>
   </div>
   <div id="rtc-node" class="tc on" style="overflow-y:auto">
-    <div id="noprop" style="padding:16px 10px;font-size:11px;color:var(--text3);text-align:center">Select a node</div>
+    <div id="noprop" style="padding:14px 9px;font-size:10px;color:var(--text3);text-align:center">Select a node</div>
     <div id="nprops" style="display:none">
-      <div class="pr"><div class="prl">Type</div><div id="pt" class="prv" style="font-family:'JetBrains Mono',monospace;font-size:10px"></div></div>
+      <div class="pr"><div class="prl">Type</div><div id="pt" class="prv" style="font-family:'JetBrains Mono',monospace;font-size:9px"></div></div>
       <div class="pr"><div class="prl">Label</div><input class="pri" id="plbl" type="text" oninput="updateLabel(this.value)"></div>
       <div class="pr"><div class="prl">Robot Assignment</div><select class="pri" id="probotas" onchange="updateRobotAs(parseInt(this.value))"><option value="-1">All Robots</option></select></div>
       <div class="pr" id="pp1r" style="display:none"><div class="prl" id="pp1l">Param 1</div><input class="pri" id="pp1" type="text" oninput="updateP1(this.value)"></div>
       <div class="pr" id="pp2r" style="display:none"><div class="prl" id="pp2l">Param 2</div><input class="pri" id="pp2" type="text" oninput="updateP2(this.value)"></div>
-      <div class="pr"><div class="prl">Last Status</div><div id="pst" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3)">—</div></div>
-      <div class="pr"><div class="prl">Description</div><div id="pdsc" style="font-size:10px;color:var(--text3);line-height:1.5"></div></div>
+      <div class="pr" id="putilr" style="display:none"><div class="prl">Utility Score (0–100)</div><input class="pri" id="putil" type="number" min="0" max="100" oninput="updateUtil(this.value)"></div>
+      <div class="pr"><div class="prl">Last Status</div><div id="pst" style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3)">—</div></div>
+      <div class="pr"><div class="prl">Description</div><div id="pdsc" style="font-size:9px;color:var(--text3);line-height:1.5"></div></div>
     </div>
   </div>
-  <div id="rtc-tpl" class="tc" style="padding:7px;overflow-y:auto">
-    <div style="font-size:9px;color:var(--text3);margin-bottom:5px">Quick templates:</div>
+  <div id="rtc-tpl" class="tc" style="padding:6px;overflow-y:auto">
     <button class="tplb" onclick="loadChallenge('patrol')">🤖 Patrol & Recharge</button>
     <button class="tplb" onclick="loadChallenge('delivery')">📦 Package Delivery</button>
     <button class="tplb" onclick="loadChallenge('swarm')">🐝 Swarm Coordination</button>
     <button class="tplb" onclick="loadChallenge('rescue')">🚨 Search & Rescue</button>
+    <button class="tplb" onclick="loadChallenge('utility_demo')">⚖ Utility Demo</button>
   </div>
   <div id="rtc-help" class="tc" style="overflow-y:auto">
     <div class="hbx">
-      <b>Composite</b><br>
-      <code>→ Sequence</code> all children must succeed.<br>
-      <code>? Selector</code> first success wins.<br>
-      <code>∥ Parallel</code> ticks all, needs ≥50%.<br><br>
-      <b>Memory decorators</b><br>
-      <code>M→</code> resumes from last RUNNING child.<br>
-      <code>M?</code> skips already-succeeded children.<br><br>
-      <b>Time decorators</b><br>
-      <code>⏱ Timeout</code> fails after N ticks.<br>
-      <code>❄ Cooldown</code> skips for N ticks after success.<br><br>
-      <b>Connecting nodes</b><br>
-      Drag from cyan bottom port → purple top port.<br><br>
-      <b>Multi-robot</b><br>
-      Assign nodes to specific robots in Properties.<br>
-      Use Broadcast / Send Msg for comms.<br><br>
-      <b>Environment</b><br>
-      Use toolbar above sim: draw walls, place waypoints &amp; packages, erase elements.
+      <b>Tick Path Highlighting</b><br>
+      Active nodes glow: <span style="color:var(--warn)">●yellow=running</span>, <span style="color:var(--acc)">●green=success</span>, <span style="color:var(--danger)">●red=failure</span>. Inactive nodes dim.<br><br>
+      <b>Utility Nodes</b><br>
+      <code>U? Utility Selector</code> picks child with highest utility score. Set scores with <code>Set Utility</code> action nodes.<br>
+      <code>U→ Utility Sequence</code> executes children in order of score.<br><br>
+      <b>Resize any pane</b><br>
+      Every border between panes is a drag handle. Drag left/right on the vertical bars between palette, canvas, and properties. Drag the horizontal bar between the canvas and sim up/down. Drag the bar between the sim world and the log panel left/right.<br><br>
+      <b>Drag robots</b><br>
+      Click and drag any robot circle in the sim panel to reposition it. If you drop it near a waypoint it will snap and update its target.<br><br>
+      <b>Waypoint editing</b><br>
+      In View mode, right-click a waypoint in the sim to rename or delete it. In Waypoint mode, click to place.<br><br>
+      <b>FOV / Sensor / Comm</b><br>
+      Sliders in the sim toolbar control field-of-view angle, sensor detection range, and communication range. See the Sensor tab for per-robot FOV.
     </div>
   </div>
 </div>
 
 </div><!-- end main -->
 
-<!-- STATUSBAR -->
 <div id="sbar">
   <div class="sdot" id="sdot"></div>
   <span id="stxt">Ready</span>
   <span>|</span><span id="ticklbl">Tick: 0</span>
   <span>|</span><span id="nodelbl">Nodes: 0</span>
   <span>|</span><span id="roblbl">Robots: 1</span>
-  <span style="margin-left:auto;color:var(--text3)">click node · drag port · env tools</span>
+  <span>|</span><span id="envlbl">mode: view</span>
+  <span style="margin-left:auto;color:var(--text3)">click node · drag port · right-click wp to edit</span>
+</div>
 </div>
 
-</div><!-- end app -->
-
-<!-- IMPORT MODAL -->
 <div id="moverlay">
   <div class="modal">
     <h3>Import Behavior Tree</h3>
     <textarea id="ijson" placeholder="Paste exported JSON here..."></textarea>
     <div class="mbtns">
-      <label style="cursor:pointer">
-        <input type="file" accept=".json" style="display:none" onchange="importFile(event)">
-        <span class="btn bg bsm">📂 Load file</span>
-      </label>
+      <label style="cursor:pointer"><input type="file" accept=".json" style="display:none" onchange="importFile(event)"><span class="btn bg bsm">📂 File</span></label>
       <button class="btn bg bsm" onclick="closeModal()">Cancel</button>
       <button class="btn bp bsm" onclick="doImport()">Import</button>
     </div>
@@ -335,555 +419,625 @@ input[type=range]{accent-color:var(--acc);width:68px;vertical-align:middle}
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // NODE DEFINITIONS
-// cat: composite | decorator | condition | action
-// ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 const ND = {
-  sequence:   {l:'Sequence',    cat:'composite', bg:'#1e3a8a',bd:'#3b82f6',ic:'→',sh:'SEQ', desc:'Runs children in order. Stops & returns FAILURE on first failure.'},
-  selector:   {l:'Selector',    cat:'composite', bg:'#4c1d95',bd:'#8b5cf6',ic:'?',sh:'SEL', desc:'Runs children until one returns SUCCESS.'},
-  parallel:   {l:'Parallel',    cat:'composite', bg:'#134e4a',bd:'#10b981',ic:'∥',sh:'PAR', desc:'Ticks all children. Succeeds when ≥50% succeed.'},
-  random_sel: {l:'Random Sel.', cat:'composite', bg:'#2d1b69',bd:'#a78bfa',ic:'⚄',sh:'RND', desc:'Shuffles children each tick, then selects like Selector.'},
-  inverter:   {l:'Inverter',    cat:'decorator', bg:'#7f1d1d',bd:'#ef4444',ic:'¬',sh:'DEC', desc:'Flips SUCCESS↔FAILURE. RUNNING passes through.'},
-  repeat:     {l:'Repeat N',    cat:'decorator', bg:'#713f12',bd:'#f59e0b',ic:'↺',sh:'DEC', desc:'Repeats child N times.', p1:'Count', p1d:'3'},
-  retry:      {l:'Retry',       cat:'decorator', bg:'#7c2d12',bd:'#fdba74',ic:'⟳',sh:'DEC', desc:'Retries child up to N times on FAILURE.', p1:'Max retries', p1d:'3'},
-  timeout:    {l:'Timeout',     cat:'decorator', bg:'#172554',bd:'#60a5fa',ic:'⏱',sh:'DEC', desc:'Returns FAILURE if child still RUNNING after N ticks.', p1:'Tick limit', p1d:'5'},
-  cooldown:   {l:'Cooldown',    cat:'decorator', bg:'#172554',bd:'#38bdf8',ic:'❄',sh:'DEC', desc:'Skips child for N ticks after SUCCESS.', p1:'Cooldown ticks', p1d:'4'},
-  mem_seq:    {l:'Mem.Sequence',cat:'decorator', bg:'#312e81',bd:'#818cf8',ic:'M→',sh:'MEM', desc:'Like Sequence but resumes from last RUNNING child.'},
-  mem_sel:    {l:'Mem.Selector',cat:'decorator', bg:'#312e81',bd:'#a5b4fc',ic:'M?',sh:'MEM', desc:'Like Selector but skips already-succeeded children.'},
-  force_ok:   {l:'Force Succ.',cat:'decorator',  bg:'#14532d',bd:'#86efac',ic:'✓!',sh:'DEC', desc:'Always returns SUCCESS.'},
-  c_battery:  {l:'Battery OK?', cat:'condition', bg:'#451a03',bd:'#d97706',ic:'⚡',sh:'IF',  desc:'SUCCESS if battery > threshold%.', p1:'Threshold', p1d:'25'},
-  c_obstacle: {l:'Obstacle?',   cat:'condition', bg:'#451a03',bd:'#d97706',ic:'⚠',sh:'IF',  desc:'SUCCESS if proximity sensor detects obstacle.'},
-  c_atgoal:   {l:'At Goal?',    cat:'condition', bg:'#451a03',bd:'#d97706',ic:'◎',sh:'IF',  desc:'SUCCESS if robot has reached its target waypoint.'},
-  c_package:  {l:'Package?',    cat:'condition', bg:'#451a03',bd:'#d97706',ic:'📦',sh:'IF', desc:'SUCCESS if package detected by sensor.'},
-  c_clear:    {l:'Area Clear?', cat:'condition', bg:'#451a03',bd:'#d97706',ic:'🔍',sh:'IF', desc:'SUCCESS if no obstacles detected nearby.'},
-  c_ally:     {l:'Ally Near?',  cat:'condition', bg:'#451a03',bd:'#d97706',ic:'🤝',sh:'IF', desc:'SUCCESS if another robot within range.', p1:'Range (px)', p1d:'80'},
-  c_msg:      {l:'Msg Received?',cat:'condition',bg:'#451a03',bd:'#d97706',ic:'📨',sh:'IF', desc:'SUCCESS if inbox has message matching key.', p1:'Key', p1d:'alert'},
-  c_zone:     {l:'Zone Occupied?',cat:'condition',bg:'#451a03',bd:'#d97706',ic:'🏠',sh:'IF',desc:'SUCCESS if another robot is at same target waypoint.'},
-  a_move:     {l:'Move To',     cat:'action',    bg:'#052e16',bd:'#22c55e',ic:'➤',sh:'DO',  desc:'Navigate to waypoint. RUNNING while moving.', p1:'Waypoint', p1d:'A'},
-  a_charge:   {l:'Charge',      cat:'action',    bg:'#052e16',bd:'#22c55e',ic:'🔌',sh:'DO', desc:'Return to base and recharge. SUCCESS when full.'},
-  a_avoid:    {l:'Avoid',       cat:'action',    bg:'#052e16',bd:'#22c55e',ic:'↪',sh:'DO',  desc:'Execute avoidance maneuver. Clears obstacle.'},
-  a_pickup:   {l:'Pick Up',     cat:'action',    bg:'#052e16',bd:'#22c55e',ic:'✋',sh:'DO', desc:'Pick up nearest package. Sets carrying=true.'},
-  a_dropoff:  {l:'Drop Off',    cat:'action',    bg:'#052e16',bd:'#22c55e',ic:'📥',sh:'DO', desc:'Release carried package.'},
-  a_scan:     {l:'Scan',        cat:'action',    bg:'#052e16',bd:'#22c55e',ic:'📡',sh:'DO', desc:'360° sensor sweep. Updates package_found.'},
-  a_broadcast:{l:'Broadcast',   cat:'action',    bg:'#052e16',bd:'#22c55e',ic:'📢',sh:'DO', desc:'Send message to ALL robots.', p1:'Key', p1d:'alert', p2:'Value', p2d:'true'},
-  a_sendmsg:  {l:'Send Msg',    cat:'action',    bg:'#052e16',bd:'#22c55e',ic:'✉',sh:'DO',  desc:'Send to specific robot index.', p1:'Robot idx', p1d:'1', p2:'Key', p2d:'help'},
-  a_help:     {l:'Request Help',cat:'action',    bg:'#052e16',bd:'#22c55e',ic:'🆘',sh:'DO', desc:'Broadcast help request to nearest ally.'},
-  a_guard:    {l:'Guard Zone',  cat:'action',    bg:'#052e16',bd:'#22c55e',ic:'🛡',sh:'DO', desc:'Hold position. Returns RUNNING indefinitely.'},
-  a_wait:     {l:'Wait',        cat:'action',    bg:'#052e16',bd:'#22c55e',ic:'⏳',sh:'DO', desc:'Idle N ticks then succeed.', p1:'Ticks', p1d:'3'},
-  a_setbb:    {l:'Set BB',      cat:'action',    bg:'#052e16',bd:'#22c55e',ic:'✎',sh:'DO',  desc:'Write to blackboard. key=p1, value=p2.', p1:'Key', p1d:'target', p2:'Value', p2d:'A'},
+  sequence:   {l:'Sequence',      cat:'composite',bg:'#0d1f4a',bd:'#3b82f6',ic:'→',sh:'SEQ',desc:'All children must succeed (left-to-right).'},
+  selector:   {l:'Selector',      cat:'composite',bg:'#1e0a4a',bd:'#9333ea',ic:'?',sh:'SEL',desc:'First child to succeed wins.'},
+  parallel:   {l:'Parallel',      cat:'composite',bg:'#042a1e',bd:'#10b981',ic:'∥',sh:'PAR',desc:'Ticks all; succeeds when ≥50% succeed.'},
+  utility_sel:{l:'Utility Sel.',  cat:'composite',bg:'#2a1200',bd:'#fb923c',ic:'U?',sh:'UTL',desc:'Selects child with highest utility score.',p1:'Policy',p1d:'max'},
+  utility_seq:{l:'Utility Seq.',  cat:'composite',bg:'#2a1a00',bd:'#fbbf24',ic:'U→',sh:'UTS',desc:'Executes children sorted by utility score descending.'},
+  inverter:   {l:'Inverter',      cat:'decorator',bg:'#3a0505',bd:'#f87171',ic:'¬',sh:'DEC',desc:'Flips SUCCESS↔FAILURE.'},
+  repeat:     {l:'Repeat N',      cat:'decorator',bg:'#3a1000',bd:'#fb923c',ic:'↺',sh:'DEC',desc:'Repeats child N times.',p1:'Count',p1d:'3'},
+  retry:      {l:'Retry',         cat:'decorator',bg:'#3a1800',bd:'#fde68a',ic:'⟳',sh:'DEC',desc:'Retries child up to N times on FAILURE.',p1:'Max',p1d:'3'},
+  timeout:    {l:'Timeout',       cat:'decorator',bg:'#071530',bd:'#60a5fa',ic:'⏱',sh:'DEC',desc:'FAILURE if child RUNNING after N ticks.',p1:'Ticks',p1d:'5'},
+  cooldown:   {l:'Cooldown',      cat:'decorator',bg:'#071530',bd:'#38bdf8',ic:'❄',sh:'DEC',desc:'Skips child for N ticks after SUCCESS.',p1:'Ticks',p1d:'4'},
+  mem_seq:    {l:'Mem.Sequence',  cat:'decorator',bg:'#12104a',bd:'#818cf8',ic:'M→',sh:'MEM',desc:'Sequence that resumes from last RUNNING child.'},
+  mem_sel:    {l:'Mem.Selector',  cat:'decorator',bg:'#12104a',bd:'#a5b4fc',ic:'M?',sh:'MEM',desc:'Selector that skips already-succeeded children.'},
+  force_ok:   {l:'Force Succ.',   cat:'decorator',bg:'#011a0a',bd:'#4ade80',ic:'✓!',sh:'DEC',desc:'Always returns SUCCESS.'},
+  c_battery:  {l:'Battery OK?',   cat:'condition',bg:'#2a1000',bd:'#f59e0b',ic:'⚡',sh:'IF',desc:'SUCCESS if battery > threshold.',p1:'Threshold%',p1d:'25'},
+  c_obstacle: {l:'Obstacle?',     cat:'condition',bg:'#2a1000',bd:'#f59e0b',ic:'⚠',sh:'IF',desc:'SUCCESS if obstacle in sensor range.'},
+  c_atgoal:   {l:'At Goal?',      cat:'condition',bg:'#2a1000',bd:'#f59e0b',ic:'◎',sh:'IF',desc:'SUCCESS if robot is at target waypoint.'},
+  c_package:  {l:'Package?',      cat:'condition',bg:'#2a1000',bd:'#f59e0b',ic:'📦',sh:'IF',desc:'SUCCESS if package in sensor range.'},
+  c_ally:     {l:'Ally Near?',    cat:'condition',bg:'#2a1000',bd:'#f59e0b',ic:'🤝',sh:'IF',desc:'SUCCESS if ally within comm range.'},
+  c_msg:      {l:'Msg Received?', cat:'condition',bg:'#2a1000',bd:'#f59e0b',ic:'📨',sh:'IF',desc:'SUCCESS if inbox has key.',p1:'Key',p1d:'alert'},
+  c_in_range: {l:'In FOV?',       cat:'condition',bg:'#2a1000',bd:'#f59e0b',ic:'👁',sh:'IF',desc:'SUCCESS if target waypoint is in robot FOV.',p1:'Target',p1d:'B'},
+  a_move:     {l:'Move To',       cat:'action',   bg:'#011a0a',bd:'#22c55e',ic:'➤',sh:'DO',desc:'Navigate to waypoint.',p1:'Waypoint',p1d:'A'},
+  a_charge:   {l:'Charge',        cat:'action',   bg:'#011a0a',bd:'#22c55e',ic:'🔌',sh:'DO',desc:'Return to Base and recharge.'},
+  a_avoid:    {l:'Avoid',         cat:'action',   bg:'#011a0a',bd:'#22c55e',ic:'↪',sh:'DO',desc:'Clear obstacle flag; reroute.'},
+  a_pickup:   {l:'Pick Up',       cat:'action',   bg:'#011a0a',bd:'#22c55e',ic:'✋',sh:'DO',desc:'Pick up nearest package in sensor range.'},
+  a_dropoff:  {l:'Drop Off',      cat:'action',   bg:'#011a0a',bd:'#22c55e',ic:'📥',sh:'DO',desc:'Release carried package.'},
+  a_scan:     {l:'Scan',          cat:'action',   bg:'#011a0a',bd:'#22c55e',ic:'📡',sh:'DO',desc:'Sensor sweep; updates package_found.'},
+  a_broadcast:{l:'Broadcast',     cat:'action',   bg:'#011a0a',bd:'#22c55e',ic:'📢',sh:'DO',desc:'Send key=value to all robots in comm range.',p1:'Key',p1d:'alert',p2:'Value',p2d:'true'},
+  a_sendmsg:  {l:'Send Msg',      cat:'action',   bg:'#011a0a',bd:'#22c55e',ic:'✉',sh:'DO',desc:'Send key to robot at index.',p1:'Robot idx',p1d:'1',p2:'Key',p2d:'help'},
+  a_wait:     {l:'Wait',          cat:'action',   bg:'#011a0a',bd:'#22c55e',ic:'⏳',sh:'DO',desc:'Idle N ticks then succeed.',p1:'Ticks',p1d:'3'},
+  a_setutil:  {l:'Set Utility',   cat:'action',   bg:'#011a0a',bd:'#fb923c',ic:'U=',sh:'DO',desc:'Write utility score for parent. Value 0-100.',p1:'Score',p1d:'50'},
+  a_setbb:    {l:'Set BB',        cat:'action',   bg:'#011a0a',bd:'#22c55e',ic:'✎',sh:'DO',desc:'Write blackboard key=value.',p1:'Key',p1d:'x',p2:'Value',p2d:'1'},
 };
 
-// ═══════════════════════════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════════════════════════
-const nodes = {}, edges = [];
-let nidx = 0, selId = null, running = false, interval = null, tick = 0;
-let dragType = null;
-const RCOLS = ['#3b82f6','#f59e0b','#ef4444','#a78bfa','#10b981','#fb923c'];
-let robots = [], activeRobot = 0;
-let commLog = [];
-let envMode = 'view';
-let wallDrag = null, wpIdx = 0;
-const WP_IDS = 'DEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+// ═══════════════════════════════════════════
+// GLOBAL STATE
+// ═══════════════════════════════════════════
+const nodes={},edges=[];
+let nidx=0,selId=null,running=false,interval=null,tick=0;
+let dragType=null;
+const RCOLS=['#3b82f6','#f59e0b','#ef4444','#a78bfa','#10b981','#fb923c'];
+let robots=[],activeRobot=0,commLog=[];
+let envMode='view',wallDrag=null,wpIdx=0,wpEditTarget=null;
+const WP_IDS='DEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
-let ENV = {
-  walls: [],
-  waypoints: [{id:'A',x:80,y:70},{id:'B',x:230,y:50},{id:'C',x:310,y:130},{id:'Base',x:35,y:140}],
-  packages: [{x:285,y:115,collected:false}],
+// physics params
+let ROB_SPEED=3;
+let FOV_DEG=180;
+let SENSOR_RANGE=80;
+let COMM_RANGE=120;
+let TICK_HZ=2;
+
+let ENV={
+  walls:[],
+  waypoints:[{id:'A',x:80,y:70},{id:'B',x:230,y:50},{id:'C',x:310,y:130},{id:'Base',x:35,y:140}],
+  packages:[{x:285,y:115,collected:false}],
 };
 
-// DOM refs — wait until after DOM is parsed
-let canvasEl, esvg, simcv, simctx, logEl;
+// metrics history
+const METRICS_HIST={}; // robotName -> [{tick, dist_to_goal, battery, victims}]
+const MAX_METRICS=120;
 
-// ═══════════════════════════════════════════════════════════════
+// per-tick tick trace for explainability
+let lastTickTrace=[]; // [{nodeId, robName, status, label, type}]
+let utilityScores={}; // nodeId -> score (set by a_setutil this tick)
+
+// DOM refs
+let canvasEl,esvg,simcv,simctx,logEl,fovCv,fovCtx,metricsCv,metricsCtx;
+
+// ═══════════════════════════════════════════
 // ROBOTS
-// ═══════════════════════════════════════════════════════════════
-function makeRobot(i) {
-  return {
-    idx:i, color:RCOLS[i%RCOLS.length], name:'R'+(i+1),
-    // world-space coords (same coordinate system as ENV waypoints)
-    wx: 35 + i*25, wy: 140,
-    angle:0,
-    bb:{battery:80-i*5, obstacle:false, at_goal:false, package_found:false, carrying:false, target_wp:i===0?'A':i===1?'B':'C'},
-    inbox:[], outbox:[],
-    memState:{}, repeatC:{}, retryC:{}, timeoutC:{}, cooldownC:{}, waitC:{},
-    status:'idle',
+// ═══════════════════════════════════════════
+function makeRobot(i){
+  return{idx:i,color:RCOLS[i%RCOLS.length],name:'R'+(i+1),
+    wx:35+i*22,wy:140,angle:0,
+    bb:{battery:80-i*5,obstacle:false,at_goal:false,package_found:false,carrying:false,target_wp:['A','B','C'][i]||'A',victims_found:0},
+    inbox:[],
+    memState:{},repeatC:{},retryC:{},timeoutC:{},cooldownC:{},waitC:{},
+    status:'idle',distTraveled:0,
   };
 }
 
-function resetRobotState(r) {
-  const base = ENV.waypoints.find(w=>w.id==='Base') || {x:35,y:140};
-  r.wx = base.x + r.idx*22; r.wy = base.y;
-  r.angle = 0;
-  r.bb = {battery:80-r.idx*5, obstacle:false, at_goal:false, package_found:false, carrying:false, target_wp:r.idx===0?'A':r.idx===1?'B':'C'};
-  r.inbox=[]; r.outbox=[];
-  r.memState={}; r.repeatC={}; r.retryC={}; r.timeoutC={}; r.cooldownC={}; r.waitC={};
-  r.status='idle';
+function resetRobotState(r){
+  const base=ENV.waypoints.find(w=>w.id==='Base')||{x:35,y:140};
+  r.wx=base.x+r.idx*22; r.wy=base.y; r.angle=0;
+  r.bb={battery:80-r.idx*5,obstacle:false,at_goal:false,package_found:false,carrying:false,target_wp:['A','B','C'][r.idx]||'A',victims_found:0};
+  r.inbox=[];
+  r.memState={}; r.repeatC={}; r.retryC={};
+  r.timeoutC={}; r.cooldownC={}; r.waitC={};
+  r.status='idle'; r.distTraveled=0;
+  METRICS_HIST[r.name]=[];
   ENV.packages.forEach(p=>p.collected=false);
 }
 
-// ═══════════════════════════════════════════════════════════════
-// CANVAS NODES
-// ═══════════════════════════════════════════════════════════════
-function uid(){ return 'n'+(++nidx); }
+// ═══════════════════════════════════════════
+// SLIDER CONTROLS
+// ═══════════════════════════════════════════
+function updateTickHz(){
+  TICK_HZ=parseInt(document.getElementById('tickhz').value);
+  document.getElementById('tickhzval').textContent=TICK_HZ;
+  if(running){clearInterval(interval);interval=setInterval(tickBT,Math.round(1000/TICK_HZ));}
+}
+function updateRobSpeed(){
+  ROB_SPEED=parseInt(document.getElementById('robspeed').value);
+  document.getElementById('robspeedval').textContent=ROB_SPEED;
+}
+function updateFOV(){
+  FOV_DEG=parseInt(document.getElementById('fovsl').value);
+  document.getElementById('fovval').textContent=FOV_DEG;
+}
+function updateSensor(){
+  SENSOR_RANGE=parseInt(document.getElementById('sensorsl').value);
+  document.getElementById('sensorval').textContent=SENSOR_RANGE;
+}
+function updateComm(){
+  COMM_RANGE=parseInt(document.getElementById('commsl').value);
+  document.getElementById('commval').textContent=COMM_RANGE;
+}
 
-function createNode(type, x, y, robotAs) {
-  const def = ND[type]; if(!def) return null;
+// ═══════════════════════════════════════════
+// CREATE NODE
+// ═══════════════════════════════════════════
+function uid(){return 'n'+(++nidx);}
+
+function createNode(type,x,y,robotAs){
+  const def=ND[type]; if(!def) return null;
   if(robotAs===undefined) robotAs=-1;
-  const id = uid();
-  x = Math.round(x/16)*16; y = Math.round(y/16)*16;
-
-  const el = document.createElement('div');
-  el.className = 'btn-node'; el.id = id;
-  el.style.cssText = `left:${x}px;top:${y}px;background:${def.bg};border-color:${def.bd}`;
-  el.innerHTML = `
+  const id=uid();
+  x=Math.round(x/16)*16; y=Math.round(y/16)*16;
+  const el=document.createElement('div');
+  el.className='btn-node'; el.id=id;
+  el.style.cssText=`left:${x}px;top:${y}px;background:${def.bg};border-color:${def.bd}`;
+  el.innerHTML=`
     <div class="nh" style="background:${def.bd}22">
-      <span style="font-size:13px">${def.ic}</span>
+      <span style="font-size:12px">${def.ic}</span>
       <span class="nt">${def.sh}</span>
     </div>
     <div class="nl">${def.l}</div>
+    <div class="nutility" id="${id}u"></div>
     <div class="nst" id="${id}s"></div>
     <div class="nrb" id="${id}r"></div>
     <div class="port po" onmousedown="startConn(event,'${id}','out')"></div>
     <div class="port pi2" onmousedown="startConn(event,'${id}','in')"></div>
     <button class="ndl" onclick="delNode('${id}')">✕</button>`;
-
-  el.addEventListener('mousedown', e=>{
+  el.addEventListener('mousedown',e=>{
     if(e.target.classList.contains('port')||e.target.classList.contains('ndl'))return;
     dragNodeEl(e,id);
   });
-  el.addEventListener('click', e=>{
+  el.addEventListener('click',e=>{
     if(e.target.classList.contains('port')||e.target.classList.contains('ndl'))return;
     selectNode(id);
   });
   canvasEl.appendChild(el);
-
-  nodes[id] = {id, type, x, y, label:def.l, p1:def.p1d||'', p2:def.p2d||'', robotAs, el, children:[], status:'idle'};
-  updateBadge(id);
-  updateNodeCount();
+  nodes[id]={id,type,x,y,label:def.l,p1:def.p1d||'',p2:def.p2d||'',robotAs,el,children:[],status:'idle',utility:50};
+  updateBadge(id); updateNodeCount();
   return id;
 }
 
-function updateBadge(id) {
-  const n=nodes[id]; if(!n) return;
-  const el=document.getElementById(id+'r'); if(!el) return;
-  if(n.robotAs>=0 && robots[n.robotAs]){
-    el.textContent=robots[n.robotAs].name;
-    el.style.color=robots[n.robotAs].color;
-  } else { el.textContent=''; }
+function updateBadge(id){
+  const n=nodes[id]; if(!n)return;
+  const el=document.getElementById(id+'r'); if(!el)return;
+  if(n.robotAs>=0&&robots[n.robotAs]){el.textContent=robots[n.robotAs].name;el.style.color=robots[n.robotAs].color;}
+  else el.textContent='';
 }
 
-function addCenter(type) {
+function addCenter(type){
   const w=document.getElementById('cwrap');
-  createNode(type, w.clientWidth/2-53+rnd(-35,35), w.clientHeight*0.38+rnd(-25,25));
+  createNode(type,w.clientWidth/2-52+rnd(-35,35),w.clientHeight*0.38+rnd(-25,25));
 }
 
-function delNode(id) {
-  if(!nodes[id]) return;
+function delNode(id){
+  if(!nodes[id])return;
   nodes[id].el.remove();
-  for(let i=edges.length-1;i>=0;i--) if(edges[i].from===id||edges[i].to===id) edges.splice(i,1);
-  Object.values(nodes).forEach(n=>{ n.children=n.children.filter(c=>c!==id); });
+  for(let i=edges.length-1;i>=0;i--)if(edges[i].from===id||edges[i].to===id)edges.splice(i,1);
+  Object.values(nodes).forEach(n=>{n.children=n.children.filter(c=>c!==id);});
   delete nodes[id];
-  if(selId===id){ selId=null; showProps(null); }
+  if(selId===id){selId=null;showProps(null);}
   drawEdges(); updateNodeCount();
 }
 
-function clearAll() {
-  // snapshot keys first to avoid mutation-during-iteration
+function clearAll(){
   [...Object.keys(nodes)].forEach(id=>delNode(id));
   edges.length=0; drawEdges();
   tick=0; updateTick();
   robots.forEach(resetRobotState);
   logMsg('<span class="li">// Canvas cleared.</span>');
+  lastTickTrace=[];
 }
 
-// ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // DRAG PALETTE
-// ═══════════════════════════════════════════════════════════════
-function pdrag(e,t){ dragType=t; }
-function onDrop(e) {
-  if(!dragType) return;
+// ═══════════════════════════════════════════
+function pdrag(e,t){dragType=t;}
+function onDrop(e){
+  if(!dragType)return;
   const r=document.getElementById('cwrap').getBoundingClientRect();
-  createNode(dragType, e.clientX-r.left-53, e.clientY-r.top-24);
+  createNode(dragType,e.clientX-r.left-52,e.clientY-r.top-24);
   dragType=null;
 }
 
-// ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // DRAG NODE
-// ═══════════════════════════════════════════════════════════════
-function dragNodeEl(e,id) {
+// ═══════════════════════════════════════════
+function dragNodeEl(e,id){
   e.preventDefault();
   const n=nodes[id];
-  const ox=e.clientX-n.x, oy=e.clientY-n.y;
-  const mv = ev => {
-    n.x = Math.max(0, Math.round((ev.clientX-ox)/16)*16);
-    n.y = Math.max(0, Math.round((ev.clientY-oy)/16)*16);
-    n.el.style.left=n.x+'px'; n.el.style.top=n.y+'px';
-    drawEdges();
+  const ox=e.clientX-n.x,oy=e.clientY-n.y;
+  const mv=ev=>{
+    n.x=Math.max(0,Math.round((ev.clientX-ox)/16)*16);
+    n.y=Math.max(0,Math.round((ev.clientY-oy)/16)*16);
+    n.el.style.left=n.x+'px'; n.el.style.top=n.y+'px'; drawEdges();
   };
-  const up = ()=>{ document.removeEventListener('mousemove',mv); document.removeEventListener('mouseup',up); };
-  document.addEventListener('mousemove',mv);
-  document.addEventListener('mouseup',up);
+  const up=()=>{document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);};
+  document.addEventListener('mousemove',mv); document.addEventListener('mouseup',up);
 }
 
-// ═══════════════════════════════════════════════════════════════
-// CONNECT PORTS
-// ═══════════════════════════════════════════════════════════════
-function startConn(e,id,port) {
+// ═══════════════════════════════════════════
+// CONNECT
+// ═══════════════════════════════════════════
+function startConn(e,id,port){
   e.stopPropagation(); e.preventDefault();
-  const tmp=document.getElementById('tempedge');
-  tmp.style.display='';
-  const mv = ev => {
+  const tmp=document.getElementById('tempedge'); tmp.style.display='';
+  const mv=ev=>{
     const r=document.getElementById('cwrap').getBoundingClientRect();
-    const mx=ev.clientX-r.left, my=ev.clientY-r.top;
     const n=nodes[id];
-    const sx=n.x+54, sy=port==='out'?n.y+66:n.y;
-    tmp.setAttribute('d',bez(sx,sy,mx,my));
+    const sx=n.x+53,sy=port==='out'?n.y+66:n.y;
+    tmp.setAttribute('d',bez(sx,sy,ev.clientX-r.left,ev.clientY-r.top));
   };
-  const up = ev => {
+  const up=ev=>{
     tmp.style.display='none';
-    document.removeEventListener('mousemove',mv);
-    document.removeEventListener('mouseup',up);
+    document.removeEventListener('mousemove',mv); document.removeEventListener('mouseup',up);
     const r=document.getElementById('cwrap').getBoundingClientRect();
-    const mx=ev.clientX-r.left, my=ev.clientY-r.top;
+    const mx=ev.clientX-r.left,my=ev.clientY-r.top;
     let target=null;
     Object.values(nodes).forEach(n=>{
-      if(n.id===id) return;
-      if(mx>n.x&&mx<n.x+108&&my>n.y&&my<n.y+68) target=n.id;
+      if(n.id===id)return;
+      if(mx>n.x&&mx<n.x+106&&my>n.y&&my<n.y+68)target=n.id;
     });
     if(target){
       let par=id,ch=target;
-      if(port==='in'){ par=target; ch=id; }
-      if(!nodes[par].children.includes(ch)){
-        nodes[par].children.push(ch);
-        edges.push({from:par,to:ch});
-        drawEdges();
-      }
+      if(port==='in'){par=target;ch=id;}
+      if(!nodes[par].children.includes(ch)){nodes[par].children.push(ch);edges.push({from:par,to:ch});drawEdges();}
     }
   };
-  document.addEventListener('mousemove',mv);
-  document.addEventListener('mouseup',up);
+  document.addEventListener('mousemove',mv); document.addEventListener('mouseup',up);
 }
 
-function bez(x1,y1,x2,y2){ const cy=(y1+y2)/2; return `M${x1},${y1} C${x1},${cy} ${x2},${cy} ${x2},${y2}`; }
+function bez(x1,y1,x2,y2){const cy=(y1+y2)/2;return `M${x1},${y1} C${x1},${cy} ${x2},${cy} ${x2},${y2}`;}
 
-function drawEdges() {
+function drawEdges(){
   esvg.querySelectorAll('.ep').forEach(e=>e.remove());
   edges.forEach(e=>{
-    const f=nodes[e.from],t=nodes[e.to]; if(!f||!t) return;
+    const f=nodes[e.from],t=nodes[e.to]; if(!f||!t)return;
     const p=document.createElementNS('http://www.w3.org/2000/svg','path');
     p.setAttribute('class','ep');
-    p.setAttribute('d',bez(f.x+54,f.y+66,t.x+54,t.y));
-    p.setAttribute('stroke','#4ade8055'); p.setAttribute('stroke-width','2');
-    p.setAttribute('fill','none'); p.setAttribute('marker-end','url(#arr)');
+    p.setAttribute('d',bez(f.x+53,f.y+66,t.x+53,t.y));
+    // color based on child node status
+    const st=t.status||'idle';
+    const col=st==='success'?'#00ff8880':st==='failure'?'#ff3d5a80':st==='running'?'#ffb80080':'#1e2d45';
+    const mk=st==='success'?'arr-ok':st==='failure'?'arr-fail':st==='running'?'arr-run':'arr-idle';
+    p.setAttribute('stroke',col); p.setAttribute('stroke-width',st==='idle'?'1.5':'2.5');
+    p.setAttribute('fill','none'); p.setAttribute('marker-end',`url(#${mk})`);
     esvg.appendChild(p);
+  });
+  // dim idle nodes when any node is active
+  const hasActive=Object.values(nodes).some(n=>n.status!=='idle');
+  Object.values(nodes).forEach(n=>{
+    n.el.classList.toggle('dimmed',hasActive&&n.status==='idle');
   });
 }
 
-// ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // SELECTION & PROPERTIES
-// ═══════════════════════════════════════════════════════════════
-function selectNode(id) {
-  if(selId) nodes[selId]?.el.classList.remove('sel');
-  selId=id;
-  nodes[id]?.el.classList.add('sel');
-  showProps(id);
+// ═══════════════════════════════════════════
+function selectNode(id){
+  if(selId)nodes[selId]?.el.classList.remove('sel');
+  selId=id; nodes[id]?.el.classList.add('sel'); showProps(id);
 }
 
-function showProps(id) {
+function showProps(id){
   document.getElementById('noprop').style.display=id?'none':'';
   document.getElementById('nprops').style.display=id?'':'none';
-  if(!id) return;
-  const n=nodes[id], def=ND[n.type];
+  if(!id)return;
+  const n=nodes[id],def=ND[n.type];
   document.getElementById('pt').textContent=def.sh+' — '+n.type;
   document.getElementById('plbl').value=n.label;
   document.getElementById('pdsc').textContent=def.desc||'';
-  // robot assignment
   const ras=document.getElementById('probotas');
-  ras.innerHTML='<option value="-1">All Robots</option>'+
-    robots.map((r,i)=>`<option value="${i}">${r.name}</option>`).join('');
+  ras.innerHTML='<option value="-1">All Robots</option>'+robots.map((r,i)=>`<option value="${i}">${r.name}</option>`).join('');
   ras.value=String(n.robotAs);
-  // params
-  if(def.p1){ document.getElementById('pp1r').style.display=''; document.getElementById('pp1l').textContent=def.p1; document.getElementById('pp1').value=n.p1; }
+  if(def.p1){document.getElementById('pp1r').style.display='';document.getElementById('pp1l').textContent=def.p1;document.getElementById('pp1').value=n.p1;}
   else document.getElementById('pp1r').style.display='none';
-  if(def.p2){ document.getElementById('pp2r').style.display=''; document.getElementById('pp2l').textContent=def.p2; document.getElementById('pp2').value=n.p2; }
+  if(def.p2){document.getElementById('pp2r').style.display='';document.getElementById('pp2l').textContent=def.p2;document.getElementById('pp2').value=n.p2;}
   else document.getElementById('pp2r').style.display='none';
-  const pst=document.getElementById('pst');
-  pst.textContent=n.status||'—'; pst.style.color=stcol(n.status);
+  // utility field for utility_sel/utility_seq children and a_setutil
+  const showUtil=def.cat==='action'&&n.type==='a_setutil'||def.cat==='composite';
+  document.getElementById('putilr').style.display=showUtil?'':'none';
+  if(showUtil)document.getElementById('putil').value=n.utility||50;
+  const pst=document.getElementById('pst'); pst.textContent=n.status||'—'; pst.style.color=stcol(n.status);
 }
 
-function updateLabel(v){ if(selId&&nodes[selId]){ nodes[selId].label=v; nodes[selId].el.querySelector('.nl').textContent=v; }}
-function updateP1(v){ if(selId&&nodes[selId]) nodes[selId].p1=v; }
-function updateP2(v){ if(selId&&nodes[selId]) nodes[selId].p2=v; }
-function updateRobotAs(v){ if(selId&&nodes[selId]){ nodes[selId].robotAs=v; updateBadge(selId); }}
-function stcol(s){ return s==='success'?'var(--acc)':s==='failure'?'var(--danger)':s==='running'?'var(--warn)':'var(--text3)'; }
+function updateLabel(v){if(selId&&nodes[selId]){nodes[selId].label=v;nodes[selId].el.querySelector('.nl').textContent=v;}}
+function updateP1(v){if(selId&&nodes[selId])nodes[selId].p1=v;}
+function updateP2(v){if(selId&&nodes[selId])nodes[selId].p2=v;}
+function updateRobotAs(v){if(selId&&nodes[selId]){nodes[selId].robotAs=v;updateBadge(selId);}}
+function updateUtil(v){if(selId&&nodes[selId]){nodes[selId].utility=parseInt(v)||50;refreshUtilityDisplay(selId);}}
+function stcol(s){return s==='success'?'var(--acc)':s==='failure'?'var(--danger)':s==='running'?'var(--warn)':'var(--text3)';}
 
-// ═══════════════════════════════════════════════════════════════
+function refreshUtilityDisplay(id){
+  const n=nodes[id]; if(!n)return;
+  const def=ND[n.type];
+  const uel=document.getElementById(id+'u');
+  const score=utilityScores[id]!==undefined?utilityScores[id]:n.utility;
+  if((def.cat==='composite'&&(n.type==='utility_sel'||n.type==='utility_seq'))||n.type==='a_setutil'){
+    if(uel){uel.style.display='block';uel.textContent=`score: ${score}`;}
+    n.el.classList.add('has-utility');
+  }
+}
+
+// ═══════════════════════════════════════════
 // BT ENGINE
-// ═══════════════════════════════════════════════════════════════
-function tickBT() {
-  tick++;
-  updateTick();
+// ═══════════════════════════════════════════
+function tickBT(){
+  tick++; updateTick();
+  utilityScores={};
+  lastTickTrace=[];
+
   const childSet=new Set();
   Object.values(nodes).forEach(n=>n.children.forEach(c=>childSet.add(c)));
   const roots=Object.values(nodes).filter(n=>!childSet.has(n.id));
-  if(!roots.length){ logMsg('<span class="li">// No nodes on canvas.</span>'); return; }
+  if(!roots.length){logMsg('<span class="li">// No nodes.</span>');return;}
 
   robots.forEach(rob=>{
-    rob.bb.battery=Math.max(0,rob.bb.battery-0.9);
-    roots.forEach(r=>{
-      const res=tickNode(r.id,rob,0);
-      logMsg(`<span class="li">[${rob.name} t${tick}] → <b>${res}</b></span>`);
-      rob.status=res;
-    });
-    rob.inbox.forEach(m=>{ rob.bb[m.key]=m.val; });
-    rob.inbox=[];
-  });
-
-  // move robots toward their target waypoint
-  robots.forEach(rob=>{
+    rob.bb.battery=Math.max(0,rob.bb.battery-0.7);
+    // move robot toward target_wp
     const tw=ENV.waypoints.find(w=>w.id===rob.bb.target_wp);
     if(tw){
-      const dx=tw.x-rob.wx, dy=tw.y-rob.wy, d=Math.hypot(dx,dy);
-      if(d>2){ const sp=1.8; rob.wx+=dx/d*sp; rob.wy+=dy/d*sp; rob.angle=Math.atan2(dy,dx); }
+      const dx=tw.x-rob.wx,dy=tw.y-rob.wy,d=Math.hypot(dx,dy);
+      if(d>2){
+        const spd=ROB_SPEED*0.6;
+        const mx=dx/d*spd, my=dy/d*spd;
+        rob.wx+=mx; rob.wy+=my;
+        rob.angle=Math.atan2(dy,dx);
+        rob.distTraveled+=Math.hypot(mx,my);
+      }
     }
+    // update sensor readings
+    rob.bb.obstacle=checkObstacle(rob);
+    rob.bb.package_found=checkPackage(rob);
+    // tick tree
+    roots.forEach(r=>{
+      const res=tickNode(r.id,rob,0);
+      logMsg(`<span class="li">[${rob.name} t${tick}]→<b>${res}</b></span>`);
+      rob.status=res;
+    });
+    rob.inbox.forEach(m=>{rob.bb[m.key]=m.val;});
+    rob.inbox=[];
+    // record metrics
+    recordMetrics(rob);
   });
 
-  renderBB(); renderComms(); drawSim(); updateSbar();
+  drawEdges(); renderBB(); renderComms();
+  updateExplainability(); renderSensorTab(); updateSbar();
 }
 
-function tickNode(id,rob,depth) {
-  const n=nodes[id]; if(!n) return 'failure';
-  if(n.robotAs>=0 && n.robotAs!==rob.idx) return 'success';
-  const def=ND[n.type]; if(!def) return 'failure';
+function checkObstacle(rob){
+  return ENV.walls.some(w=>{
+    const cx=Math.max(w.x,Math.min(rob.wx,w.x+w.w));
+    const cy=Math.max(w.y,Math.min(rob.wy,w.y+w.h));
+    return Math.hypot(cx-rob.wx,cy-rob.wy)<SENSOR_RANGE*0.5;
+  });
+}
+
+function checkPackage(rob){
+  return ENV.packages.some(p=>!p.collected&&inFOV(rob,p.x,p.y,SENSOR_RANGE));
+}
+
+function inFOV(rob,tx,ty,range){
+  const dx=tx-rob.wx,dy=ty-rob.wy,d=Math.hypot(dx,dy);
+  if(d>range)return false;
+  if(FOV_DEG>=360)return true;
+  const angle=Math.atan2(dy,dx);
+  let diff=angle-rob.angle;
+  while(diff>Math.PI)diff-=2*Math.PI;
+  while(diff<-Math.PI)diff+=2*Math.PI;
+  return Math.abs(diff)<=(FOV_DEG/2)*Math.PI/180;
+}
+
+function tickNode(id,rob,depth){
+  const n=nodes[id]; if(!n)return 'failure';
+  if(n.robotAs>=0&&n.robotAs!==rob.idx)return 'success';
+  const def=ND[n.type]; if(!def)return 'failure';
   let res;
-  if(def.cat==='composite') res=tickComposite(id,rob,depth);
-  else if(def.cat==='decorator') res=tickDecorator(id,rob,depth);
-  else if(def.cat==='condition') res=tickCond(id,rob);
+  if(def.cat==='composite')res=tickComposite(id,rob,depth);
+  else if(def.cat==='decorator')res=tickDecorator(id,rob,depth);
+  else if(def.cat==='condition')res=tickCond(id,rob);
   else res=tickAct(id,rob);
   setNodeSt(id,res);
+  lastTickTrace.push({nodeId:id,robName:rob.name,status:res,label:n.label,type:n.type,depth});
   const cl=res==='success'?'ls':res==='failure'?'lf':'lr';
   logMsg('&nbsp;'.repeat(depth*2)+`<span class="${cl}">[${rob.name}] ${n.label}: <b>${res}</b></span>`);
   return res;
 }
 
-// COMPOSITE
-function tickComposite(id,rob,depth) {
+function tickComposite(id,rob,depth){
   const n=nodes[id];
-  if(n.type==='mem_seq') {
-    if(rob.memState[id]===undefined) rob.memState[id]=0;
+  if(n.type==='mem_seq'){
+    if(rob.memState[id]===undefined)rob.memState[id]=0;
     for(let i=rob.memState[id];i<n.children.length;i++){
       const r=tickNode(n.children[i],rob,depth+1);
-      if(r==='running'){rob.memState[id]=i; return 'running';}
-      if(r==='failure'){rob.memState[id]=0; return 'failure';}
+      if(r==='running'){rob.memState[id]=i;return 'running';}
+      if(r==='failure'){rob.memState[id]=0;return 'failure';}
     }
     rob.memState[id]=0; return 'success';
   }
-  if(n.type==='mem_sel') {
-    if(!rob.memState[id]) rob.memState[id]=new Set();
+  if(n.type==='mem_sel'){
+    if(!rob.memState[id])rob.memState[id]=new Set();
     for(let i=0;i<n.children.length;i++){
-      if(rob.memState[id].has(i)) continue;
+      if(rob.memState[id].has(i))continue;
       const r=tickNode(n.children[i],rob,depth+1);
-      if(r==='success'){ rob.memState[id].add(i); return 'success'; }
+      if(r==='success'){rob.memState[id].add(i);return 'success';}
     }
     rob.memState[id]=new Set(); return 'failure';
   }
-  if(n.type==='sequence') {
-    for(const c of n.children){ const r=tickNode(c,rob,depth+1); if(r!=='success') return r; }
+  if(n.type==='sequence'){
+    for(const c of n.children){const r=tickNode(c,rob,depth+1);if(r!=='success')return r;}
     return n.children.length?'success':'failure';
   }
-  if(n.type==='selector') {
-    for(const c of n.children){ const r=tickNode(c,rob,depth+1); if(r==='success') return 'success'; }
+  if(n.type==='selector'){
+    for(const c of n.children){const r=tickNode(c,rob,depth+1);if(r==='success')return 'success';}
     return 'failure';
   }
-  if(n.type==='parallel') {
-    let ok=0;
-    n.children.forEach(c=>{ if(tickNode(c,rob,depth+1)==='success') ok++; });
+  if(n.type==='parallel'){
+    let ok=0; n.children.forEach(c=>{if(tickNode(c,rob,depth+1)==='success')ok++;});
     return ok>=Math.ceil(n.children.length/2)?'success':'failure';
   }
-  if(n.type==='random_sel') {
-    const sh=[...n.children].sort(()=>Math.random()-.5);
-    for(const c of sh){ if(tickNode(c,rob,depth+1)==='success') return 'success'; }
-    return 'failure';
+  if(n.type==='utility_sel'||n.type==='utility_seq'){
+    // evaluate utility scores (tick children once to let a_setutil fire)
+    const scored=n.children.map(c=>{
+      const sc=utilityScores[c]!==undefined?utilityScores[c]:(nodes[c]?.utility||50);
+      return{c,sc};
+    });
+    scored.sort((a,b)=>b.sc-a.sc);
+    if(n.type==='utility_sel'){
+      for(const {c} of scored){const r=tickNode(c,rob,depth+1);if(r==='success')return 'success';}
+      return 'failure';
+    } else {
+      for(const {c} of scored){const r=tickNode(c,rob,depth+1);if(r!=='success')return r;}
+      return scored.length?'success':'failure';
+    }
   }
   return 'failure';
 }
 
-// DECORATOR
-function tickDecorator(id,rob,depth) {
-  const n=nodes[id], ch=n.children[0];
-  if(n.type==='inverter'){
-    if(!ch) return 'failure';
-    const r=tickNode(ch,rob,depth+1);
-    return r==='success'?'failure':r==='failure'?'success':'running';
-  }
-  if(n.type==='force_ok'){ if(ch) tickNode(ch,rob,depth+1); return 'success'; }
+function tickDecorator(id,rob,depth){
+  const n=nodes[id],ch=n.children[0];
+  if(n.type==='inverter'){if(!ch)return 'failure';const r=tickNode(ch,rob,depth+1);return r==='success'?'failure':r==='failure'?'success':'running';}
+  if(n.type==='force_ok'){if(ch)tickNode(ch,rob,depth+1);return 'success';}
   if(n.type==='repeat'){
-    if(!ch) return 'failure';
+    if(!ch)return 'failure';
     const max=parseInt(n.p1)||3;
-    if(!rob.repeatC[id]) rob.repeatC[id]=0;
+    if(!rob.repeatC[id])rob.repeatC[id]=0;
     const r=tickNode(ch,rob,depth+1);
-    if(r==='success'){ rob.repeatC[id]++; if(rob.repeatC[id]>=max){rob.repeatC[id]=0;return 'success';} return 'running'; }
+    if(r==='success'){rob.repeatC[id]++;if(rob.repeatC[id]>=max){rob.repeatC[id]=0;return 'success';}return 'running';}
     rob.repeatC[id]=0; return 'failure';
   }
   if(n.type==='retry'){
-    if(!ch) return 'failure';
+    if(!ch)return 'failure';
     const max=parseInt(n.p1)||3;
-    if(!rob.retryC[id]) rob.retryC[id]=0;
+    if(!rob.retryC[id])rob.retryC[id]=0;
     const r=tickNode(ch,rob,depth+1);
-    if(r==='success'){rob.retryC[id]=0; return 'success';}
-    if(r==='failure'){rob.retryC[id]++; if(rob.retryC[id]>=max){rob.retryC[id]=0;return 'failure';} return 'running';}
+    if(r==='success'){rob.retryC[id]=0;return 'success';}
+    if(r==='failure'){rob.retryC[id]++;if(rob.retryC[id]>=max){rob.retryC[id]=0;return 'failure';}return 'running';}
     return 'running';
   }
   if(n.type==='timeout'){
-    if(!ch) return 'failure';
+    if(!ch)return 'failure';
     const lim=parseInt(n.p1)||5;
-    if(!rob.timeoutC[id]) rob.timeoutC[id]=0;
+    if(!rob.timeoutC[id])rob.timeoutC[id]=0;
     rob.timeoutC[id]++;
-    if(rob.timeoutC[id]>lim){rob.timeoutC[id]=0; return 'failure';}
+    if(rob.timeoutC[id]>lim){rob.timeoutC[id]=0;return 'failure';}
     const r=tickNode(ch,rob,depth+1);
-    if(r!=='running') rob.timeoutC[id]=0;
-    return r;
+    if(r!=='running')rob.timeoutC[id]=0; return r;
   }
   if(n.type==='cooldown'){
     const cd=parseInt(n.p1)||4;
-    if(!rob.cooldownC[id]) rob.cooldownC[id]=0;
-    if(rob.cooldownC[id]>0){rob.cooldownC[id]--; return 'success';}
-    if(!ch) return 'failure';
+    if(!rob.cooldownC[id])rob.cooldownC[id]=0;
+    if(rob.cooldownC[id]>0){rob.cooldownC[id]--;return 'success';}
+    if(!ch)return 'failure';
     const r=tickNode(ch,rob,depth+1);
-    if(r==='success') rob.cooldownC[id]=cd;
-    return r;
+    if(r==='success')rob.cooldownC[id]=cd; return r;
   }
   return 'failure';
 }
 
-// CONDITION
 function tickCond(id,rob){
-  const n=nodes[id], bb=rob.bb;
+  const n=nodes[id],bb=rob.bb;
   switch(n.type){
-    case 'c_battery':  return bb.battery>(parseInt(n.p1)||25)?'success':'failure';
+    case 'c_battery': return bb.battery>(parseInt(n.p1)||25)?'success':'failure';
     case 'c_obstacle': return bb.obstacle?'success':'failure';
-    case 'c_atgoal':   return bb.at_goal?'success':'failure';
-    case 'c_package':  return bb.package_found?'success':'failure';
-    case 'c_clear':    return !bb.obstacle&&Math.random()>.15?'success':'failure';
+    case 'c_atgoal':{
+      const tw=ENV.waypoints.find(w=>w.id===bb.target_wp);
+      return(tw&&wdist(rob,{wx:tw.x,wy:tw.y})<10)?'success':'failure';
+    }
+    case 'c_package': return bb.package_found?'success':'failure';
     case 'c_ally':{
-      const range=parseInt(n.p1)||80;
-      return robots.some(r=>r.idx!==rob.idx&&wdist(r,rob)<range)?'success':'failure';
+      return robots.some(r=>r.idx!==rob.idx&&wdist(r,rob)<COMM_RANGE)?'success':'failure';
     }
-    case 'c_msg':{
-      const k=n.p1||'alert';
-      return (bb[k]!==undefined&&bb[k]!==false)?'success':'failure';
+    case 'c_msg':{const k=n.p1||'alert';return(bb[k]!==undefined&&bb[k]!==false)?'success':'failure';}
+    case 'c_in_range':{
+      const tw=ENV.waypoints.find(w=>w.id===(n.p1||'B'));
+      return tw&&inFOV(rob,tw.x,tw.y,SENSOR_RANGE)?'success':'failure';
     }
-    case 'c_zone':
-      return robots.some(r=>r.idx!==rob.idx&&r.bb.target_wp===rob.bb.target_wp)?'success':'failure';
     default: return Math.random()>.4?'success':'failure';
   }
 }
 
-// ACTION
 function tickAct(id,rob){
-  const n=nodes[id], bb=rob.bb;
+  const n=nodes[id],bb=rob.bb;
   switch(n.type){
     case 'a_move':{
-      const wp=n.p1||'A';
-      bb.target_wp=wp;
-      bb.obstacle=Math.random()<.1;
-      if(bb.obstacle) return 'running';
+      const wp=n.p1||'A'; bb.target_wp=wp;
       const tw=ENV.waypoints.find(w=>w.id===wp);
-      const arrived=tw && wdist(rob,{wx:tw.x,wy:tw.y})<8;
+      const arrived=tw&&wdist(rob,{wx:tw.x,wy:tw.y})<10;
       bb.at_goal=arrived;
       return arrived?'success':'running';
     }
     case 'a_charge':{
-      bb.battery=Math.min(100,bb.battery+18);
-      const base=ENV.waypoints.find(w=>w.id==='Base');
-      if(base){rob.wx=lerp(rob.wx,base.x,.18);rob.wy=lerp(rob.wy,base.y,.18);}
       bb.target_wp='Base';
+      const base=ENV.waypoints.find(w=>w.id==='Base');
+      const atBase=base&&wdist(rob,{wx:base.x,wy:base.y})<10;
+      if(atBase)bb.battery=Math.min(100,bb.battery+15);
       return bb.battery>=95?'success':'running';
     }
-    case 'a_avoid':  bb.obstacle=false; return 'success';
+    case 'a_avoid': bb.obstacle=false; return 'success';
     case 'a_pickup':
       if(!bb.carrying){
-        bb.carrying=true; bb.package_found=false;
-        ENV.packages.forEach(p=>{ if(!p.collected&&Math.random()>.25) p.collected=true; });
+        const pkg=ENV.packages.find(p=>!p.collected&&inFOV(rob,p.x,p.y,SENSOR_RANGE));
+        if(pkg){pkg.collected=true;bb.carrying=true;bb.package_found=false;bb.victims_found++;}
+        else return 'failure';
       }
       return 'success';
     case 'a_dropoff': bb.carrying=false; return 'success';
-    case 'a_scan':    bb.package_found=Math.random()>.38; return 'success';
+    case 'a_scan': bb.package_found=checkPackage(rob); return 'success';
     case 'a_broadcast':{
-      const key=n.p1||'alert', val=n.p2!==undefined?n.p2:'true';
-      robots.forEach(r=>{ if(r.idx!==rob.idx) r.inbox.push({key,val:pval(val)}); });
+      const key=n.p1||'alert',val=n.p2!==undefined?n.p2:'true';
+      robots.forEach(r=>{if(r.idx!==rob.idx&&wdist(r,rob)<COMM_RANGE)r.inbox.push({key,val:pval(val)});});
       addComm(rob.name,'ALL',key,val,'bc'); return 'success';
     }
     case 'a_sendmsg':{
-      const ti=parseInt(n.p1)||0, key=n.p2||'help';
-      if(robots[ti]&&ti!==rob.idx){ robots[ti].inbox.push({key,val:true}); addComm(rob.name,robots[ti].name,key,'true','dm'); }
+      const ti=parseInt(n.p1)||0,key=n.p2||'help';
+      if(robots[ti]&&ti!==rob.idx&&wdist(robots[ti],rob)<COMM_RANGE){robots[ti].inbox.push({key,val:true});addComm(rob.name,robots[ti].name,key,'true','dm');}
       return 'success';
     }
-    case 'a_help':{
-      let near=null, md=99999;
-      robots.forEach(r=>{ if(r.idx===rob.idx)return; const d=wdist(r,rob); if(d<md){md=d;near=r;} });
-      if(near){ near.inbox.push({key:'help',val:rob.name}); addComm(rob.name,near.name,'help',rob.name,'sos'); }
-      return 'success';
-    }
-    case 'a_guard': return 'running';
     case 'a_wait':{
-      if(!rob.waitC[id]) rob.waitC[id]=0;
-      rob.waitC[id]++;
-      const t=parseInt(n.p1)||3;
-      if(rob.waitC[id]>=t){rob.waitC[id]=0;return 'success';}
+      if(!rob.waitC[id])rob.waitC[id]=0; rob.waitC[id]++;
+      if(rob.waitC[id]>=(parseInt(n.p1)||3)){rob.waitC[id]=0;return 'success';}
       return 'running';
     }
-    case 'a_setbb': bb[n.p1||'target']=pval(n.p2||''); return 'success';
+    case 'a_setutil':{
+      const sc=parseInt(n.p1)||50; utilityScores[id]=sc;
+      const uel=document.getElementById(id+'u');
+      if(uel){uel.style.display='block';uel.textContent=`score: ${sc}`;}
+      nodes[id].el.classList.add('has-utility');
+      return 'success';
+    }
+    case 'a_setbb': bb[n.p1||'x']=pval(n.p2||''); return 'success';
     default: return Math.random()>.35?'success':'running';
   }
 }
 
-function pval(v){ if(v==='true')return true; if(v==='false')return false; const n=parseFloat(v); return isNaN(n)?v:n; }
+function pval(v){if(v==='true')return true;if(v==='false')return false;const n=parseFloat(v);return isNaN(n)?v:n;}
 
 function setNodeSt(id,st){
-  const n=nodes[id]; if(!n) return;
+  const n=nodes[id]; if(!n)return;
   n.status=st;
   n.el.classList.remove('st-running','st-success','st-failure');
-  if(st!=='idle') n.el.classList.add('st-'+st);
+  if(st!=='idle')n.el.classList.add('st-'+st);
   const sel=document.getElementById(id+'s');
-  if(sel){ sel.textContent=st==='success'?'✓':st==='failure'?'✗':'…'; sel.style.color=stcol(st); }
-  if(selId===id){ const ps=document.getElementById('pst'); if(ps){ps.textContent=st;ps.style.color=stcol(st);} }
+  if(sel){sel.textContent=st==='success'?'✓':st==='failure'?'✗':'…';sel.style.color=stcol(st);}
+  if(selId===id){const ps=document.getElementById('pst');if(ps){ps.textContent=st;ps.style.color=stcol(st);}}
 }
 
-// ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // RUN CONTROL
-// ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 function toggleRun(){
   running=!running;
-  const btn=document.getElementById('runbtn'), dot=document.getElementById('sdot'), stxt=document.getElementById('stxt');
+  const btn=document.getElementById('runbtn'),dot=document.getElementById('sdot'),stxt=document.getElementById('stxt');
   if(running){
-    btn.textContent='⏸ Pause'; btn.className='btn bd';
-    dot.className='sdot run'; stxt.textContent='Running';
-    interval=setInterval(tickBT,parseInt(document.getElementById('speedsl').value));
+    btn.textContent='⏸ Pause';btn.className='btn bd';
+    dot.className='sdot run';stxt.textContent='Running';
+    interval=setInterval(tickBT,Math.round(1000/TICK_HZ));
   } else {
-    btn.textContent='▶ Run'; btn.className='btn bp';
-    dot.className='sdot ok'; stxt.textContent='Paused';
+    btn.textContent='▶ Run';btn.className='btn bp';
+    dot.className='sdot ok';stxt.textContent='Paused';
     clearInterval(interval);
   }
 }
-function updateSpeed(){ if(!running)return; clearInterval(interval); interval=setInterval(tickBT,parseInt(document.getElementById('speedsl').value)); }
-function stepOnce(){ if(!running) tickBT(); }
+function stepOnce(){if(!running)tickBT();}
 function resetSim(){
-  if(running) toggleRun();
-  tick=0; updateTick();
+  if(running)toggleRun();
+  tick=0;updateTick();
   robots.forEach(resetRobotState);
-  Object.values(nodes).forEach(n=>{ setNodeSt(n.id,'idle'); n.status='idle'; });
-  logEl.innerHTML='<span class="li">// Reset. Ready.</span>';
+  Object.values(nodes).forEach(n=>{setNodeSt(n.id,'idle');n.status='idle';});
+  logEl.innerHTML='<span class="li">// Reset.</span>';
   document.getElementById('sdot').className='sdot ok';
   document.getElementById('stxt').textContent='Ready';
-  renderBB(); drawSim();
+  lastTickTrace=[];
+  renderBB();renderComms();drawEdges();drawSim();
+  updateExplainability();
 }
 
-// ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // MULTI-ROBOT UI
-// ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 function syncRobotUI(){
   const rs=document.getElementById('robsel');
   rs.innerHTML=robots.map((r,i)=>`<option value="${i}">${r.name}</option>`).join('');
@@ -893,30 +1047,25 @@ function syncRobotUI(){
   const rb=document.getElementById('robbar');
   rb.innerHTML=robots.map((r,i)=>`<button class="rsbtn" style="color:${r.color};border-color:${r.color};background:${i===activeRobot?r.color+'28':'transparent'}" onclick="setActiveRobot(${i})">${r.name}</button>`).join('');
   document.getElementById('roblbl').textContent='Robots: '+robots.length;
-  // update robot assignment select in props
   const ras=document.getElementById('probotas');
-  if(ras){
-    const cv=ras.value;
-    ras.innerHTML='<option value="-1">All Robots</option>'+robots.map((r,i)=>`<option value="${i}">${r.name}</option>`).join('');
-    ras.value=cv;
-  }
+  if(ras){const cv=ras.value;ras.innerHTML='<option value="-1">All Robots</option>'+robots.map((r,i)=>`<option value="${i}">${r.name}</option>`).join('');ras.value=cv;}
 }
-function setActiveRobot(i){ activeRobot=i; document.getElementById('robsel').value=String(i); syncRobotUI(); renderBB(); }
+function setActiveRobot(i){activeRobot=i;document.getElementById('robsel').value=String(i);syncRobotUI();renderBB();renderSensorTab();}
 function addRobot(){
   if(robots.length>=6){logMsg('<span class="lf">// Max 6 robots.</span>');return;}
-  const r=makeRobot(robots.length); robots.push(r); resetRobotState(r);
-  syncRobotUI(); drawSim(); logMsg(`<span class="li">// Added ${r.name}.</span>`);
+  const r=makeRobot(robots.length);robots.push(r);resetRobotState(r);
+  syncRobotUI();drawSim();logMsg(`<span class="li">// Added ${r.name}.</span>`);
 }
 function removeRobot(){
-  if(robots.length<=1){logMsg('<span class="lf">// Need at least 1 robot.</span>');return;}
-  const rem=robots.pop(); if(activeRobot>=robots.length) activeRobot=robots.length-1;
-  syncRobotUI(); drawSim(); logMsg(`<span class="li">// Removed ${rem.name}.</span>`);
+  if(robots.length<=1){logMsg('<span class="lf">// Need ≥1 robot.</span>');return;}
+  const rem=robots.pop();if(activeRobot>=robots.length)activeRobot=robots.length-1;
+  syncRobotUI();drawSim();logMsg(`<span class="li">// Removed ${rem.name}.</span>`);
 }
 
-// ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // COMMS & BB
-// ═══════════════════════════════════════════════════════════════
-function addComm(from,to,key,val,type){ commLog.unshift({from,to,key,val,type,tick}); if(commLog.length>60) commLog.pop(); }
+// ═══════════════════════════════════════════
+function addComm(from,to,key,val,type){commLog.unshift({from,to,key,val,type,tick});if(commLog.length>60)commLog.pop();}
 function renderComms(){
   const el=document.getElementById('commwrap');
   const tc={bc:'var(--acc4)',dm:'var(--acc2)',sos:'var(--danger)'};
@@ -924,29 +1073,232 @@ function renderComms(){
 }
 function renderBB(){
   const ri=parseInt(document.getElementById('bbrobsel').value)||0;
-  const rob=robots[Math.min(ri,robots.length-1)]||robots[0];
+  const rob=robots[Math.min(ri,robots.length-1)]||robots[0]; if(!rob)return;
   document.getElementById('bbwrap').innerHTML=Object.entries(rob.bb).map(([k,v])=>`<div class="bbr"><span class="bbk">${k}</span><span class="bbv">${JSON.stringify(v)}</span></div>`).join('');
 }
 
-// ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // LOG
-// ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 function logMsg(html){
-  const d=document.createElement('div'); d.innerHTML=html; logEl.appendChild(d);
-  if(logEl.children.length>250) logEl.removeChild(logEl.firstChild);
+  const d=document.createElement('div');d.innerHTML=html;logEl.appendChild(d);
+  if(logEl.children.length>300)logEl.removeChild(logEl.firstChild);
   logEl.scrollTop=logEl.scrollHeight;
 }
 
-// ═══════════════════════════════════════════════════════════════
-// ENVIRONMENT EDITOR
-// ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
+// EXPLAINABILITY
+// ═══════════════════════════════════════════
+function updateExplainability(){
+  const el=document.getElementById('expwrap'); if(!el)return;
+  if(!lastTickTrace.length){el.innerHTML='<div style="padding:8px;font-size:9px;color:var(--text3)">No tick data yet. Press Run.</div>';return;}
+  const byRobot={};
+  lastTickTrace.forEach(t=>{if(!byRobot[t.robName])byRobot[t.robName]=[];byRobot[t.robName].push(t);});
+  let html='';
+  for(const[robName,trace] of Object.entries(byRobot)){
+    const rob=robots.find(r=>r.name===robName); if(!rob)continue;
+    const running_nodes=trace.filter(t=>t.status==='running');
+    const success_nodes=trace.filter(t=>t.status==='success');
+    const fail_nodes=trace.filter(t=>t.status==='failure');
+    // find deepest running action
+    const active=running_nodes.filter(t=>ND[t.type]?.cat==='action');
+    const lastAct=active[active.length-1]||running_nodes[running_nodes.length-1];
+    // overall status
+    const rootTrace=trace.find(t=>t.depth===0);
+    const overallSt=rootTrace?.status||'—';
+    const cls=overallSt==='running'?'exp-run':overallSt==='success'?'exp-ok':'exp-fail';
+    // build sentence
+    let what='Robot is idle.';
+    let why='No active behavior found in tree.';
+    if(lastAct){
+      what=naturalAction(lastAct.label,lastAct.type,rob);
+      // find parent sequence/selector to explain why
+      const parentTrace=trace.filter(t=>t.depth<lastAct.depth&&(ND[t.type]?.cat==='composite'||ND[t.type]?.cat==='decorator'));
+      const par=parentTrace[parentTrace.length-1];
+      why=par?naturalParent(par.label,par.type,rob,trace):`Executing the top-level goal in the behavior tree.`;
+    } else if(success_nodes.length){
+      what=`✓ ${robName} completed all current goals successfully this tick.`;
+      why=`The behavior tree returned SUCCESS at tick ${tick}.`;
+    } else if(fail_nodes.length){
+      what=`✗ ${robName} failed to execute its current task.`;
+      why=`A node returned FAILURE. ${fail_nodes[0]?.label} could not proceed.`;
+    }
+    html+=`<div class="exp-card ${cls}">
+      <b style="color:${rob.color}">${robName}</b> — tick ${tick} — <span style="color:${stcol(overallSt)}">${overallSt}</span><br>
+      ${what}
+      <div class="exp-why">🧠 Why: ${why}</div>
+    </div>`;
+  }
+  el.innerHTML=html||'<div style="padding:8px;font-size:9px;color:var(--text3)">Tree is empty.</div>';
+}
+
+function naturalAction(label,type,rob){
+  const wp=rob.bb.target_wp||'?';
+  const bat=Math.round(rob.bb.battery);
+  switch(type){
+    case 'a_move': return `🚗 ${rob.name} is navigating to waypoint <b>${wp}</b> (battery: ${bat}%).`;
+    case 'a_charge': return `🔌 ${rob.name} is heading to Base to recharge (battery: ${bat}%).`;
+    case 'a_scan': return `📡 ${rob.name} is performing a sensor sweep to detect objects.`;
+    case 'a_pickup': return `✋ ${rob.name} is picking up a package in its sensor range.`;
+    case 'a_dropoff': return `📥 ${rob.name} is dropping off its carried package.`;
+    case 'a_avoid': return `↪ ${rob.name} is rerouting to avoid an obstacle.`;
+    case 'a_broadcast': return `📢 ${rob.name} is broadcasting a message to nearby robots.`;
+    case 'a_wait': return `⏳ ${rob.name} is waiting (idling this tick).`;
+    default: return `⚙ ${rob.name} is executing <b>${label}</b>.`;
+  }
+}
+
+function naturalParent(label,type,rob,trace){
+  switch(type){
+    case 'sequence': return `A Sequence node requires all tasks to complete. ${rob.name} must finish each step before moving on.`;
+    case 'selector': return `A Selector node tries options until one works. ${rob.name} is working through fallback options.`;
+    case 'mem_seq': return `A Memory Sequence is resuming from where it left off — ${rob.name} already finished earlier steps.`;
+    case 'inverter': return `An Inverter decorator flipped the result, so ${rob.name} proceeds when its child fails.`;
+    case 'cooldown': return `A Cooldown decorator is preventing re-execution until enough ticks have passed.`;
+    case 'retry': return `A Retry decorator is re-attempting the action because it previously failed.`;
+    case 'timeout': return `A Timeout decorator will force failure if this action runs too long.`;
+    case 'utility_sel': return `A Utility Selector chose this action because it has the highest utility score.`;
+    default: return `Parent node "${label}" is guiding the execution.`;
+  }
+}
+
+// ═══════════════════════════════════════════
+// SENSOR TAB
+// ═══════════════════════════════════════════
+function renderSensorTab(){
+  const rob=robots[activeRobot]||robots[0]; if(!rob)return;
+  // FOV canvas
+  const cv=document.getElementById('fovcanvas'); if(!cv)return;
+  cv.width=cv.clientWidth||230; cv.height=110;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,cv.width,cv.height);
+  ctx.fillStyle='#040810'; ctx.fillRect(0,0,cv.width,cv.height);
+  const cx=cv.width/2,cy=cv.height/2,sc=cv.width/280;
+  // draw comm range
+  ctx.beginPath(); ctx.arc(cx,cy,COMM_RANGE*sc,0,Math.PI*2);
+  ctx.strokeStyle='rgba(34,211,238,.2)'; ctx.lineWidth=1; ctx.stroke();
+  // draw sensor range + FOV
+  const fovRad=(FOV_DEG/2)*Math.PI/180;
+  if(FOV_DEG<360){
+    ctx.beginPath(); ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,SENSOR_RANGE*sc,rob.angle-fovRad,rob.angle+fovRad);
+    ctx.closePath();
+    ctx.fillStyle='rgba(0,255,136,.12)'; ctx.fill();
+    ctx.strokeStyle='rgba(0,255,136,.5)'; ctx.lineWidth=1.2; ctx.stroke();
+  } else {
+    ctx.beginPath(); ctx.arc(cx,cy,SENSOR_RANGE*sc,0,Math.PI*2);
+    ctx.fillStyle='rgba(0,255,136,.1)'; ctx.fill();
+    ctx.strokeStyle='rgba(0,255,136,.4)'; ctx.lineWidth=1.2; ctx.stroke();
+  }
+  // draw other robots relative positions
+  robots.forEach(r=>{
+    if(r.idx===rob.idx)return;
+    const dx=(r.wx-rob.wx)*sc, dy=(r.wy-rob.wy)*sc;
+    if(Math.hypot(dx,dy)>cv.width*0.8)return;
+    ctx.beginPath(); ctx.arc(cx+dx,cy+dy,4,0,Math.PI*2);
+    ctx.fillStyle=r.color; ctx.fill();
+    ctx.font='7px JetBrains Mono,monospace'; ctx.fillStyle=r.color;
+    ctx.textAlign='center'; ctx.fillText(r.name,cx+dx,cy+dy-6);
+  });
+  // draw waypoints
+  ENV.waypoints.forEach(wp=>{
+    const dx=(wp.x-rob.wx)*sc, dy=(wp.y-rob.wy)*sc;
+    if(Math.hypot(dx,dy)>cv.width*0.8)return;
+    ctx.beginPath(); ctx.arc(cx+dx,cy+dy,3,0,Math.PI*2);
+    const vis=inFOV(rob,wp.x,wp.y,SENSOR_RANGE);
+    ctx.fillStyle=vis?'#00ff88':'#263858'; ctx.fill();
+    ctx.font='7px Inter,sans-serif'; ctx.fillStyle=vis?'#00ff88':'#4a5a72';
+    ctx.textAlign='center'; ctx.fillText(wp.id,cx+dx,cy+dy-5);
+  });
+  // robot self
+  ctx.beginPath(); ctx.arc(cx,cy,6,0,Math.PI*2);
+  ctx.fillStyle=rob.color; ctx.fill();
+  ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+Math.cos(rob.angle)*12,cy+Math.sin(rob.angle)*12);
+  ctx.strokeStyle='#fff'; ctx.lineWidth=1.5; ctx.stroke();
+
+  // sensor data rows
+  const rows=document.getElementById('sensorrows');
+  const sensors=[
+    {l:'Battery',v:rob.bb.battery,max:100,c:'#f59e0b'},
+    {l:'Obstacle',v:rob.bb.obstacle?100:0,max:100,c:'#ef4444'},
+    {l:'Package',v:rob.bb.package_found?100:0,max:100,c:'#f59e0b'},
+    {l:'Allies in range',v:robots.filter(r=>r.idx!==rob.idx&&wdist(r,rob)<COMM_RANGE).length,max:robots.length-1||1,c:'#22d3ee'},
+    {l:'Dist traveled',v:Math.round(rob.distTraveled),max:999,c:'#a78bfa'},
+    {l:'Victims found',v:rob.bb.victims_found||0,max:10,c:'#4ade80'},
+  ];
+  rows.innerHTML=sensors.map(s=>`<div class="sensor-row">
+    <span style="width:85px;color:var(--text3)">${s.l}</span>
+    <div class="sensor-bar"><div class="sensor-fill" style="width:${Math.min(100,s.v/s.max*100)}%;background:${s.c}"></div></div>
+    <span style="width:40px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:8px;color:${s.c}">${typeof s.v==='number'?s.v.toFixed(s.l==='Battery'?1:0):s.v}</span>
+  </div>`).join('');
+}
+
+// ═══════════════════════════════════════════
+// METRICS
+// ═══════════════════════════════════════════
+function recordMetrics(rob){
+  if(!METRICS_HIST[rob.name])METRICS_HIST[rob.name]=[];
+  const tw=ENV.waypoints.find(w=>w.id===rob.bb.target_wp);
+  const dist=tw?Math.round(wdist(rob,{wx:tw.x,wy:tw.y})):0;
+  METRICS_HIST[rob.name].push({tick,dist,battery:rob.bb.battery,victims:rob.bb.victims_found||0});
+  if(METRICS_HIST[rob.name].length>MAX_METRICS)METRICS_HIST[rob.name].shift();
+}
+
+function renderMetrics(){
+  const cv=document.getElementById('metricscv'); if(!cv)return;
+  const wrap=document.getElementById('metricswrap'); if(!wrap)return;
+  cv.width=cv.clientWidth||230; cv.height=cv.clientHeight||80;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,cv.width,cv.height);
+  ctx.fillStyle='#040810'; ctx.fillRect(0,0,cv.width,cv.height);
+  const W=cv.width,H=cv.height;
+  const metrics=['battery','dist','victims'];
+  const mcols={battery:'#f59e0b',dist:'#a78bfa',victims:'#4ade80'};
+  const maxVals={battery:100,dist:300,victims:10};
+  // draw grid
+  ctx.strokeStyle='#1a2540'; ctx.lineWidth=1;
+  for(let y=0;y<H;y+=H/4){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  // draw series
+  robots.forEach(rob=>{
+    const hist=METRICS_HIST[rob.name]||[]; if(!hist.length)return;
+    metrics.forEach(m=>{
+      ctx.beginPath();
+      hist.forEach((pt,i)=>{
+        const x=i/(MAX_METRICS-1)*W;
+        const y=H-(pt[m]||0)/maxVals[m]*H;
+        i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+      });
+      ctx.strokeStyle=mcols[m]+'99'; ctx.lineWidth=1.2; ctx.stroke();
+    });
+  });
+  // legend
+  ctx.font='7px JetBrains Mono,monospace'; ctx.textBaseline='top';
+  let lx=4;
+  metrics.forEach(m=>{ctx.fillStyle=mcols[m];ctx.fillText(m,lx,2);lx+=ctx.measureText(m).width+12;});
+
+  // rows
+  const rows=document.getElementById('metricsrows');
+  rows.innerHTML=robots.map(rob=>{
+    const hist=METRICS_HIST[rob.name]||[];
+    const last=hist[hist.length-1];
+    if(!last)return '';
+    return `<div class="metric-row">
+      <span class="mk" style="color:${rob.color}">${rob.name}</span>
+      <span class="mv">bat:${last.battery.toFixed(0)}%</span>
+      <span class="mv">d:${last.dist}</span>
+      <span class="mv">v:${last.victims}</span>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════
+// ENV EDITOR
+// ═══════════════════════════════════════════
 function setEnvMode(m){
   envMode=m;
-  ['view','wall','wp','pkg','erase'].forEach(id=>{
-    const b=document.getElementById('eb-'+id);
-    if(b) b.style.color = id===m?'var(--acc)':'var(--text2)';
-  });
-  simcv.style.cursor = m==='view'?'default':m==='erase'?'crosshair':'cell';
+  ['view','wall','wp','pkg','erase'].forEach(id=>{const b=document.getElementById('eb-'+id);if(b)b.style.color=id===m?'var(--acc)':'var(--text2)';});
+  simcv.style.cursor=m==='view'?'default':m==='erase'?'crosshair':'cell';
+  document.getElementById('envlbl').textContent='mode: '+m;
 }
 
 function resetEnv(){
@@ -959,16 +1311,42 @@ function resetEnv(){
 function simCoords(e){
   const r=simcv.getBoundingClientRect();
   const sc=simScale();
-  return { x:(e.clientX-r.left)/sc, y:(e.clientY-r.top)/sc };
+  return{x:(e.clientX-r.left)/sc,y:(e.clientY-r.top)/sc};
 }
-
-// ═══════════════════════════════════════════════════════════════
-// SIM CANVAS
-// ═══════════════════════════════════════════════════════════════
 function simScale(){
-  return Math.min(simcv.clientWidth/380, simcv.clientHeight/175);
+  return Math.min(simcv.clientWidth/400,simcv.clientHeight/190);
 }
 
+// wp edit runtime
+function openWpEdit(wp,screenX,screenY){
+  wpEditTarget=wp;
+  const ov=document.getElementById('wpoverlay');
+  document.getElementById('wp-id-input').value=wp.id;
+  ov.style.left=Math.min(screenX,simcv.clientWidth-160)+'px';
+  ov.style.top=Math.min(screenY,simcv.clientHeight-100)+'px';
+  ov.style.display='block';
+}
+function confirmWpEdit(){
+  if(!wpEditTarget)return;
+  const newId=document.getElementById('wp-id-input').value.trim();
+  if(newId){
+    // update BT nodes referencing old id
+    Object.values(nodes).forEach(n=>{if(n.p1===wpEditTarget.id)n.p1=newId;});
+    robots.forEach(r=>{if(r.bb.target_wp===wpEditTarget.id)r.bb.target_wp=newId;});
+    wpEditTarget.id=newId;
+  }
+  cancelWpEdit(); drawSim();
+}
+function deleteWpEdit(){
+  if(!wpEditTarget||wpEditTarget.id==='Base')return;
+  ENV.waypoints=ENV.waypoints.filter(w=>w!==wpEditTarget);
+  cancelWpEdit(); drawSim();
+}
+function cancelWpEdit(){wpEditTarget=null;document.getElementById('wpoverlay').style.display='none';}
+
+// ═══════════════════════════════════════════
+// SIM CANVAS DRAW
+// ═══════════════════════════════════════════
 function resizeSim(){
   const w=document.getElementById('scwrap');
   simcv.width=w.clientWidth; simcv.height=w.clientHeight;
@@ -976,12 +1354,12 @@ function resizeSim(){
 }
 
 function drawSim(){
-  if(!simctx) return;
-  const W=simcv.width, H=simcv.height, sc=simScale();
+  if(!simctx)return;
+  const W=simcv.width,H=simcv.height,sc=simScale();
   simctx.clearRect(0,0,W,H);
-  simctx.fillStyle='#060a10'; simctx.fillRect(0,0,W,H);
+  simctx.fillStyle='#040810'; simctx.fillRect(0,0,W,H);
   // grid
-  simctx.strokeStyle='rgba(74,222,128,0.04)'; simctx.lineWidth=1;
+  simctx.strokeStyle='rgba(0,255,136,.03)'; simctx.lineWidth=1;
   for(let x=0;x<W;x+=20){simctx.beginPath();simctx.moveTo(x,0);simctx.lineTo(x,H);simctx.stroke();}
   for(let y=0;y<H;y+=20){simctx.beginPath();simctx.moveTo(0,y);simctx.lineTo(W,y);simctx.stroke();}
 
@@ -989,310 +1367,376 @@ function drawSim(){
 
   // walls
   ENV.walls.forEach(w=>{
-    simctx.fillStyle='#374151'; simctx.fillRect(w.x,w.y,w.w,w.h);
-    simctx.strokeStyle='#6b7280'; simctx.lineWidth=1.5; simctx.strokeRect(w.x,w.y,w.w,w.h);
+    simctx.fillStyle='#1f2937'; simctx.fillRect(w.x,w.y,w.w,w.h);
+    simctx.strokeStyle='#374151'; simctx.lineWidth=1.5; simctx.strokeRect(w.x,w.y,w.w,w.h);
+  });
+  if(wallDrag&&wallDrag.x1!==undefined){
+    const x=Math.min(wallDrag.x0,wallDrag.x1),y=Math.min(wallDrag.y0,wallDrag.y1);
+    simctx.fillStyle='rgba(55,65,81,.5)'; simctx.fillRect(x,y,Math.abs(wallDrag.x1-wallDrag.x0),Math.abs(wallDrag.y1-wallDrag.y0));
+  }
+
+  // comm range circles
+  robots.forEach(rob=>{
+    simctx.beginPath(); simctx.arc(rob.wx,rob.wy,COMM_RANGE,0,Math.PI*2);
+    simctx.strokeStyle=rob.color+'18'; simctx.lineWidth=1; simctx.stroke();
   });
 
-  // wall preview
-  if(wallDrag&&wallDrag.x1!==undefined){
-    const x=Math.min(wallDrag.x0,wallDrag.x1), y=Math.min(wallDrag.y0,wallDrag.y1);
-    simctx.fillStyle='rgba(107,114,128,.3)';
-    simctx.fillRect(x,y,Math.abs(wallDrag.x1-wallDrag.x0),Math.abs(wallDrag.y1-wallDrag.y0));
+  // sensor FOV
+  const ar=robots[activeRobot]||robots[0];
+  if(ar){
+    const fovRad=(FOV_DEG/2)*Math.PI/180;
+    if(FOV_DEG<360){
+      simctx.beginPath(); simctx.moveTo(ar.wx,ar.wy);
+      simctx.arc(ar.wx,ar.wy,SENSOR_RANGE,ar.angle-fovRad,ar.angle+fovRad);
+      simctx.closePath();
+      simctx.fillStyle='rgba(0,255,136,.06)'; simctx.fill();
+      simctx.strokeStyle='rgba(0,255,136,.25)'; simctx.lineWidth=1; simctx.stroke();
+    } else {
+      simctx.beginPath(); simctx.arc(ar.wx,ar.wy,SENSOR_RANGE,0,Math.PI*2);
+      simctx.fillStyle='rgba(0,255,136,.05)'; simctx.fill();
+      simctx.strokeStyle='rgba(0,255,136,.2)'; simctx.lineWidth=1; simctx.stroke();
+    }
   }
 
   // comm arcs
   commLog.slice(0,4).forEach((c,i)=>{
-    if(tick-c.tick>4) return;
-    const fr=robots.find(r=>r.name===c.from); if(!fr) return;
+    if(tick-c.tick>4)return;
+    const fr=robots.find(r=>r.name===c.from); if(!fr)return;
     if(c.to==='ALL'){
-      simctx.beginPath(); simctx.arc(fr.wx,fr.wy,16+i*8,0,Math.PI*2);
-      simctx.strokeStyle='rgba(251,146,60,.35)'; simctx.lineWidth=1; simctx.stroke();
+      simctx.beginPath(); simctx.arc(fr.wx,fr.wy,16+i*10,0,Math.PI*2);
+      simctx.strokeStyle='rgba(255,140,0,.3)'; simctx.lineWidth=1; simctx.stroke();
     } else {
       const tr=robots.find(r=>r.name===c.to);
       if(tr){
         simctx.beginPath(); simctx.moveTo(fr.wx,fr.wy); simctx.lineTo(tr.wx,tr.wy);
-        simctx.strokeStyle='rgba(34,211,238,.4)'; simctx.lineWidth=1.2; simctx.stroke();
+        simctx.strokeStyle='rgba(0,212,255,.4)'; simctx.lineWidth=1.2; simctx.stroke();
       }
     }
+  });
+
+  // packages
+  ENV.packages.forEach(p=>{
+    if(p.collected)return;
+    simctx.fillStyle='rgba(245,158,11,.2)'; simctx.fillRect(p.x-5,p.y-5,10,10);
+    simctx.strokeStyle='#f59e0b'; simctx.lineWidth=1.4; simctx.strokeRect(p.x-5,p.y-5,10,10);
   });
 
   // waypoints
   ENV.waypoints.forEach(wp=>{
     const isB=wp.id==='Base';
-    simctx.beginPath(); simctx.arc(wp.x,wp.y,9,0,Math.PI*2);
-    simctx.fillStyle=isB?'rgba(74,222,128,.2)':'rgba(34,211,238,.18)'; simctx.fill();
-    simctx.strokeStyle=isB?'#4ade80':'#22d3ee'; simctx.lineWidth=1.5; simctx.stroke();
-    simctx.fillStyle=isB?'#4ade80':'#22d3ee';
-    simctx.font='bold 8px JetBrains Mono,monospace';
+    simctx.beginPath(); simctx.arc(wp.x,wp.y,8,0,Math.PI*2);
+    simctx.fillStyle=isB?'rgba(0,255,136,.18)':'rgba(0,212,255,.15)'; simctx.fill();
+    simctx.strokeStyle=isB?'#00ff88':'#00d4ff'; simctx.lineWidth=1.5; simctx.stroke();
+    simctx.fillStyle=isB?'#00ff88':'#00d4ff';
+    simctx.font='bold 7px JetBrains Mono,monospace';
     simctx.textAlign='center'; simctx.textBaseline='middle';
-    simctx.fillText(isB?'⚡':wp.id, wp.x, wp.y);
-  });
-
-  // packages
-  ENV.packages.forEach(p=>{
-    if(p.collected) return;
-    simctx.fillStyle='rgba(245,158,11,.22)'; simctx.fillRect(p.x-5,p.y-5,10,10);
-    simctx.strokeStyle='#f59e0b'; simctx.lineWidth=1.4; simctx.strokeRect(p.x-5,p.y-5,10,10);
+    simctx.fillText(isB?'⚡':wp.id,wp.x,wp.y);
   });
 
   // robots
   robots.forEach(rob=>{
-    const rx=rob.wx, ry=rob.wy;
-    // glow
-    const g=simctx.createRadialGradient(rx,ry,0,rx,ry,14);
-    g.addColorStop(0,rob.color+'38'); g.addColorStop(1,'transparent');
-    simctx.beginPath(); simctx.arc(rx,ry,14,0,Math.PI*2); simctx.fillStyle=g; simctx.fill();
-
-    simctx.save(); simctx.translate(rx,ry); simctx.rotate(rob.angle);
-    simctx.beginPath(); simctx.arc(0,0,8,0,Math.PI*2);
+    const g=simctx.createRadialGradient(rob.wx,rob.wy,0,rob.wx,rob.wy,13);
+    g.addColorStop(0,rob.color+'35'); g.addColorStop(1,'transparent');
+    simctx.beginPath(); simctx.arc(rob.wx,rob.wy,13,0,Math.PI*2); simctx.fillStyle=g; simctx.fill();
+    simctx.save(); simctx.translate(rob.wx,rob.wy); simctx.rotate(rob.angle);
+    simctx.beginPath(); simctx.arc(0,0,7,0,Math.PI*2);
     simctx.fillStyle=rob.color+'cc'; simctx.fill();
     simctx.strokeStyle=rob.color; simctx.lineWidth=1.8; simctx.stroke();
     simctx.beginPath(); simctx.moveTo(0,0); simctx.lineTo(10,0);
-    simctx.strokeStyle='#ffffff80'; simctx.lineWidth=1.5; simctx.stroke();
-    if(rob.bb.carrying){
-      simctx.fillStyle='#f59e0b'; simctx.fillRect(-3,-14,6,5);
-    }
+    simctx.strokeStyle='rgba(255,255,255,.7)'; simctx.lineWidth=1.4; simctx.stroke();
+    if(rob.bb.carrying){simctx.fillStyle='#f59e0b'; simctx.fillRect(-3,-12,6,5);}
     simctx.restore();
-    simctx.fillStyle=rob.color; simctx.font='bold 8px JetBrains Mono,monospace';
+    simctx.fillStyle=rob.color; simctx.font='bold 7px JetBrains Mono,monospace';
     simctx.textAlign='center'; simctx.textBaseline='bottom';
-    simctx.fillText(rob.name,rx,ry-10);
-    // battery bar
+    simctx.fillText(rob.name,rob.wx,rob.wy-9);
+    // battery mini
     const bp=rob.bb.battery/100;
-    simctx.fillStyle='rgba(0,0,0,.4)'; simctx.fillRect(rx-9,ry+10,18,3);
-    simctx.fillStyle=bp>.5?'#4ade80':bp>.25?'#f59e0b':'#ef4444';
-    simctx.fillRect(rx-9,ry+10,18*bp,3);
+    simctx.fillStyle='rgba(0,0,0,.4)'; simctx.fillRect(rob.wx-8,rob.wy+9,16,2.5);
+    simctx.fillStyle=bp>.5?'#00ff88':bp>.25?'#f59e0b':'#ff3d5a';
+    simctx.fillRect(rob.wx-8,rob.wy+9,16*bp,2.5);
   });
 
   simctx.restore();
 }
 
-// ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // STATUSBAR
-// ═══════════════════════════════════════════════════════════════
-function updateTick(){ document.getElementById('ticklbl').textContent='Tick: '+tick; }
-function updateNodeCount(){ document.getElementById('nodelbl').textContent='Nodes: '+Object.keys(nodes).length; }
+// ═══════════════════════════════════════════
+function updateTick(){document.getElementById('ticklbl').textContent='Tick: '+tick;}
+function updateNodeCount(){document.getElementById('nodelbl').textContent='Nodes: '+Object.keys(nodes).length;}
 function updateSbar(){
-  if(!running) return;
+  if(!running)return;
   const r=robots[activeRobot]||robots[0];
-  document.getElementById('stxt').textContent=`Running — ${r.name} ${Math.round(r.bb.battery)}%`;
+  document.getElementById('stxt').textContent=`Running ${r.name} bat:${Math.round(r.bb.battery)}% t:${tick}`;
 }
 
-// ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // TABS
-// ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 function stab(el,name){
   el.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
   el.classList.add('on');
-  ['log','bb','comms'].forEach(n=>{
+  ['log','bb','comms','explain','sensor','metrics'].forEach(n=>{
     const tc=document.getElementById('tc-'+n);
-    if(tc) tc.classList.toggle('on',n===name);
+    if(tc)tc.classList.toggle('on',n===name);
   });
+  if(name==='sensor')renderSensorTab();
+  if(name==='metrics')renderMetrics();
 }
 function rtab(el,name){
   el.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
   el.classList.add('on');
-  ['node','tpl','help'].forEach(n=>{
-    const tc=document.getElementById('rtc-'+n);
-    if(tc) tc.classList.toggle('on',n===name);
-  });
+  ['node','tpl','help'].forEach(n=>{const tc=document.getElementById('rtc-'+n);if(tc)tc.classList.toggle('on',n===name);});
 }
 
-// ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // IMPORT / EXPORT
-// ═══════════════════════════════════════════════════════════════
-function openImport(){ document.getElementById('moverlay').classList.add('show'); }
-function closeModal(){ document.getElementById('moverlay').classList.remove('show'); }
-
+// ═══════════════════════════════════════════
+function openImport(){document.getElementById('moverlay').classList.add('show');}
+function closeModal(){document.getElementById('moverlay').classList.remove('show');}
 function exportBT(){
-  const data={
-    nodes:Object.values(nodes).map(n=>({id:n.id,type:n.type,label:n.label,p1:n.p1,p2:n.p2,x:n.x,y:n.y,robotAs:n.robotAs,children:n.children})),
-    edges:[...edges],
-    env:{walls:ENV.walls,waypoints:ENV.waypoints,packages:ENV.packages},
-    robots:robots.length,
-  };
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
-  a.download='bt_tree.json'; a.click();
+  const data={nodes:Object.values(nodes).map(n=>({id:n.id,type:n.type,label:n.label,p1:n.p1,p2:n.p2,x:n.x,y:n.y,robotAs:n.robotAs,children:n.children,utility:n.utility})),edges:[...edges],env:{walls:ENV.walls,waypoints:ENV.waypoints,packages:ENV.packages},robots:robots.length};
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='bt_tree.json';a.click();
 }
-
-function importFile(e){
-  const f=e.target.files[0]; if(!f) return;
-  const rdr=new FileReader(); rdr.onload=ev=>document.getElementById('ijson').value=ev.target.result; rdr.readAsText(f);
-}
-
+function importFile(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>document.getElementById('ijson').value=ev.target.result;r.readAsText(f);}
 function doImport(){
   try{
     const data=JSON.parse(document.getElementById('ijson').value);
     clearAll();
     if(data.env){ENV.walls=data.env.walls||[];ENV.waypoints=data.env.waypoints||ENV.waypoints;ENV.packages=data.env.packages||[];}
-    if(data.robots&&data.robots>1){ while(robots.length<data.robots) addRobot(); while(robots.length>data.robots) robots.pop(); syncRobotUI(); }
+    if(data.robots&&data.robots>1){while(robots.length<data.robots)addRobot();while(robots.length>data.robots)robots.pop();syncRobotUI();}
     robots.forEach(resetRobotState);
     const idMap={};
-    data.nodes.forEach(nd=>{
-      const nid=createNode(nd.type,nd.x,nd.y,nd.robotAs??-1);
-      idMap[nd.id]=nid;
-      const n=nodes[nid];
-      n.label=nd.label; n.p1=nd.p1||''; n.p2=nd.p2||'';
-      n.el.querySelector('.nl').textContent=n.label;
-      updateBadge(nid);
-    });
-    data.edges.forEach(e=>{
-      const f=idMap[e.from],t=idMap[e.to]; if(!f||!t) return;
-      if(!nodes[f].children.includes(t)){ nodes[f].children.push(t); edges.push({from:f,to:t}); }
-    });
-    drawEdges(); drawSim(); closeModal();
-    logMsg('<span class="li">// Import successful.</span>');
-  }catch(err){ alert('Import failed: '+err.message); }
+    data.nodes.forEach(nd=>{const nid=createNode(nd.type,nd.x,nd.y,nd.robotAs??-1);idMap[nd.id]=nid;const n=nodes[nid];n.label=nd.label;n.p1=nd.p1||'';n.p2=nd.p2||'';n.utility=nd.utility||50;n.el.querySelector('.nl').textContent=n.label;updateBadge(nid);});
+    data.edges.forEach(e=>{const f=idMap[e.from],t=idMap[e.to];if(!f||!t)return;if(!nodes[f].children.includes(t)){nodes[f].children.push(t);edges.push({from:f,to:t});}});
+    drawEdges();drawSim();closeModal();logMsg('<span class="li">// Import OK.</span>');
+  }catch(err){alert('Import failed: '+err.message);}
 }
 
-// ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // CHALLENGE TEMPLATES
-// ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 const CHALL={
-  patrol:{
-    text:'Patrol waypoints A→B→C, recharging at Base when battery drops below 25%. Cooldown prevents constant charging.',
-    env:{walls:[{x:160,y:40,w:8,h:50},{x:200,y:80,w:50,h:8}],
-         waypoints:[{id:'A',x:80,y:70},{id:'B',x:230,y:50},{id:'C',x:310,y:130},{id:'Base',x:35,y:140}],packages:[]},
-    tpl:[
-      {id:'root',type:'selector',  x:200,y:20},
-      {id:'n2',  type:'sequence',  x:60, y:120},
-      {id:'n3',  type:'sequence',  x:350,y:120},
-      {id:'n4',  type:'c_battery', x:10, y:230,p1:'25'},
-      {id:'n5',  type:'a_move',    x:110,y:230,p1:'A'},
-      {id:'n6',  type:'inverter',  x:290,y:230},
-      {id:'n7',  type:'cooldown',  x:420,y:230,p1:'5'},
-      {id:'n8',  type:'c_battery', x:290,y:330,p1:'25'},
-      {id:'n9',  type:'a_charge',  x:420,y:330},
-    ],
-    edges:[['root','n2'],['root','n3'],['n2','n4'],['n2','n5'],['n3','n6'],['n3','n7'],['n6','n8'],['n7','n9']],
-    robots:1,
-  },
-  delivery:{
-    text:'Scan for a package, pick it up and deliver to C. Uses Retry on pick-up and Timeout on navigation.',
-    env:{walls:[{x:140,y:60,w:8,h:70},{x:260,y:30,w:8,h:60}],
-         waypoints:[{id:'A',x:80,y:70},{id:'B',x:230,y:50},{id:'C',x:310,y:130},{id:'Base',x:35,y:140}],
-         packages:[{x:285,y:115,collected:false}]},
-    tpl:[
-      {id:'root',type:'sequence',  x:200,y:20},
-      {id:'n2',  type:'a_scan',    x:60, y:120},
-      {id:'n3',  type:'retry',     x:200,y:120,p1:'3'},
-      {id:'n4',  type:'timeout',   x:360,y:120,p1:'6'},
-      {id:'n5',  type:'selector',  x:200,y:230},
-      {id:'n6',  type:'a_move',    x:360,y:230,p1:'C'},
-      {id:'n7',  type:'sequence',  x:120,y:340},
-      {id:'n8',  type:'a_avoid',   x:270,y:340},
-      {id:'n9',  type:'c_obstacle',x:70, y:450},
-      {id:'n10', type:'a_pickup',  x:180,y:450},
-    ],
-    edges:[['root','n2'],['root','n3'],['root','n4'],['n3','n5'],['n4','n6'],['n5','n7'],['n5','n8'],['n7','n9'],['n7','n10']],
-    robots:1,
-  },
-  swarm:{
-    text:'Two robots cooperate: R1 scans and broadcasts location; R2 waits for the message then picks up and delivers.',
-    env:{walls:[{x:170,y:30,w:8,h:85}],
-         waypoints:[{id:'A',x:80,y:70},{id:'B',x:230,y:50},{id:'C',x:310,y:130},{id:'Base',x:35,y:140}],
-         packages:[{x:285,y:115,collected:false}]},
-    tpl:[
-      {id:'r1',  type:'sequence',  x:60, y:20, robotAs:0},
-      {id:'r1a', type:'a_scan',    x:20, y:120,robotAs:0},
-      {id:'r1b', type:'a_broadcast',x:120,y:120,robotAs:0,p1:'pkg_loc',p2:'C'},
-      {id:'r1c', type:'a_move',    x:60, y:230,robotAs:0,p1:'A'},
-      {id:'r2',  type:'sequence',  x:360,y:20, robotAs:1},
-      {id:'r2a', type:'c_msg',     x:300,y:120,robotAs:1,p1:'pkg_loc'},
-      {id:'r2b', type:'a_pickup',  x:420,y:120,robotAs:1},
-      {id:'r2c', type:'a_move',    x:360,y:230,robotAs:1,p1:'C'},
-      {id:'r2d', type:'a_dropoff', x:360,y:330,robotAs:1},
-    ],
-    edges:[['r1','r1a'],['r1','r1b'],['r1','r1c'],['r2','r2a'],['r2','r2b'],['r2','r2c'],['r2','r2d']],
-    robots:2,
-  },
-  rescue:{
-    text:'Memory Sequence: R1 scans, moves to B and requests help; R2 responds and guards zone.',
-    env:{walls:[{x:150,y:50,w:10,h:90},{x:240,y:70,w:80,h:10}],
-         waypoints:[{id:'A',x:80,y:70},{id:'B',x:230,y:50},{id:'C',x:310,y:130},{id:'Base',x:35,y:140}],
-         packages:[{x:240,y:110,collected:false}]},
-    tpl:[
-      {id:'root',type:'mem_seq',  x:200,y:20},
-      {id:'n2',  type:'selector', x:60, y:130},
-      {id:'n3',  type:'a_move',   x:280,y:130,p1:'B'},
-      {id:'n4',  type:'a_scan',   x:430,y:130},
-      {id:'n5',  type:'sequence', x:0,  y:260},
-      {id:'n6',  type:'inverter', x:130,y:260},
-      {id:'n7',  type:'a_help',   x:260,y:260},
-      {id:'n8',  type:'c_clear',  x:0,  y:370},
-      {id:'n9',  type:'a_avoid',  x:130,y:370},
-    ],
-    edges:[['root','n2'],['root','n3'],['root','n4'],['n2','n5'],['n2','n6'],['n2','n7'],['n5','n8'],['n5','n9'],['n6','n8']],
-    robots:2,
-  },
+  patrol:{text:'Patrol A→B→C, recharge at Base when battery < 25%.',
+    env:{walls:[{x:160,y:40,w:8,h:50},{x:200,y:80,w:50,h:8}],waypoints:[{id:'A',x:80,y:70},{id:'B',x:230,y:50},{id:'C',x:310,y:130},{id:'Base',x:35,y:140}],packages:[]},
+    tpl:[{id:'root',type:'selector',x:200,y:20},{id:'n2',type:'sequence',x:60,y:120},{id:'n3',type:'sequence',x:350,y:120},{id:'n4',type:'c_battery',x:10,y:230,p1:'25'},{id:'n5',type:'a_move',x:110,y:230,p1:'A'},{id:'n6',type:'inverter',x:290,y:230},{id:'n7',type:'cooldown',x:420,y:230,p1:'5'},{id:'n8',type:'c_battery',x:290,y:330,p1:'25'},{id:'n9',type:'a_charge',x:420,y:330}],
+    edges:[['root','n2'],['root','n3'],['n2','n4'],['n2','n5'],['n3','n6'],['n3','n7'],['n6','n8'],['n7','n9']],robots:1},
+  delivery:{text:'Scan for package, pick up and deliver to C. Retry + Timeout guards.',
+    env:{walls:[{x:140,y:60,w:8,h:70},{x:260,y:30,w:8,h:60}],waypoints:[{id:'A',x:80,y:70},{id:'B',x:230,y:50},{id:'C',x:310,y:130},{id:'Base',x:35,y:140}],packages:[{x:285,y:115,collected:false}]},
+    tpl:[{id:'root',type:'sequence',x:200,y:20},{id:'n2',type:'a_scan',x:60,y:120},{id:'n3',type:'retry',x:200,y:120,p1:'3'},{id:'n4',type:'timeout',x:360,y:120,p1:'6'},{id:'n5',type:'selector',x:200,y:230},{id:'n6',type:'a_move',x:360,y:230,p1:'C'},{id:'n7',type:'sequence',x:120,y:340},{id:'n8',type:'a_avoid',x:270,y:340},{id:'n9',type:'c_obstacle',x:70,y:450},{id:'n10',type:'a_pickup',x:180,y:450}],
+    edges:[['root','n2'],['root','n3'],['root','n4'],['n3','n5'],['n4','n6'],['n5','n7'],['n5','n8'],['n7','n9'],['n7','n10']],robots:1},
+  swarm:{text:'R1 scans & broadcasts; R2 waits for message then picks up and delivers.',
+    env:{walls:[{x:170,y:30,w:8,h:85}],waypoints:[{id:'A',x:80,y:70},{id:'B',x:230,y:50},{id:'C',x:310,y:130},{id:'Base',x:35,y:140}],packages:[{x:285,y:115,collected:false}]},
+    tpl:[{id:'r1',type:'sequence',x:60,y:20,robotAs:0},{id:'r1a',type:'a_scan',x:20,y:120,robotAs:0},{id:'r1b',type:'a_broadcast',x:120,y:120,robotAs:0,p1:'pkg_loc',p2:'C'},{id:'r1c',type:'a_move',x:60,y:230,robotAs:0,p1:'A'},{id:'r2',type:'sequence',x:360,y:20,robotAs:1},{id:'r2a',type:'c_msg',x:300,y:120,robotAs:1,p1:'pkg_loc'},{id:'r2b',type:'a_pickup',x:420,y:120,robotAs:1},{id:'r2c',type:'a_move',x:360,y:230,robotAs:1,p1:'C'},{id:'r2d',type:'a_dropoff',x:360,y:330,robotAs:1}],
+    edges:[['r1','r1a'],['r1','r1b'],['r1','r1c'],['r2','r2a'],['r2','r2b'],['r2','r2c'],['r2','r2d']],robots:2},
+  rescue:{text:'Memory Sequence: scan, move to B, request help. R2 guards zone.',
+    env:{walls:[{x:150,y:50,w:10,h:90},{x:240,y:70,w:80,h:10}],waypoints:[{id:'A',x:80,y:70},{id:'B',x:230,y:50},{id:'C',x:310,y:130},{id:'Base',x:35,y:140}],packages:[{x:240,y:110,collected:false}]},
+    tpl:[{id:'root',type:'mem_seq',x:200,y:20},{id:'n2',type:'selector',x:60,y:130},{id:'n3',type:'a_move',x:280,y:130,p1:'B'},{id:'n4',type:'a_scan',x:430,y:130},{id:'n5',type:'sequence',x:0,y:260},{id:'n6',type:'inverter',x:130,y:260},{id:'n7',type:'a_broadcast',x:260,y:260,p1:'help',p2:'needed'},{id:'n8',type:'c_obstacle',x:0,y:370},{id:'n9',type:'a_avoid',x:130,y:370}],
+    edges:[['root','n2'],['root','n3'],['root','n4'],['n2','n5'],['n2','n6'],['n2','n7'],['n5','n8'],['n5','n9'],['n6','n8']],robots:2},
+  utility_demo:{text:'Utility Selector: picks the highest-score task. Scores set dynamically by battery and goal distance.',
+    env:{walls:[],waypoints:[{id:'A',x:80,y:70},{id:'B',x:230,y:50},{id:'C',x:310,y:130},{id:'Base',x:35,y:140}],packages:[{x:200,y:100,collected:false}]},
+    tpl:[{id:'root',type:'utility_sel',x:200,y:20},{id:'n1',type:'sequence',x:40,y:130},{id:'n2',type:'sequence',x:200,y:130},{id:'n3',type:'sequence',x:360,y:130},{id:'n1a',type:'a_setutil',x:40,y:250,p1:'30'},{id:'n1b',type:'a_charge',x:40,y:360},{id:'n2a',type:'a_setutil',x:200,y:250,p1:'70'},{id:'n2b',type:'a_scan',x:200,y:360},{id:'n3a',type:'a_setutil',x:360,y:250,p1:'50'},{id:'n3b',type:'a_move',x:360,y:360,p1:'B'}],
+    edges:[['root','n1'],['root','n2'],['root','n3'],['n1','n1a'],['n1','n1b'],['n2','n2a'],['n2','n2b'],['n3','n3a'],['n3','n3b']],robots:1},
 };
 
 function loadChallenge(key){
   clearAll();
   document.getElementById('chalsel').value=key;
-  if(key==='blank'){ document.getElementById('cprompt').textContent='Build your own behavior tree.'; return; }
-  const ch=CHALL[key]; if(!ch) return;
+  if(key==='blank'){document.getElementById('cprompt').textContent='Build your own behavior tree.';return;}
+  const ch=CHALL[key]; if(!ch)return;
   document.getElementById('cprompt').textContent=ch.text;
-  if(ch.env){ ENV.walls=ch.env.walls||[]; ENV.waypoints=ch.env.waypoints; ENV.packages=ch.env.packages||[]; }
-  while(robots.length<(ch.robots||1)) addRobot();
-  while(robots.length>(ch.robots||1)) robots.pop();
+  if(ch.env){ENV.walls=ch.env.walls||[];ENV.waypoints=ch.env.waypoints;ENV.packages=ch.env.packages||[];}
+  while(robots.length<(ch.robots||1))addRobot();
+  while(robots.length>(ch.robots||1))robots.pop();
   syncRobotUI(); robots.forEach(resetRobotState);
   const idMap={};
   ch.tpl.forEach(nd=>{
     const newId=createNode(nd.type,nd.x,nd.y,nd.robotAs??-1);
     idMap[nd.id]=newId;
     const n=nodes[newId];
-    if(nd.p1!==undefined) n.p1=nd.p1;
-    if(nd.p2!==undefined) n.p2=nd.p2;
+    if(nd.p1!==undefined)n.p1=nd.p1;
+    if(nd.p2!==undefined)n.p2=nd.p2;
+    if(nd.utility!==undefined)n.utility=nd.utility;
     n.el.querySelector('.nl').textContent=n.label;
     updateBadge(newId);
   });
   ch.edges.forEach(([f,t])=>{
-    const fi=idMap[f],ti=idMap[t]; if(!fi||!ti) return;
-    if(!nodes[fi].children.includes(ti)){ nodes[fi].children.push(ti); edges.push({from:fi,to:ti}); }
+    const fi=idMap[f],ti=idMap[t]; if(!fi||!ti)return;
+    if(!nodes[fi].children.includes(ti)){nodes[fi].children.push(ti);edges.push({from:fi,to:ti});}
   });
   drawEdges(); drawSim();
   logMsg(`<span class="li">// Template: ${key}</span>`);
 }
 
-// ═══════════════════════════════════════════════════════════════
-// UTILS
-// ═══════════════════════════════════════════════════════════════
-function rnd(a,b){ return a+Math.random()*(b-a); }
-function lerp(a,b,t){ return a+(b-a)*t; }
-function wdist(a,b){ return Math.hypot((a.wx||0)-(b.wx||0),(a.wy||0)-(b.wy||0)); }
+// ═══════════════════════════════════════════
+// RESIZE SYSTEM — all panes
+// ═══════════════════════════════════════════
 
-// ═══════════════════════════════════════════════════════════════
-// INIT (runs after DOM is ready)
-// ═══════════════════════════════════════════════════════════════
-document.addEventListener('DOMContentLoaded', ()=>{
-  canvasEl = document.getElementById('canvas');
-  esvg     = document.getElementById('esvg');
-  simcv    = document.getElementById('simcv');
-  simctx   = simcv.getContext('2d');
-  logEl    = document.getElementById('logwrap');
+// Generic horizontal splitter: drags to resize leftEl and rightEl
+function makeHrzHandle(handleId, leftEl, rightEl, minLeft, minRight){
+  const handle = document.getElementById(handleId);
+  if(!handle) return;
+  handle.addEventListener('mousedown', e=>{
+    e.preventDefault();
+    const startX = e.clientX;
+    const startLW = leftEl.clientWidth;
+    const startRW = rightEl.clientWidth;
+    handle.classList.add('dragging');
+    const mv = ev => {
+      const dx = ev.clientX - startX;
+      const newLW = Math.max(minLeft, startLW + dx);
+      const newRW = Math.max(minRight, startRW - dx);
+      leftEl.style.flex = 'none';
+      leftEl.style.width = newLW + 'px';
+      rightEl.style.flex = 'none';
+      rightEl.style.width = newRW + 'px';
+      resizeSim();
+    };
+    const up = () => {
+      handle.classList.remove('dragging');
+      document.removeEventListener('mousemove', mv);
+      document.removeEventListener('mouseup', up);
+    };
+    document.addEventListener('mousemove', mv);
+    document.addEventListener('mouseup', up);
+  });
+}
+
+// Generic vertical splitter: drags to resize topEl and bottomEl
+function makeVrtHandle(handleId, topEl, bottomEl, minTop, minBottom){
+  const handle = document.getElementById(handleId);
+  if(!handle) return;
+  handle.addEventListener('mousedown', e=>{
+    e.preventDefault();
+    const startY = e.clientY;
+    const startTH = topEl.clientHeight;
+    const startBH = bottomEl.clientHeight;
+    handle.classList.add('dragging');
+    const mv = ev => {
+      const dy = ev.clientY - startY;
+      const newTH = Math.max(minTop, startTH + dy);
+      const newBH = Math.max(minBottom, startBH - dy);
+      topEl.style.flex = 'none';
+      topEl.style.height = newTH + 'px';
+      bottomEl.style.height = newBH + 'px';
+      resizeSim();
+    };
+    const up = () => {
+      handle.classList.remove('dragging');
+      document.removeEventListener('mousemove', mv);
+      document.removeEventListener('mouseup', up);
+    };
+    document.addEventListener('mousemove', mv);
+    document.addEventListener('mouseup', up);
+  });
+}
+
+function initResizeHandles(){
+  // palette ↔ center
+  makeHrzHandle('pal-handle',
+    document.getElementById('pal'),
+    document.getElementById('center'),
+    80, 200);
+  // center ↔ right panel
+  makeHrzHandle('rpanel-handle',
+    document.getElementById('center'),
+    document.getElementById('rpanel'),
+    200, 120);
+  // sim canvas ↔ sim side panel
+  makeHrzHandle('smside-handle',
+    document.getElementById('scwrap'),
+    document.getElementById('smside'),
+    120, 100);
+  // canvas area ↕ sim panel
+  makeVrtHandle('resize-handle',
+    document.getElementById('cwrap'),
+    document.getElementById('smpanel'),
+    80, 80);
+}
+
+// ═══════════════════════════════════════════
+// ROBOT DRAG & DROP in sim canvas
+// ═══════════════════════════════════════════
+let robDrag = null; // { robot, offsetX, offsetY }
+
+function initRobotDrag(){
+  simcv.addEventListener('mousedown', e=>{
+    // only in view mode and when not drawing walls
+    if(envMode === 'wall') return;
+
+    const {x, y} = simCoords(e);
+    // find robot under cursor (hit radius 12 world-units)
+    const hit = robots.find(r => Math.hypot(r.wx - x, r.wy - y) < 12);
+    if(!hit) return;
+
+    e.stopPropagation();
+    e.preventDefault();
+    robDrag = { robot: hit, ox: x - hit.wx, oy: y - hit.wy };
+    simcv.classList.add('rob-drag');
+
+    const mv = ev => {
+      if(!robDrag) return;
+      const {x: nx, y: ny} = simCoords(ev);
+      robDrag.robot.wx = nx - robDrag.ox;
+      robDrag.robot.wy = ny - robDrag.oy;
+      // also update the robot's target_wp if it was just placed near a waypoint
+      const nearest = ENV.waypoints.reduce((best, wp)=>{
+        const d = Math.hypot(wp.x - robDrag.robot.wx, wp.y - robDrag.robot.wy);
+        return (!best || d < best.d) ? {wp, d} : best;
+      }, null);
+      if(nearest && nearest.d < 18){
+        robDrag.robot.bb.target_wp = nearest.wp.id;
+      }
+      drawSim();
+    };
+
+    const up = () => {
+      simcv.classList.remove('rob-drag');
+      robDrag = null;
+      document.removeEventListener('mousemove', mv);
+      document.removeEventListener('mouseup', up);
+      drawSim();
+    };
+
+    document.addEventListener('mousemove', mv);
+    document.addEventListener('mouseup', up);
+  });
+}
+
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+function rnd(a,b){return a+Math.random()*(b-a);}
+function wdist(a,b){return Math.hypot((a.wx||0)-(b.wx||0),(a.wy||0)-(b.wy||0));}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  canvasEl=document.getElementById('canvas');
+  esvg=document.getElementById('esvg');
+  simcv=document.getElementById('simcv');
+  simctx=simcv.getContext('2d');
+  logEl=document.getElementById('logwrap');
+  fovCv=document.getElementById('fovcanvas');
+  fovCtx=fovCv?.getContext('2d');
+  metricsCv=document.getElementById('metricscv');
+  metricsCtx=metricsCv?.getContext('2d');
 
   robots.push(makeRobot(0));
   syncRobotUI(); renderBB(); renderComms();
 
-  // sim canvas resize
-  window.addEventListener('resize', resizeSim);
-  resizeSim();
+  window.addEventListener('resize',resizeSim);
+  resizeSim(); initResizeHandles(); initRobotDrag();
 
-  // env editor — click on sim canvas
-  simcv.addEventListener('click', e=>{
-    if(envMode==='view') return;
-    const {x,y}=simCoords(e);
+  // sim canvas events
+  simcv.addEventListener('click',e=>{
+    const{x,y}=simCoords(e);
     if(envMode==='wp'){
       const id=WP_IDS[wpIdx%WP_IDS.length]+(wpIdx>=WP_IDS.length?Math.floor(wpIdx/WP_IDS.length):'');
-      wpIdx++;
-      ENV.waypoints.push({id,x,y}); drawSim();
-      logMsg(`<span class="li">// Waypoint ${id} added.</span>`); return;
+      wpIdx++; ENV.waypoints.push({id,x,y}); drawSim(); logMsg(`<span class="li">// Waypoint ${id} added.</span>`); return;
     }
-    if(envMode==='pkg'){
-      ENV.packages.push({x,y,collected:false}); drawSim();
-      logMsg('<span class="li">// Package added.</span>'); return;
-    }
+    if(envMode==='pkg'){ENV.packages.push({x,y,collected:false});drawSim();return;}
     if(envMode==='erase'){
       const tol=16;
       ENV.walls=ENV.walls.filter(w=>!(x>=w.x-tol&&x<=w.x+w.w+tol&&y>=w.y-tol&&y<=w.y+w.h+tol));
@@ -1301,31 +1745,48 @@ document.addEventListener('DOMContentLoaded', ()=>{
       drawSim(); return;
     }
   });
-  simcv.addEventListener('mousedown', e=>{
-    if(envMode!=='wall') return;
-    const {x,y}=simCoords(e);
+
+  // right-click on waypoint to edit (runtime waypoint editing)
+  simcv.addEventListener('contextmenu',e=>{
+    e.preventDefault();
+    const{x,y}=simCoords(e);
+    const wp=ENV.waypoints.find(w=>Math.hypot(w.x-x,w.y-y)<14);
+    if(wp){
+      const r=simcv.getBoundingClientRect();
+      openWpEdit(wp,e.clientX-r.left,e.clientY-r.top);
+    } else cancelWpEdit();
+  });
+
+  simcv.addEventListener('mousedown',e=>{
+    if(envMode!=='wall')return;
+    // don't start wall draw if clicking on a robot
+    const{x,y}=simCoords(e);
+    if(robots.some(r=>Math.hypot(r.wx-x,r.wy-y)<12))return;
     wallDrag={x0:x,y0:y};
   });
-  simcv.addEventListener('mousemove', e=>{
-    if(!wallDrag||envMode!=='wall') return;
-    const {x,y}=simCoords(e);
-    wallDrag.x1=x; wallDrag.y1=y; drawSim();
+  simcv.addEventListener('mousemove',e=>{
+    if(!wallDrag||envMode!=='wall')return;
+    const{x,y}=simCoords(e); wallDrag.x1=x; wallDrag.y1=y; drawSim();
   });
-  simcv.addEventListener('mouseup', e=>{
-    if(!wallDrag||envMode!=='wall') return;
-    const {x,y}=simCoords(e);
-    const wx=Math.min(wallDrag.x0,x), wy=Math.min(wallDrag.y0,y);
-    const ww=Math.abs(x-wallDrag.x0), wh=Math.abs(y-wallDrag.y0);
-    if(ww>5||wh>5){ ENV.walls.push({x:wx,y:wy,w:ww,h:wh}); logMsg('<span class="li">// Wall added.</span>'); }
+  simcv.addEventListener('mouseup',e=>{
+    if(!wallDrag||envMode!=='wall')return;
+    const{x,y}=simCoords(e);
+    const wx=Math.min(wallDrag.x0,x),wy=Math.min(wallDrag.y0,y);
+    const ww=Math.abs(x-wallDrag.x0),wh=Math.abs(y-wallDrag.y0);
+    if(ww>5||wh>5){ENV.walls.push({x:wx,y:wy,w:ww,h:wh});logMsg('<span class="li">// Wall added.</span>');}
     wallDrag=null; drawSim();
   });
 
-  // load default challenge
   loadChallenge('patrol');
   document.getElementById('sdot').className='sdot ok';
 
-  // animation loop
-  (function loop(){ requestAnimationFrame(loop); if(running) drawSim(); })();
+  // animation + metrics loop
+  let lastMetricRender=0;
+  (function loop(ts){
+    requestAnimationFrame(loop);
+    if(running)drawSim();
+    if(ts-lastMetricRender>500){lastMetricRender=ts;renderMetrics();renderSensorTab();}
+  })(0);
 });
 </script>
 </body>
