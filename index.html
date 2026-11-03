@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>BT Playground Pro</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@300;400;500;600&display=swap');
+:root{
+  --bg:#0c0f14;--surface:#131820;--s2:#1a2130;--s3:#1f2940;
+  --border:#252e3f;--border2:#2e3f58;
+  --acc:#4ade80;--acc2:#22d3ee;--acc3:#a78bfa;--acc4:#fb923c;
+  --warn:#f59e0b;--danger:#ef4444;--info:#38bdf8;
+  --text:#dde4ef;--text2:#7a8fa8;--text3:#4a5a72;
+  --r1:#1e3a8a;--r1b:#3b82f6;
+  --r2:#7c3aed;--r2b:#a78bfa;  /* selector purple */
+  --r3:#0f6b5a;--r3b:#10d9a0;  /* parallel teal */
+  --dec:#7f1d1d;--decb:#ef4444;
+  --cond:#78350f;--condb:#f59e0b;
+  --act:#052e16;--actb:#22c55e;
+  --mem:#312e81;--memb:#818cf8;  /* memory decorator indigo */
+  --time:#1a1a3e;--timeb:#60a5fa; /* time decorator */
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;font-size:13px;background:var(--bg);color:var(--text)}
+
+/* ── TOPBAR ── */
+#topbar{display:flex;align-items:center;gap:10px;padding:6px 14px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;z-index:200}
+.logo{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--acc);white-space:nowrap}
+.logo em{color:var(--text3);font-style:normal;font-weight:400}
+.sep{width:1px;height:18px;background:var(--border);flex-shrink:0}
+select.tb-sel{background:var(--s2);border:1px solid var(--border2);color:var(--text);padding:4px 8px;border-radius:5px;font:12px 'Inter',sans-serif;cursor:pointer}
+label.tb-label{font-size:11px;color:var(--text3)}
+input[type=range]{accent-color:var(--acc);width:70px}
+.tb-right{margin-left:auto;display:flex;gap:6px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:4px;padding:5px 11px;border-radius:5px;font:500 11px 'Inter',sans-serif;cursor:pointer;border:1px solid transparent;transition:all .12s;white-space:nowrap}
+.btn-pri{background:var(--acc);color:#0c0f14;border-color:var(--acc)}.btn-pri:hover{background:#86efac}
+.btn-ghost{background:transparent;color:var(--text2);border-color:var(--border)}.btn-ghost:hover{background:var(--s2);color:var(--text)}
+.btn-warn{background:transparent;color:var(--warn);border-color:var(--warn)}.btn-warn:hover{background:#78350f40}
+.btn-danger{background:transparent;color:var(--danger);border-color:var(--danger)}.btn-danger:hover{background:#ef444420}
+.btn-sm{padding:3px 8px;font-size:10px}
+
+/* ── LAYOUT ── */
+#shell{display:flex;flex-direction:column;height:calc(100vh - 36px)}
+#mid{display:flex;flex:1;overflow:hidden}
+
+/* ── PALETTE ── */
+#palette{width:190px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column}
+.pgroup{padding:0 6px 6px}
+.pgroup-hd{font-size:9px;font-weight:600;letter-spacing:.07em;color:var(--text3);padding:8px 6px 4px;text-transform:uppercase}
+.pnode{display:flex;align-items:center;gap:7px;padding:5px 6px;border-radius:6px;cursor:grab;border:1px solid transparent;margin-bottom:1px;transition:background .1s;user-select:none}
+.pnode:hover{background:var(--s2);border-color:var(--border2)}
+.pnode:active{cursor:grabbing}
+.pico{width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;flex-shrink:0}
+.pname{font-size:11px;color:var(--text);line-height:1.2}
+.pdesc{font-size:9px;color:var(--text3)}
+
+/* ── CENTER ── */
+#center{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative}
+
+/* ── CANVAS ── */
+#canvaswrap{flex:1;position:relative;overflow:hidden;background:var(--bg)}
+#cgrid{position:absolute;inset:0;background-image:linear-gradient(var(--s2) 1px,transparent 1px),linear-gradient(90deg,var(--s2) 1px,transparent 1px);background-size:28px 28px;opacity:.4;pointer-events:none}
+#canvas{position:absolute;inset:0}
+#esvg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+
+/* ── BT NODES ── */
+.btnode{position:absolute;border-radius:8px;border:2px solid;cursor:move;user-select:none;min-width:108px;z-index:10;transition:box-shadow .12s}
+.btnode:hover{box-shadow:0 0 0 2px rgba(74,222,128,.3)}
+.btnode.selected{box-shadow:0 0 0 3px var(--acc)!important}
+.btnode.st-running{animation:pulse .7s ease-in-out infinite alternate}
+.btnode.st-success{box-shadow:0 0 0 3px var(--acc),0 0 16px rgba(74,222,128,.25)}
+.btnode.st-failure{box-shadow:0 0 0 3px var(--danger),0 0 16px rgba(239,68,68,.25)}
+@keyframes pulse{from{box-shadow:0 0 0 2px var(--warn)}to{box-shadow:0 0 0 4px var(--warn),0 0 14px rgba(245,158,11,.35)}}
+.nhead{display:flex;align-items:center;gap:5px;padding:5px 8px;border-radius:6px 6px 0 0}
+.ntype{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:600;opacity:.75;text-transform:uppercase;letter-spacing:.04em}
+.nlabel{padding:3px 8px 5px;font-size:11px;font-weight:500;color:var(--text);line-height:1.3}
+.nstatus{position:absolute;top:3px;right:5px;font-size:9px;font-family:'JetBrains Mono',monospace;font-weight:700}
+.nrobotbadge{position:absolute;bottom:4px;right:6px;font-size:8px;color:var(--text3);font-family:'JetBrains Mono',monospace}
+.port{position:absolute;width:10px;height:10px;border-radius:50%;border:2px solid var(--bg);cursor:crosshair;z-index:20;transition:transform .1s}
+.port-out{bottom:-6px;left:50%;transform:translateX(-50%);background:var(--acc2)}.port-out:hover{transform:translateX(-50%) scale(1.5)}
+.port-in{top:-6px;left:50%;transform:translateX(-50%);background:var(--acc3)}.port-in:hover{transform:translateX(-50%) scale(1.5)}
+.ndel{position:absolute;top:-7px;right:-7px;width:15px;height:15px;border-radius:50%;background:var(--danger);color:#fff;font-size:9px;display:none;align-items:center;justify-content:center;cursor:pointer;z-index:30;border:none;line-height:1}
+.btnode:hover .ndel,.btnode.selected .ndel{display:flex}
+#tempedge{stroke:var(--acc2);stroke-width:2;stroke-dasharray:4,3;fill:none;pointer-events:none}
+
+/* ── SIM PANEL ── */
+#simpanel{height:230px;flex-shrink:0;border-top:1px solid var(--border);display:flex;overflow:hidden}
+#simcanvaswrap{position:relative;overflow:hidden;flex:1;background:#080c14;cursor:crosshair}
+#simcanvas{width:100%;height:100%}
+#envmode-bar{position:absolute;top:6px;left:6px;display:flex;gap:4px;z-index:50}
+#robot-selector{position:absolute;top:6px;right:6px;display:flex;gap:4px;z-index:50;flex-wrap:wrap}
+.rsel-btn{padding:3px 7px;border-radius:4px;font:500 10px 'JetBrains Mono',monospace;cursor:pointer;border:1px solid;transition:all .12s}
+
+/* ── SIM SIDE ── */
+#simside{width:250px;flex-shrink:0;background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column}
+.tabbar{display:flex;border-bottom:1px solid var(--border);flex-shrink:0}
+.tab{flex:1;padding:6px 4px;text-align:center;font-size:10px;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:all .1s}
+.tab.active{color:var(--acc);border-bottom-color:var(--acc)}
+.tc{display:none}.tc.active{display:block}
+#simlog{flex:1;overflow-y:auto;padding:7px;font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--text2);line-height:1.8}
+#simlog .ls{color:var(--acc)}.#simlog .lf{color:var(--danger)}
+.log-s{color:var(--acc)}.log-f{color:var(--danger)}.log-r{color:var(--warn)}.log-i{color:var(--acc2)}.log-c{color:var(--acc3)}
+#simctrl{padding:7px;border-top:1px solid var(--border);display:flex;gap:5px;flex-wrap:wrap}
+#bbcontent{padding:7px;overflow-y:auto;max-height:170px}
+.bbrow{display:flex;justify-content:space-between;padding:2px 0;font-family:'JetBrains Mono',monospace;font-size:9.5px;border-bottom:1px solid var(--border)}
+.bbk{color:var(--acc2)}.bbv{color:var(--acc)}
+.comm-list{padding:7px;overflow-y:auto;max-height:170px}
+.comm-entry{padding:3px 6px;border-radius:4px;margin-bottom:3px;font-size:9.5px;font-family:'JetBrains Mono',monospace;border-left:2px solid}
+
+/* ── RIGHT PANEL ── */
+#rightpanel{width:215px;flex-shrink:0;background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.proprow{padding:5px 10px;border-bottom:1px solid var(--border)}
+.proplabel{font-size:9px;color:var(--text3);margin-bottom:3px;font-weight:500}
+.propinput{width:100%;background:var(--s2);border:1px solid var(--border2);color:var(--text);padding:3px 7px;border-radius:4px;font:11px 'Inter',sans-serif}
+.propinput:focus{outline:none;border-color:var(--acc)}
+.propval{font-size:11px;color:var(--text)}
+.tplbtn{display:block;width:100%;text-align:left;padding:5px 7px;border-radius:5px;font:11px 'Inter',sans-serif;background:transparent;color:var(--text2);border:1px solid var(--border);margin-bottom:3px;cursor:pointer;transition:all .1s}
+.tplbtn:hover{background:var(--s2);color:var(--text)}
+.helpbox{background:var(--s2);border:1px solid var(--border);border-radius:5px;padding:8px;font-size:10px;color:var(--text2);line-height:1.7;margin:7px}
+.helpbox code{font-family:'JetBrains Mono',monospace;color:var(--acc2);font-size:9px}
+.helpbox b{color:var(--text)}
+
+/* ── STATUSBAR ── */
+#statusbar{display:flex;align-items:center;gap:10px;padding:3px 12px;background:var(--surface);border-top:1px solid var(--border);font:10px 'JetBrains Mono',monospace;color:var(--text3);flex-shrink:0}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--text3)}
+.sdot.ok{background:var(--acc)}.sdot.running{background:var(--warn);animation:blink .5s ease infinite alternate}.sdot.fail{background:var(--danger)}
+@keyframes blink{from{opacity:.3}to{opacity:1}}
+
+/* ── MODAL ── */
+#modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+#modal-overlay.show{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:20px;min-width:340px;max-width:480px;max-height:80vh;overflow-y:auto}
+.modal h3{font-size:14px;margin-bottom:12px;color:var(--acc2)}
+.modal textarea{width:100%;height:180px;background:var(--s2);border:1px solid var(--border2);color:var(--text);padding:8px;border-radius:5px;font:11px 'JetBrains Mono',monospace;resize:vertical}
+.modal-btns{display:flex;gap:8px;margin-top:12px;justify-content:flex-end}
+
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <div class="logo">BT<em>playground</em> <span style="color:var(--acc4);font-size:10px">PRO</span></div>
+  <div class="sep"></div>
+  <label class="tb-label">Challenge:</label>
+  <select class="tb-sel" id="chalsel" onchange="loadChallenge(this.value)">
+    <option value="patrol">Patrol & Recharge</option>
+    <option value="delivery">Package Delivery</option>
+    <option value="swarm">Swarm Coordination</option>
+    <option value="rescue">Search & Rescue</option>
+    <option value="blank">— Blank —</option>
+  </select>
+  <div class="sep"></div>
+  <label class="tb-label">Speed:</label>
+  <input type="range" id="speedslider" min="150" max="2500" value="900" oninput="updateSpeed()">
+  <div class="sep"></div>
+  <label class="tb-label">Robot:</label>
+  <select class="tb-sel" id="robotsel" onchange="setActiveRobot(this.value)">
+    <option value="0">R1</option>
+  </select>
+  <button class="btn btn-ghost btn-sm" onclick="addRobot()">+ Robot</button>
+  <button class="btn btn-ghost btn-sm" onclick="removeRobot()">– Robot</button>
+  <div class="tb-right">
+    <button class="btn btn-ghost btn-sm" onclick="openImport()">⬆ Import</button>
+    <button class="btn btn-ghost btn-sm" onclick="exportBT()">⬇ Export</button>
+    <button class="btn btn-ghost btn-sm" onclick="clearCanvas()">✕ Clear</button>
+    <button class="btn btn-pri" id="runbtn" onclick="toggleRun()">▶ Run</button>
+  </div>
+</div>
+
+<div id="shell">
+<div id="mid">
+
+<!-- PALETTE -->
+<div id="palette">
+  <div class="pgroup">
+    <div class="pgroup-hd">Composite</div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'sequence')" onclick="addCenter('sequence')">
+      <div class="pico" style="background:#1e3a8a;color:#93c5fd">→</div>
+      <div><div class="pname">Sequence</div><div class="pdesc">All must succeed</div></div>
+    </div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'selector')" onclick="addCenter('selector')">
+      <div class="pico" style="background:#4c1d95;color:#c4b5fd">?</div>
+      <div><div class="pname">Selector</div><div class="pdesc">First success wins</div></div>
+    </div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'parallel')" onclick="addCenter('parallel')">
+      <div class="pico" style="background:#134e4a;color:#6ee7b7">∥</div>
+      <div><div class="pname">Parallel</div><div class="pdesc">Run concurrently</div></div>
+    </div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'random_selector')" onclick="addCenter('random_selector')">
+      <div class="pico" style="background:#2d1b69;color:#a78bfa">⚄</div>
+      <div><div class="pname">Random Sel.</div><div class="pdesc">Shuffle & select</div></div>
+    </div>
+  </div>
+  <div class="pgroup">
+    <div class="pgroup-hd">Decorator</div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'inverter')" onclick="addCenter('inverter')">
+      <div class="pico" style="background:#7f1d1d;color:#fca5a5">¬</div>
+      <div><div class="pname">Inverter</div><div class="pdesc">Flip result</div></div>
+    </div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'repeat')" onclick="addCenter('repeat')">
+      <div class="pico" style="background:#713f12;color:#fde68a">↺</div>
+      <div><div class="pname">Repeat N</div><div class="pdesc">Loop N times</div></div>
+    </div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'retry')" onclick="addCenter('retry')">
+      <div class="pico" style="background:#7c2d12;color:#fdba74">⟳</div>
+      <div><div class="pname">Retry</div><div class="pdesc">Retry on failure</div></div>
+    </div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'timeout')" onclick="addCenter('timeout')">
+      <div class="pico" style="background:#1a1a3e;color:#60a5fa">⏱</div>
+      <div><div class="pname">Timeout</div><div class="pdesc">Fail after T ms</div></div>
+    </div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'cooldown')" onclick="addCenter('cooldown')">
+      <div class="pico" style="background:#1a1a3e;color:#38bdf8">❄</div>
+      <div><div class="pname">Cooldown</div><div class="pdesc">Skip until ready</div></div>
+    </div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'memory_seq')" onclick="addCenter('memory_seq')">
+      <div class="pico" style="background:#312e81;color:#818cf8">M→</div>
+      <div><div class="pname">Mem. Sequence</div><div class="pdesc">Resume after run</div></div>
+    </div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'memory_sel')" onclick="addCenter('memory_sel')">
+      <div class="pico" style="background:#312e81;color:#a5b4fc">M?</div>
+      <div><div class="pname">Mem. Selector</div><div class="pdesc">Skip past success</div></div>
+    </div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'force_success')" onclick="addCenter('force_success')">
+      <div class="pico" style="background:#14532d;color:#86efac">✓!</div>
+      <div><div class="pname">Force Success</div><div class="pdesc">Always succeed</div></div>
+    </div>
+  </div>
+  <div class="pgroup">
+    <div class="pgroup-hd">Condition</div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'battery_ok')" onclick="addCenter('battery_ok')">
+      <div class="pico" style="background:#78350f;color:#fcd34d">⚡</div>
+      <div><div class="pname">Battery OK?</div><div class="pdesc">&gt; threshold</div></div>
+    </div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'obstacle_ahead')" onclick="addCenter('obstacle_ahead')">
+      <div class="pico" style="background:#78350f;color:#fcd34d">⚠</div>
+      <div><div class="pname">Obstacle?</div><div class="pdesc">Proximity sensor</div></div>
+    </div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'at_goal')" onclick="addCenter('at_goal')">
+      <div class="pico" style="background:#78350f;color:#fcd34d">◎</div>
+      <div><div class="pname">At Goal?</div><div class="pdesc">Position check</div></div>
+    </div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'package_found')" onclick="addCenter('package_found')">
+      <div class="pico" style="background:#78350f;color:#fcd34d">📦</div>
+      <div><div class="pname">Package Found?</div><div class="pdesc">Sensor detect</div></div>
+    </div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'area_clear')" onclick="addCenter('area_clear')">
+      <div class="pico" style="background:#78350f;color:#fcd34d">🔍</div>
+      <div><div class="pname">Area Clear?</div><div class="pdesc">No obstacles near</div></div>
+    </div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'ally_near')" onclick="addCenter('ally_near')">
+      <div class="pico" style="background:#78350f;color:#fcd34d">🤝</div>
+      <div><div class="pname">Ally Near?</div><div class="pdesc">Robot proximity</div></div>
+    </div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'msg_received')" onclick="addCenter('msg_received')">
+      <div class="pico" style="background:#78350f;color:#fcd34d">📨</div>
+      <div><div class="pname">Msg Received?</div><div class="pdesc">Check inbox</div></div>
+    </div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'zone_occupied')" onclick="addCenter('zone_occupied')">
+      <div class="pico" style="background:#78350f;color:#fcd34d">🏚</div>
+      <div><div class="pname">Zone Occupied?</div><div class="pdesc">Other robot in zone</div></div>
+    </div>
+  </div>
+  <div class="pgroup">
+    <div class="pgroup-hd">Action</div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'move_to')" onclick="addCenter('move_to')">
+      <div class="pico" style="background:#052e16;color:#86efac">➤</div>
+      <div><div class="pname">Move To</div><div class="pdesc">Navigate waypoint</div></div>
+    </div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'charge')" onclick="addCenter('charge')">
+      <div class="pico" style="background:#052e16;color:#86efac">🔌</div>
+      <div><div class="pname">Charge</div><div class="pdesc">Recharge battery</div></div>
+    </div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'avoid_obstacle')" onclick="addCenter('avoid_obstacle')">
+      <div class="pico" style="background:#052e16;color:#86efac">↪</div>
+      <div><div class="pname">Avoid</div><div class="pdesc">Reroute obstacle</div></div>
+    </div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'pick_up')" onclick="addCenter('pick_up')">
+      <div class="pico" style="background:#052e16;color:#86efac">✋</div>
+      <div><div class="pname">Pick Up</div><div class="pdesc">Grasp object</div></div>
+    </div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'drop_off')" onclick="addCenter('drop_off')">
+      <div class="pico" style="background:#052e16;color:#86efac">📥</div>
+      <div><div class="pname">Drop Off</div><div class="pdesc">Release at dest.</div></div>
+    </div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'scan')" onclick="addCenter('scan')">
+      <div class="pico" style="background:#052e16;color:#86efac">📡</div>
+      <div><div class="pname">Scan</div><div class="pdesc">360° sensor sweep</div></div>
+    </div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'broadcast')" onclick="addCenter('broadcast')">
+      <div class="pico" style="background:#052e16;color:#86efac">📢</div>
+      <div><div class="pname">Broadcast</div><div class="pdesc">Send to all robots</div></div>
+    </div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'send_msg')" onclick="addCenter('send_msg')">
+      <div class="pico" style="background:#052e16;color:#86efac">✉</div>
+      <div><div class="pname">Send Msg</div><div class="pdesc">Point-to-point comm</div></div>
+    </div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'request_help')" onclick="addCenter('request_help')">
+      <div class="pico" style="background:#052e16;color:#86efac">🆘</div>
+      <div><div class="pname">Request Help</div><div class="pdesc">Ask nearest ally</div></div>
+    </div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'guard_zone')" onclick="addCenter('guard_zone')">
+      <div class="pico" style="background:#052e16;color:#86efac">🛡</div>
+      <div><div class="pname">Guard Zone</div><div class="pdesc">Hold position</div></div>
+    </div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'wait')" onclick="addCenter('wait')">
+      <div class="pico" style="background:#052e16;color:#86efac">⏳</div>
+      <div><div class="pname">Wait</div><div class="pdesc">Idle for T ms</div></div>
+    </div>
+    <div class="pnode" draggable="true" ondragstart="pdrag(event,'set_bb')" onclick="addCenter('set_bb')">
+      <div class="pico" style="background:#052e16;color:#86efac">✎</div>
+      <div><div class="pname">Set Blackboard</div><div class="pdesc">Write key=value</div></div>
+    </div>
+  </div>
+</div><!-- end palette -->
+
+<!-- CENTER -->
+<div id="center">
+  <div id="canvaswrap"
+       ondragover="event.preventDefault()"
+       ondrop="onDrop(event)">
+    <div id="cgrid"></div>
+    <div id="challprompt" style="position:absolute;top:8px;left:50%;transform:translateX(-50%);background:rgba(19,24,32,.9);border:1px solid var(--border2);border-radius:7px;padding:6px 14px;font-size:11px;color:var(--text2);pointer-events:none;z-index:50;max-width:500px;text-align:center;backdrop-filter:blur(4px)">
+      <span id="challtext"></span>
+    </div>
+    <svg id="esvg">
+      <defs>
+        <marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L6,3 Z" fill="#4ade8070"/>
+        </marker>
+      </defs>
+      <path id="tempedge" d="" style="display:none"/>
+    </svg>
+    <div id="canvas"></div>
+  </div>
+
+  <!-- SIM -->
+  <div id="simpanel">
+    <div id="simcanvaswrap">
+      <canvas id="simcanvas"></canvas>
+      <div id="envmode-bar">
+        <button class="btn btn-ghost btn-sm" id="envbtn-view" onclick="setEnvMode('view')" style="color:var(--acc)">👁 View</button>
+        <button class="btn btn-ghost btn-sm" id="envbtn-wall" onclick="setEnvMode('wall')">🧱 Wall</button>
+        <button class="btn btn-ghost btn-sm" id="envbtn-wp" onclick="setEnvMode('wp')">📍 Waypoint</button>
+        <button class="btn btn-ghost btn-sm" id="envbtn-pkg" onclick="setEnvMode('pkg')">📦 Package</button>
+        <button class="btn btn-ghost btn-sm" id="envbtn-erase" onclick="setEnvMode('erase')">✕ Erase</button>
+        <button class="btn btn-ghost btn-sm" onclick="resetEnv()">↺ Reset</button>
+      </div>
+      <div id="robot-selector"></div>
+    </div>
+    <div id="simside">
+      <div class="tabbar">
+        <div class="tab active" onclick="stab(this,'log')">Log</div>
+        <div class="tab" onclick="stab(this,'bb')">Blackboard</div>
+        <div class="tab" onclick="stab(this,'comms')">Comms</div>
+      </div>
+      <div id="tc-log" class="tc active" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
+        <div id="simlog" style="flex:1;overflow-y:auto;padding:7px;font-family:'JetBrains Mono',monospace;font-size:9.5px;color:var(--text2);line-height:1.8"></div>
+      </div>
+      <div id="tc-bb" class="tc" style="overflow-y:auto">
+        <div style="padding:5px 7px;font-size:9px;color:var(--text3)">
+          Robot: <select id="bbrobsel" class="tb-sel" style="font-size:9px;padding:2px 5px" onchange="renderBB()"><option value="0">R1</option></select>
+        </div>
+        <div id="bbcontent"></div>
+      </div>
+      <div id="tc-comms" class="tc" style="overflow-y:auto">
+        <div class="comm-list" id="commlist"></div>
+      </div>
+      <div id="simctrl">
+        <button class="btn btn-ghost btn-sm" onclick="stepOnce()">⏭ Step</button>
+        <button class="btn btn-ghost btn-sm" onclick="resetSim()">⏮ Reset</button>
+      </div>
+    </div>
+  </div>
+</div><!-- end center -->
+
+<!-- RIGHT PANEL -->
+<div id="rightpanel">
+  <div class="tabbar">
+    <div class="tab active" onclick="rtab(this,'node')">Node</div>
+    <div class="tab" onclick="rtab(this,'tpl')">Templates</div>
+    <div class="tab" onclick="rtab(this,'help')">Help</div>
+  </div>
+  <div id="rtc-node" class="tc active" style="overflow-y:auto;flex:1">
+    <div id="noprop" style="padding:16px 10px;font-size:11px;color:var(--text3);text-align:center">Select a node</div>
+    <div id="nodeprops" style="display:none">
+      <div class="proprow"><div class="proplabel">Type</div><div id="ptype" class="propval" style="font-family:'JetBrains Mono',monospace;font-size:10px"></div></div>
+      <div class="proprow"><div class="proplabel">Label</div><input class="propinput" id="plabel" type="text" onchange="updateLabel(this.value)"></div>
+      <div class="proprow"><div class="proplabel">Robot Assignment</div>
+        <select class="propinput" id="probotas" onchange="updateRobotAs(this.value)"><option value="-1">All Robots</option></select>
+      </div>
+      <div class="proprow" id="pprow1" style="display:none"><div class="proplabel" id="pplabel1">Param</div><input class="propinput" id="pparam1" type="text" onchange="updateParam1(this.value)"></div>
+      <div class="proprow" id="pprow2" style="display:none"><div class="proplabel" id="pplabel2">Param 2</div><input class="propinput" id="pparam2" type="text" onchange="updateParam2(this.value)"></div>
+      <div class="proprow"><div class="proplabel">Last Status</div><div id="pstatus" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3)">—</div></div>
+      <div class="proprow"><div class="proplabel">Description</div><div id="pdesc" style="font-size:10px;color:var(--text3);line-height:1.5"></div></div>
+    </div>
+  </div>
+  <div id="rtc-tpl" class="tc" style="padding:8px;overflow-y:auto">
+    <div style="font-size:9px;color:var(--text3);margin-bottom:6px">Quick templates:</div>
+    <button class="tplbtn" onclick="loadChallenge('patrol')">🤖 Patrol & Recharge</button>
+    <button class="tplbtn" onclick="loadChallenge('delivery')">📦 Package Delivery</button>
+    <button class="tplbtn" onclick="loadChallenge('swarm')">🐝 Swarm Coordination</button>
+    <button class="tplbtn" onclick="loadChallenge('rescue')">🚨 Search & Rescue</button>
+  </div>
+  <div id="rtc-help" class="tc" style="overflow-y:auto">
+    <div class="helpbox">
+      <b>Composite nodes</b><br>
+      <code>→ Sequence</code> runs children until one fails.<br>
+      <code>? Selector</code> runs until one succeeds.<br>
+      <code>∥ Parallel</code> ticks all, needs ≥50% success.<br><br>
+      <b>Memory decorators</b><br>
+      <code>M→ Mem.Seq</code> resumes from last running child next tick.<br>
+      <code>M? Mem.Sel</code> skips already-succeeded children.<br><br>
+      <b>Time decorators</b><br>
+      <code>⏱ Timeout</code> fails if child takes too long.<br>
+      <code>❄ Cooldown</code> skips re-execution for N ticks.<br><br>
+      <b>Multi-robot</b><br>
+      Each robot has its own blackboard. A node assigned to robot R only ticks for that robot. <code>Broadcast</code> sends to all; <code>Send Msg</code> sends to one.<br><br>
+      <b>Environment editor</b><br>
+      Use 🧱 Wall, 📍 Waypoint, 📦 Package tools to click/drag on the sim canvas and reshape the world.<br><br>
+      <b>Import/Export</b><br>
+      <code>⬇ Export</code> saves JSON. <code>⬆ Import</code> pastes or loads JSON to restore a tree.
+    </div>
+  </div>
+</div>
+
+</div><!-- end mid -->
+
+<div id="statusbar">
+  <div class="sdot" id="sdot"></div>
+  <span id="stext">Ready</span>
+  <span>|</span><span id="ticklbl">Tick: 0</span>
+  <span>|</span><span id="nodelbl">Nodes: 0</span>
+  <span>|</span><span id="roblbl">Robots: 1</span>
+  <span>|</span><span id="envlbl">Env: view</span>
+  <span style="margin-left:auto;color:var(--text3)">click node to select · drag port to connect · env tools to edit world</span>
+</div>
+</div><!-- end shell -->
+
+<!-- IMPORT MODAL -->
+<div id="modal-overlay">
+  <div class="modal">
+    <h3>Import Behavior Tree JSON</h3>
+    <textarea id="import-json" placeholder='Paste exported JSON here...'></textarea>
+    <div class="modal-btns">
+      <label style="cursor:pointer;display:inline-flex;align-items:center">
+        <input type="file" accept=".json" style="display:none" onchange="importFile(event)">
+        <span class="btn btn-ghost">📂 Load file</span>
+      </label>
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-pri" onclick="doImport()">Import</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════ DEFINITIONS ═══════════════════════════
+const NDEF = {
+  sequence:      {label:'Sequence',       cat:'composite', color:'#1e3a8a',border:'#3b82f6',icon:'→',short:'SEQ',  desc:'Runs children left-to-right. Stops and returns FAILURE on first child that fails.'},
+  selector:      {label:'Selector',       cat:'composite', color:'#4c1d95',border:'#8b5cf6',icon:'?', short:'SEL',  desc:'Runs children until one returns SUCCESS. Returns FAILURE if all fail.'},
+  parallel:      {label:'Parallel',       cat:'composite', color:'#134e4a',border:'#10b981',icon:'∥', short:'PAR',  desc:'Ticks all children every tick. Succeeds when ≥50% succeed.'},
+  random_selector:{label:'Random Sel.',   cat:'composite', color:'#2d1b69',border:'#a78bfa',icon:'⚄', short:'RND',  desc:'Shuffles children each tick, then picks like a Selector.'},
+  inverter:      {label:'Inverter',       cat:'decorator', color:'#7f1d1d',border:'#ef4444',icon:'¬', short:'DEC',  desc:'Flips child result: SUCCESS↔FAILURE. RUNNING passes through.'},
+  repeat:        {label:'Repeat N',       cat:'decorator', color:'#713f12',border:'#f59e0b',icon:'↺', short:'DEC',  desc:'Repeats child N times (param1). Returns SUCCESS after N successes.', p1:'Count',p1def:'3'},
+  retry:         {label:'Retry',          cat:'decorator', color:'#7c2d12',border:'#fdba74',icon:'⟳', short:'DEC',  desc:'Retries child up to N times on FAILURE (param1).', p1:'Max retries',p1def:'3'},
+  timeout:       {label:'Timeout',        cat:'decorator', color:'#1a1a3e',border:'#60a5fa',icon:'⏱', short:'DEC',  desc:'Returns FAILURE if child is still RUNNING after T ticks (param1).', p1:'Ticks limit',p1def:'5'},
+  cooldown:      {label:'Cooldown',       cat:'decorator', color:'#1a1a3e',border:'#38bdf8',icon:'❄', short:'DEC',  desc:'Skips child for N ticks after SUCCESS (param1). Returns SUCCESS while cooling.', p1:'Cooldown ticks',p1def:'4'},
+  memory_seq:    {label:'Mem. Sequence',  cat:'decorator', color:'#312e81',border:'#818cf8',icon:'M→',short:'MEM',  desc:'Like Sequence, but resumes from the last RUNNING child on the next tick.'},
+  memory_sel:    {label:'Mem. Selector',  cat:'decorator', color:'#312e81',border:'#a5b4fc',icon:'M?',short:'MEM',  desc:'Like Selector, but skips children that already returned SUCCESS.'},
+  force_success: {label:'Force Success',  cat:'decorator', color:'#14532d',border:'#86efac',icon:'✓!',short:'DEC',  desc:'Always returns SUCCESS regardless of child result.'},
+  battery_ok:    {label:'Battery OK?',    cat:'condition', color:'#451a03',border:'#d97706',icon:'⚡', short:'COND', desc:'Returns SUCCESS if robot battery > threshold (param1).', p1:'Threshold %',p1def:'25'},
+  obstacle_ahead:{label:'Obstacle?',      cat:'condition', color:'#451a03',border:'#d97706',icon:'⚠', short:'COND', desc:'Returns SUCCESS if proximity sensor detects obstacle.'},
+  at_goal:       {label:'At Goal?',       cat:'condition', color:'#451a03',border:'#d97706',icon:'◎', short:'COND', desc:'Returns SUCCESS if robot is at its target waypoint.'},
+  package_found: {label:'Package Found?', cat:'condition', color:'#451a03',border:'#d97706',icon:'📦',short:'COND', desc:'Returns SUCCESS if a package is detected by sensor.'},
+  area_clear:    {label:'Area Clear?',    cat:'condition', color:'#451a03',border:'#d97706',icon:'🔍',short:'COND', desc:'Returns SUCCESS if no obstacles in a radius around robot.'},
+  ally_near:     {label:'Ally Near?',     cat:'condition', color:'#451a03',border:'#d97706',icon:'🤝',short:'COND', desc:'Returns SUCCESS if another robot is within range (param1 px).', p1:'Range px',p1def:'60'},
+  msg_received:  {label:'Msg Received?',  cat:'condition', color:'#451a03',border:'#d97706',icon:'📨',short:'COND', desc:'Returns SUCCESS if robot has an unread message matching key (param1).', p1:'Key',p1def:'alert'},
+  zone_occupied: {label:'Zone Occupied?', cat:'condition', color:'#451a03',border:'#d97706',icon:'🏚',short:'COND', desc:'Returns SUCCESS if another robot is at this robot\'s target waypoint.'},
+  move_to:       {label:'Move To',        cat:'action',    color:'#052e16',border:'#22c55e',icon:'➤', short:'ACT',  desc:'Navigate to waypoint ID (param1). Returns RUNNING while moving.', p1:'Waypoint',p1def:'A'},
+  charge:        {label:'Charge',         cat:'action',    color:'#052e16',border:'#22c55e',icon:'🔌',short:'ACT',  desc:'Move to charge station and recharge battery. Returns SUCCESS when full.'},
+  avoid_obstacle:{label:'Avoid',          cat:'action',    color:'#052e16',border:'#22c55e',icon:'↪', short:'ACT',  desc:'Execute avoidance maneuver. Clears obstacle flag.'},
+  pick_up:       {label:'Pick Up',        cat:'action',    color:'#052e16',border:'#22c55e',icon:'✋',short:'ACT',  desc:'Pick up nearest detected package. Sets carrying=true.'},
+  drop_off:      {label:'Drop Off',       cat:'action',    color:'#052e16',border:'#22c55e',icon:'📥',short:'ACT',  desc:'Release carried package at current location.'},
+  scan:          {label:'Scan',           cat:'action',    color:'#052e16',border:'#22c55e',icon:'📡',short:'ACT',  desc:'Perform 360° sensor sweep. Updates package_found flag.'},
+  broadcast:     {label:'Broadcast',      cat:'action',    color:'#052e16',border:'#22c55e',icon:'📢',short:'ACT',  desc:'Send message to ALL robots. Key=param1, value=param2.', p1:'Key',p1def:'alert',p2:'Value',p2def:'true'},
+  send_msg:      {label:'Send Msg',       cat:'action',    color:'#052e16',border:'#22c55e',icon:'✉', short:'ACT',  desc:'Send message to specific robot index (param1). Key=param2.', p1:'Robot idx',p1def:'1',p2:'Key',p2def:'help'},
+  request_help:  {label:'Request Help',   cat:'action',    color:'#052e16',border:'#22c55e',icon:'🆘',short:'ACT',  desc:'Broadcasts help request. Nearby ally will respond.'},
+  guard_zone:    {label:'Guard Zone',     cat:'action',    color:'#052e16',border:'#22c55e',icon:'🛡', short:'ACT',  desc:'Hold current position. Returns RUNNING until displaced.'},
+  wait:          {label:'Wait',           cat:'action',    color:'#052e16',border:'#22c55e',icon:'⏳',short:'ACT',  desc:'Idle for N ticks (param1). Returns SUCCESS afterward.', p1:'Ticks',p1def:'3'},
+  set_bb:        {label:'Set Blackboard', cat:'action',    color:'#052e16',border:'#22c55e',icon:'✎', short:'ACT',  desc:'Write value to blackboard. Key=param1, Value=param2.', p1:'Key',p1def:'target',p2:'Value',p2def:'A'},
+};
+
+// ═══════════════════════════ STATE ═══════════════════════════
+const nodes = {}, edges = [];
+let nid = 0, selectedId = null, running = false, runInterval = null, globalTick = 0;
+let dragType = null, connecting = null;
+let envMode = 'view';
+
+// ─── ROBOTS ───
+const ROBOT_COLORS = ['#3b82f6','#f59e0b','#ef4444','#a78bfa','#10b981','#fb923c'];
+let robots = [];
+let activeRobot = 0;
+
+function makeRobot(idx) {
+  return {
+    idx,
+    color: ROBOT_COLORS[idx % ROBOT_COLORS.length],
+    name: 'R'+(idx+1),
+    x: 60 + idx*40, y: 60 + idx*30,
+    angle: 0,
+    bb: {
+      battery: 80 - idx*5,
+      obstacle: false,
+      at_goal: false,
+      package_found: false,
+      carrying: false,
+      waypoint: idx===0?'A':idx===1?'B':'C',
+      target_wp: idx===0?'A':idx===1?'B':'C',
+    },
+    inbox: [],
+    outbox: [],
+    // memory state per node
+    memState: {},
+    repeatCounts: {},
+    retryCounts: {},
+    timeoutCounts: {},
+    cooldownCounts: {},
+    waitCounts: {},
+    status: 'idle', // idle, running, success, failure
+  };
+}
+
+robots.push(makeRobot(0));
+
+// ─── ENVIRONMENT ───
+let ENV = {
+  walls: [],      // [{x,y,w,h}] in sim coords
+  waypoints: [
+    {id:'A',   x:80,  y:70,  label:'A'},
+    {id:'B',   x:230, y:50,  label:'B'},
+    {id:'C',   x:310, y:130, label:'C'},
+    {id:'Base',x:35,  y:140, label:'⚡'},
+  ],
+  packages: [{x:285,y:115,collected:false}],
+};
+
+// ─── COMMS ───
+let commLog = [];
+
+// ═══════════════════════════ DOM REFS ═══════════════════════════
+const canvasEl = document.getElementById('canvas');
+const esvg     = document.getElementById('esvg');
+const simCan   = document.getElementById('simcanvas');
+const simCtx   = simCan.getContext('2d');
+const logEl    = document.getElementById('simlog');
+
+// ═══════════════════════════ NODE CREATION ═══════════════════════════
+function uid(){ return 'n'+(++nid); }
+
+function createNode(type, x, y, robotAs=-1) {
+  const def = NDEF[type]; if(!def) return null;
+  const id  = uid();
+  x = Math.round(x/16)*16; y = Math.round(y/16)*16;
+
+  const el = document.createElement('div');
+  el.className = 'btnode'; el.id = id;
+  el.style.cssText = `left:${x}px;top:${y}px;background:${def.color};border-color:${def.border}`;
+
+  el.innerHTML = `
+    <div class="nhead" style="background:${def.border}20">
+      <span style="font-size:13px">${def.icon}</span>
+      <span class="ntype">${def.short}</span>
+    </div>
+    <div class="nlabel">${def.label}</div>
+    <div class="nstatus" id="${id}-st"></div>
+    <div class="nrobotbadge" id="${id}-rb"></div>
+    <div class="port port-in"  id="${id}-in"  onmousedown="startConn(event,'${id}','in')"></div>
+    <div class="port port-out" id="${id}-out" onmousedown="startConn(event,'${id}','out')"></div>
+    <button class="ndel" onclick="delNode('${id}')">✕</button>`;
+
+  el.addEventListener('mousedown', e=>{
+    if(e.target.classList.contains('port')||e.target.classList.contains('ndel'))return;
+    dragNode(e,id);
+  });
+  el.addEventListener('click', e=>{
+    if(e.target.classList.contains('port')||e.target.classList.contains('ndel'))return;
+    selNode(id);
+  });
+  canvasEl.appendChild(el);
+
+  nodes[id] = {id,type,x,y,
+    label:def.label,
+    p1: def.p1def||'', p2: def.p2def||'',
+    robotAs,
+    el, children:[], status:'idle'};
+
+  updateRobotBadge(id);
+  updateNodeCount();
+  return id;
+}
+
+function updateRobotBadge(id){
+  const n=nodes[id]; if(!n) return;
+  const el=document.getElementById(id+'-rb');
+  if(!el)return;
+  el.textContent = n.robotAs>=0 ? robots[n.robotAs]?.name||'' : '';
+  el.style.color = n.robotAs>=0 ? (robots[n.robotAs]?.color||'#fff') : '';
+}
+
+function addCenter(type){
+  const w=document.getElementById('canvaswrap');
+  const id=createNode(type,w.clientWidth/2-54+rnd(-40,40),w.clientHeight*0.4+rnd(-30,30));
+  selNode(id);
+}
+
+function delNode(id){
+  nodes[id]?.el.remove();
+  for(let i=edges.length-1;i>=0;i--)if(edges[i].from===id||edges[i].to===id)edges.splice(i,1);
+  Object.values(nodes).forEach(n=>{n.children=n.children.filter(c=>c!==id)});
+  delete nodes[id];
+  if(selectedId===id){selectedId=null;showProps(null);}
+  drawEdges(); updateNodeCount();
+}
+
+function clearCanvas(){
+  Object.keys(nodes).forEach(delNode);
+  edges.length=0; drawEdges();
+  globalTick=0; updateTick();
+  robots.forEach(resetRobotState);
+  log('<span class="log-i">// Canvas cleared.</span>');
+}
+
+// ═══════════════════════════ DRAG PALETTE ═══════════════════════════
+function pdrag(e,t){dragType=t;}
+function onDrop(e){
+  if(!dragType)return;
+  const r=document.getElementById('canvaswrap').getBoundingClientRect();
+  createNode(dragType,e.clientX-r.left-54,e.clientY-r.top-24);
+  dragType=null;
+}
+
+// ═══════════════════════════ DRAG NODE ═══════════════════════════
+function dragNode(e,id){
+  e.preventDefault();
+  const n=nodes[id];
+  const ox=e.clientX-n.x, oy=e.clientY-n.y;
+  const mv=ev=>{
+    n.x=Math.max(0,Math.round((ev.clientX-ox)/16)*16);
+    n.y=Math.max(0,Math.round((ev.clientY-oy)/16)*16);
+    n.el.style.left=n.x+'px'; n.el.style.top=n.y+'px'; drawEdges();
+  };
+  const up=()=>{document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up)};
+  document.addEventListener('mousemove',mv);
+  document.addEventListener('mouseup',up);
+}
+
+// ═══════════════════════════ CONNECT ═══════════════════════════
+function startConn(e,id,port){
+  e.stopPropagation(); e.preventDefault();
+  connecting={id,port};
+  const tmp=document.getElementById('tempedge');
+  tmp.style.display='';
+  const mv=ev=>{
+    const r=document.getElementById('canvaswrap').getBoundingClientRect();
+    const mx=ev.clientX-r.left, my=ev.clientY-r.top;
+    const n=nodes[id];
+    const sx=n.x+55, sy=port==='out'?n.y+64:n.y;
+    tmp.setAttribute('d',bez(sx,sy,mx,my));
+  };
+  const up=ev=>{
+    tmp.style.display='none';
+    document.removeEventListener('mousemove',mv);
+    document.removeEventListener('mouseup',up);
+    const r=document.getElementById('canvaswrap').getBoundingClientRect();
+    const mx=ev.clientX-r.left, my=ev.clientY-r.top;
+    let target=null;
+    Object.values(nodes).forEach(n=>{
+      if(n.id===id)return;
+      if(mx>n.x&&mx<n.x+110&&my>n.y&&my<n.y+70)target=n.id;
+    });
+    if(target){
+      let par=id,ch=target;
+      if(port==='in'){par=target;ch=id;}
+      if(!nodes[par].children.includes(ch)){
+        nodes[par].children.push(ch);
+        edges.push({from:par,to:ch});
+        drawEdges();
+      }
+    }
+    connecting=null;
+  };
+  document.addEventListener('mousemove',mv);
+  document.addEventListener('mouseup',up);
+}
+
+function bez(x1,y1,x2,y2){const cy=(y1+y2)/2;return `M${x1},${y1} C${x1},${cy} ${x2},${cy} ${x2},${y2}`;}
+
+function drawEdges(){
+  esvg.querySelectorAll('.ep').forEach(e=>e.remove());
+  edges.forEach(e=>{
+    const f=nodes[e.from],t=nodes[e.to]; if(!f||!t) return;
+    const p=document.createElementNS('http://www.w3.org/2000/svg','path');
+    p.setAttribute('class','ep');
+    p.setAttribute('d',bez(f.x+55,f.y+64,t.x+55,t.y));
+    p.setAttribute('stroke','#4ade8055'); p.setAttribute('stroke-width','2');
+    p.setAttribute('fill','none'); p.setAttribute('marker-end','url(#arr)');
+    esvg.appendChild(p);
+  });
+}
+
+// ═══════════════════════════ SELECTION ═══════════════════════════
+function selNode(id){
+  if(selectedId)nodes[selectedId]?.el.classList.remove('selected');
+  selectedId=id;
+  nodes[id]?.el.classList.add('selected');
+  showProps(id);
+}
+
+function showProps(id){
+  document.getElementById('noprop').style.display = id?'none':'';
+  document.getElementById('nodeprops').style.display = id?'':'none';
+  if(!id)return;
+  const n=nodes[id], def=NDEF[n.type];
+  document.getElementById('ptype').textContent = def.short+' — '+n.type;
+  document.getElementById('plabel').value = n.label;
+  document.getElementById('pdesc').textContent = def.desc||'';
+
+  // robot assignment select
+  const ras=document.getElementById('probotas');
+  ras.innerHTML='<option value="-1">All Robots</option>';
+  robots.forEach((r,i)=>{
+    const o=document.createElement('option');
+    o.value=i; o.textContent=r.name;
+    ras.appendChild(o);
+  });
+  ras.value=n.robotAs;
+
+  // params
+  const r1=document.getElementById('pprow1'), r2=document.getElementById('pprow2');
+  if(def.p1){
+    r1.style.display=''; document.getElementById('pplabel1').textContent=def.p1;
+    document.getElementById('pparam1').value=n.p1;
+  } else r1.style.display='none';
+  if(def.p2){
+    r2.style.display=''; document.getElementById('pplabel2').textContent=def.p2;
+    document.getElementById('pparam2').value=n.p2;
+  } else r2.style.display='none';
+
+  const pst=document.getElementById('pstatus');
+  pst.textContent=n.status||'—';
+  pst.style.color=stColor(n.status);
+}
+
+function updateLabel(v){if(!selectedId)return;nodes[selectedId].label=v;nodes[selectedId].el.querySelector('.nlabel').textContent=v;}
+function updateParam1(v){if(!selectedId)return;nodes[selectedId].p1=v;}
+function updateParam2(v){if(!selectedId)return;nodes[selectedId].p2=v;}
+function updateRobotAs(v){if(!selectedId)return;nodes[selectedId].robotAs=parseInt(v);updateRobotBadge(selectedId);}
+
+function stColor(s){return s==='success'?'var(--acc)':s==='failure'?'var(--danger)':s==='running'?'var(--warn)':'var(--text3)';}
+
+// ═══════════════════════════ BT ENGINE ═══════════════════════════
+function tickBT(){
+  globalTick++;
+  updateTick();
+
+  // Find roots (no parent)
+  const childSet=new Set();
+  Object.values(nodes).forEach(n=>n.children.forEach(c=>childSet.add(c)));
+  const roots=Object.values(nodes).filter(n=>!childSet.has(n.id));
+  if(!roots.length){log('<span class="log-i">// No nodes.</span>');return;}
+
+  robots.forEach(rob=>{
+    // drain battery
+    rob.bb.battery=Math.max(0,rob.bb.battery-1.0);
+    // tick tree for this robot
+    roots.forEach(r=>{
+      const res=tickNode(r.id,rob,0);
+      log(`<span class="log-i">[${rob.name} tick ${globalTick}] root → <b>${res}</b></span>`);
+      rob.status=res;
+    });
+    // process inbox
+    rob.inbox.forEach(msg=>{rob.bb[msg.key]=msg.value;});
+    rob.inbox=[];
+  });
+
+  renderBB(); renderComms(); drawSim();
+  updateStatusBar();
+}
+
+function tickNode(id, rob, depth){
+  const n=nodes[id]; if(!n) return 'failure';
+
+  // robot assignment filter
+  if(n.robotAs>=0 && n.robotAs!==rob.idx) return 'success'; // skip, pass through
+
+  const def=NDEF[n.type];
+  let res='failure';
+
+  if(def.cat==='composite') res=tickComposite(id,rob,depth);
+  else if(def.cat==='decorator') res=tickDecorator(id,rob,depth);
+  else if(def.cat==='condition') res=tickCondition(id,rob);
+  else res=tickAction(id,rob);
+
+  setNS(id,res);
+  const cls=res==='success'?'log-s':res==='failure'?'log-f':'log-r';
+  const ind='&nbsp;'.repeat(depth*2);
+  log(`${ind}<span class="${cls}">[${rob.name}] ${n.label}: <b>${res}</b></span>`);
+  return res;
+}
+
+// ─── COMPOSITE ───
+function tickComposite(id,rob,depth){
+  const n=nodes[id];
+  const type=n.type;
+
+  if(type==='memory_seq'){
+    if(!rob.memState[id])rob.memState[id]=0;
+    for(let i=rob.memState[id];i<n.children.length;i++){
+      const r=tickNode(n.children[i],rob,depth+1);
+      if(r==='running'){rob.memState[id]=i;return 'running';}
+      if(r==='failure'){rob.memState[id]=0;return 'failure';}
+    }
+    rob.memState[id]=0; return 'success';
+  }
+  if(type==='memory_sel'){
+    if(!rob.memState[id])rob.memState[id]=new Set();
+    for(let i=0;i<n.children.length;i++){
+      if(rob.memState[id].has(i))continue;
+      const r=tickNode(n.children[i],rob,depth+1);
+      if(r==='success'){rob.memState[id].add(i);}
+      if(r==='success')return 'success';
+    }
+    rob.memState[id]=new Set(); return 'failure';
+  }
+  if(type==='sequence'){
+    for(const c of n.children){const r=tickNode(c,rob,depth+1);if(r!=='success')return r;}
+    return n.children.length?'success':'failure';
+  }
+  if(type==='selector'){
+    for(const c of n.children){const r=tickNode(c,rob,depth+1);if(r==='success')return 'success';}
+    return 'failure';
+  }
+  if(type==='parallel'){
+    let ok=0;
+    n.children.forEach(c=>{if(tickNode(c,rob,depth+1)==='success')ok++;});
+    return ok>=Math.ceil(n.children.length/2)?'success':'failure';
+  }
+  if(type==='random_selector'){
+    const shuffled=[...n.children].sort(()=>Math.random()-.5);
+    for(const c of shuffled){const r=tickNode(c,rob,depth+1);if(r==='success')return 'success';}
+    return 'failure';
+  }
+  return 'failure';
+}
+
+// ─── DECORATOR ───
+function tickDecorator(id,rob,depth){
+  const n=nodes[id];
+  const ch=n.children[0];
+
+  if(n.type==='inverter'){
+    if(!ch)return 'failure';
+    const r=tickNode(ch,rob,depth+1);
+    return r==='success'?'failure':r==='failure'?'success':'running';
+  }
+  if(n.type==='force_success'){
+    if(ch)tickNode(ch,rob,depth+1);
+    return 'success';
+  }
+  if(n.type==='repeat'){
+    if(!ch)return 'failure';
+    const max=parseInt(n.p1)||3;
+    if(!rob.repeatCounts[id])rob.repeatCounts[id]=0;
+    const r=tickNode(ch,rob,depth+1);
+    if(r==='success'){rob.repeatCounts[id]++;if(rob.repeatCounts[id]>=max){rob.repeatCounts[id]=0;return 'success';}return 'running';}
+    rob.repeatCounts[id]=0; return 'failure';
+  }
+  if(n.type==='retry'){
+    if(!ch)return 'failure';
+    const max=parseInt(n.p1)||3;
+    if(!rob.retryCounts[id])rob.retryCounts[id]=0;
+    const r=tickNode(ch,rob,depth+1);
+    if(r==='success'){rob.retryCounts[id]=0;return 'success';}
+    if(r==='failure'){rob.retryCounts[id]++;if(rob.retryCounts[id]>=max){rob.retryCounts[id]=0;return 'failure';}return 'running';}
+    return 'running';
+  }
+  if(n.type==='timeout'){
+    if(!ch)return 'failure';
+    const limit=parseInt(n.p1)||5;
+    if(!rob.timeoutCounts[id])rob.timeoutCounts[id]=0;
+    rob.timeoutCounts[id]++;
+    if(rob.timeoutCounts[id]>limit){rob.timeoutCounts[id]=0;return 'failure';}
+    const r=tickNode(ch,rob,depth+1);
+    if(r!=='running')rob.timeoutCounts[id]=0;
+    return r;
+  }
+  if(n.type==='cooldown'){
+    const cd=parseInt(n.p1)||4;
+    if(!rob.cooldownCounts[id])rob.cooldownCounts[id]=0;
+    if(rob.cooldownCounts[id]>0){rob.cooldownCounts[id]--;return 'success';}
+    if(!ch)return 'failure';
+    const r=tickNode(ch,rob,depth+1);
+    if(r==='success')rob.cooldownCounts[id]=cd;
+    return r;
+  }
+  return 'failure';
+}
+
+// ─── CONDITION ───
+function tickCondition(id,rob){
+  const n=nodes[id],bb=rob.bb;
+  switch(n.type){
+    case 'battery_ok':     return bb.battery>(parseInt(n.p1)||25)?'success':'failure';
+    case 'obstacle_ahead': return bb.obstacle?'success':'failure';
+    case 'at_goal':        return bb.at_goal?'success':'failure';
+    case 'package_found':  return bb.package_found?'success':'failure';
+    case 'area_clear':     return !bb.obstacle&&Math.random()>.2?'success':'failure';
+    case 'ally_near': {
+      const range=parseInt(n.p1)||60;
+      const near=robots.some(r=>r.idx!==rob.idx&&dist(r,rob)<range);
+      return near?'success':'failure';
+    }
+    case 'msg_received': {
+      const key=n.p1||'alert';
+      return rob.bb[key]!==undefined&&rob.bb[key]!==false?'success':'failure';
+    }
+    case 'zone_occupied': {
+      const tw=rob.bb.target_wp;
+      return robots.some(r=>r.idx!==rob.idx&&r.bb.target_wp===tw)?'success':'failure';
+    }
+    default: return Math.random()>.4?'success':'failure';
+  }
+}
+
+// ─── ACTION ───
+function tickAction(id,rob){
+  const n=nodes[id],bb=rob.bb;
+  switch(n.type){
+    case 'move_to': {
+      const wp=n.p1||'A';
+      bb.target_wp=wp;
+      bb.obstacle=Math.random()<.12;
+      if(bb.obstacle)return 'running';
+      bb.at_goal=Math.random()>.4;
+      if(bb.at_goal){
+        const wobj=ENV.waypoints.find(w=>w.id===wp);
+        if(wobj){rob.x=lerp(rob.x,wobj.x*simScale(),0.3);rob.y=lerp(rob.y,wobj.y*simScale(),0.3);}
+      }
+      return bb.at_goal?'success':'running';
+    }
+    case 'charge': {
+      bb.battery=Math.min(100,bb.battery+20);
+      const base=ENV.waypoints.find(w=>w.id==='Base');
+      if(base){rob.x=lerp(rob.x,base.x*simScale(),0.3);rob.y=lerp(rob.y,base.y*simScale(),0.3);}
+      return bb.battery>=95?'success':'running';
+    }
+    case 'avoid_obstacle': bb.obstacle=false; return 'success';
+    case 'pick_up':
+      if(!bb.carrying){bb.carrying=true;bb.package_found=false;ENV.packages.forEach(p=>{if(!p.collected&&Math.random()>.3){p.collected=true;}});}
+      return 'success';
+    case 'drop_off': bb.carrying=false; return 'success';
+    case 'scan':     bb.package_found=Math.random()>.4; return 'success';
+    case 'broadcast': {
+      const key=n.p1||'alert', val=n.p2!==undefined?n.p2:'true';
+      robots.forEach(r=>{
+        if(r.idx===rob.idx)return;
+        r.inbox.push({key,value:parseVal(val)});
+      });
+      addComm(rob.name,'ALL',key,val,'broadcast');
+      return 'success';
+    }
+    case 'send_msg': {
+      const tidx=parseInt(n.p1)||0, key=n.p2||'help';
+      if(robots[tidx]&&tidx!==rob.idx){
+        robots[tidx].inbox.push({key,value:true});
+        addComm(rob.name,robots[tidx].name,key,'true','direct');
+      }
+      return 'success';
+    }
+    case 'request_help': {
+      let nearest=null, minD=9999;
+      robots.forEach(r=>{if(r.idx===rob.idx)return;const d=dist(r,rob);if(d<minD){minD=d;nearest=r;}});
+      if(nearest){nearest.inbox.push({key:'help_requested',value:rob.name});addComm(rob.name,nearest.name,'help_requested',rob.name,'sos');}
+      return 'success';
+    }
+    case 'guard_zone': return 'running';
+    case 'wait': {
+      if(!rob.waitCounts[id])rob.waitCounts[id]=0;
+      rob.waitCounts[id]++;
+      const t=parseInt(n.p1)||3;
+      if(rob.waitCounts[id]>=t){rob.waitCounts[id]=0;return 'success';}
+      return 'running';
+    }
+    case 'set_bb': {
+      bb[n.p1||'target']=parseVal(n.p2||'');
+      return 'success';
+    }
+    default: return Math.random()>.35?'success':'running';
+  }
+}
+
+function parseVal(v){if(v==='true')return true;if(v==='false')return false;const n=parseFloat(v);return isNaN(n)?v:n;}
+
+// ═══════════════════════════ NODE STATUS DISPLAY ═══════════════════════════
+function setNS(id,status){
+  const n=nodes[id]; if(!n) return;
+  n.status=status;
+  n.el.classList.remove('st-running','st-success','st-failure');
+  if(status!=='idle')n.el.classList.add('st-'+status);
+  const s=document.getElementById(id+'-st');
+  if(s){s.textContent=status==='success'?'✓':status==='failure'?'✗':'…';s.style.color=stColor(status);}
+  if(selectedId===id){
+    const ps=document.getElementById('pstatus');
+    if(ps){ps.textContent=status;ps.style.color=stColor(status);}
+  }
+}
+
+// ═══════════════════════════ RUN CONTROL ═══════════════════════════
+function toggleRun(){
+  running=!running;
+  const btn=document.getElementById('runbtn');
+  const dot=document.getElementById('sdot');
+  if(running){
+    btn.textContent='⏸ Pause'; btn.className='btn btn-danger';
+    dot.className='sdot running';
+    document.getElementById('stext').textContent='Running';
+    const spd=parseInt(document.getElementById('speedslider').value);
+    runInterval=setInterval(tickBT,spd);
+  } else {
+    btn.textContent='▶ Run'; btn.className='btn btn-pri';
+    dot.className='sdot ok';
+    document.getElementById('stext').textContent='Paused';
+    clearInterval(runInterval);
+  }
+}
+
+function updateSpeed(){if(!running)return;clearInterval(runInterval);runInterval=setInterval(tickBT,parseInt(document.getElementById('speedslider').value));}
+function stepOnce(){if(!running)tickBT();}
+
+function resetSim(){
+  if(running)toggleRun();
+  globalTick=0; updateTick();
+  robots.forEach(resetRobotState);
+  Object.values(nodes).forEach(n=>{setNS(n.id,'idle');n.status='idle';});
+  logEl.innerHTML='<span class="log-i">// Reset. Ready.</span>';
+  document.getElementById('sdot').className='sdot ok';
+  document.getElementById('stext').textContent='Ready';
+  renderBB(); drawSim();
+}
+
+function resetRobotState(rob){
+  rob.bb={battery:80-rob.idx*5,obstacle:false,at_goal:false,package_found:false,carrying:false,waypoint:rob.idx===0?'A':rob.idx===1?'B':'C',target_wp:'A'};
+  rob.inbox=[]; rob.outbox=[];
+  rob.memState={}; rob.repeatCounts={}; rob.retryCounts={};
+  rob.timeoutCounts={}; rob.cooldownCounts={}; rob.waitCounts={};
+  rob.status='idle';
+  const base=ENV.waypoints.find(w=>w.id==='Base')||{x:35,y:140};
+  rob.x=(base.x+rob.idx*30)*simScale(); rob.y=(base.y)*simScale();
+  rob.angle=0;
+  ENV.packages.forEach(p=>p.collected=false);
+}
+
+// ═══════════════════════════ MULTI-ROBOT UI ═══════════════════════════
+function syncRobotUI(){
+  const sel=document.getElementById('robotsel');
+  sel.innerHTML=robots.map((r,i)=>`<option value="${i}">${r.name}</option>`).join('');
+  sel.value=activeRobot;
+
+  const bbsel=document.getElementById('bbrobsel');
+  bbsel.innerHTML=robots.map((r,i)=>`<option value="${i}">${r.name}</option>`).join('');
+
+  // update robot buttons in sim
+  const rs=document.getElementById('robot-selector');
+  rs.innerHTML=robots.map((r,i)=>`
+    <button class="rsel-btn" id="rsbtn-${i}"
+      style="color:${r.color};border-color:${r.color};background:${i===activeRobot?r.color+'30':'transparent'}"
+      onclick="setActiveRobot(${i})">${r.name}</button>`).join('');
+
+  // update robot-assignment in node props
+  const ras=document.getElementById('probotas');
+  if(ras){
+    ras.innerHTML='<option value="-1">All Robots</option>'+
+      robots.map((r,i)=>`<option value="${i}">${r.name}</option>`).join('');
+    if(selectedId&&nodes[selectedId])ras.value=nodes[selectedId].robotAs;
+  }
+
+  document.getElementById('roblbl').textContent='Robots: '+robots.length;
+}
+
+function setActiveRobot(i){
+  activeRobot=parseInt(i);
+  document.getElementById('robotsel').value=i;
+  syncRobotUI();
+  renderBB();
+}
+
+function addRobot(){
+  if(robots.length>=6){log('<span class="log-f">// Max 6 robots.</span>');return;}
+  const r=makeRobot(robots.length);
+  robots.push(r);
+  resetRobotState(r);
+  syncRobotUI();
+  drawSim();
+  log(`<span class="log-i">// Added ${r.name}.</span>`);
+}
+
+function removeRobot(){
+  if(robots.length<=1){log('<span class="log-f">// Need at least 1 robot.</span>');return;}
+  const removed=robots.pop();
+  if(activeRobot>=robots.length)activeRobot=robots.length-1;
+  syncRobotUI();
+  drawSim();
+  log(`<span class="log-i">// Removed ${removed.name}.</span>`);
+}
+
+// ═══════════════════════════ COMMS ═══════════════════════════
+function addComm(from,to,key,val,type){
+  commLog.unshift({from,to,key,val,type,tick:globalTick});
+  if(commLog.length>50)commLog.pop();
+}
+
+function renderComms(){
+  const el=document.getElementById('commlist');
+  const typeColor={broadcast:'var(--acc4)',direct:'var(--acc2)',sos:'var(--danger)'};
+  el.innerHTML=commLog.slice(0,20).map(c=>`
+    <div class="comm-entry" style="border-color:${typeColor[c.type]||'var(--border2)'}">
+      <span style="color:${typeColor[c.type]}">[t${c.tick}]</span>
+      <b style="color:var(--text)">${c.from}→${c.to}</b>
+      <span style="color:var(--acc2)">${c.key}</span>=<span style="color:var(--acc)">${c.val}</span>
+    </div>`).join('');
+}
+
+// ═══════════════════════════ BLACKBOARD ═══════════════════════════
+function renderBB(){
+  const ri=parseInt(document.getElementById('bbrobsel').value)||0;
+  const rob=robots[ri]||robots[0];
+  const el=document.getElementById('bbcontent');
+  el.innerHTML=Object.entries(rob.bb).map(([k,v])=>
+    `<div class="bbrow"><span class="bbk">${k}</span><span class="bbv">${JSON.stringify(v)}</span></div>`
+  ).join('');
+  // battery display in status
+  const r=robots[activeRobot]||robots[0];
+  document.getElementById('stext').textContent= running?`Running — ${r.name} bat:${Math.round(r.bb.battery)}%`:'Paused';
+}
+
+// ═══════════════════════════ LOG ═══════════════════════════
+function log(html){
+  const d=document.createElement('div'); d.innerHTML=html; logEl.appendChild(d);
+  if(logEl.children.length>200)logEl.removeChild(logEl.firstChild);
+  logEl.scrollTop=logEl.scrollHeight;
+}
+
+// ═══════════════════════════ ENV EDITOR ═══════════════════════════
+let envMode='view', draggingWall=null, wallStart=null;
+
+function setEnvMode(m){
+  envMode=m;
+  ['view','wall','wp','pkg','erase'].forEach(n=>{
+    const b=document.getElementById('envbtn-'+n);
+    if(b)b.style.color=n===m?'var(--acc)':'var(--text2)';
+  });
+  document.getElementById('envlbl').textContent='Env: '+m;
+  const sc=document.getElementById('simcanvas');
+  sc.style.cursor=m==='view'?'default':m==='erase'?'crosshair':'cell';
+}
+
+let wpCounter = ['D','E','F','G','H','I','J'];
+let wpIdx=0;
+
+simCan.addEventListener('click',e=>{
+  if(running&&envMode!=='view')return;
+  const r=simCan.getBoundingClientRect();
+  const mx=(e.clientX-r.left)/r.width, my=(e.clientY-r.top)/r.height;
+  const W=simCan.width,H=simCan.height;
+  const wx=mx*W/simScale(), wy=my*H/simScale();
+
+  if(envMode==='wp'){
+    const id=wpCounter[wpIdx%wpCounter.length]+(wpIdx>=wpCounter.length?Math.floor(wpIdx/wpCounter.length):'');
+    wpIdx++;
+    ENV.waypoints.push({id,x:wx,y:wy,label:id});
+    log(`<span class="log-i">// Added waypoint ${id}.</span>`);
+    drawSim();
+    return;
+  }
+  if(envMode==='pkg'){
+    ENV.packages.push({x:wx,y:wy,collected:false});
+    log('<span class="log-i">// Added package.</span>');
+    drawSim(); return;
+  }
+  if(envMode==='erase'){
+    // erase walls, waypoints, packages near click
+    const px=wx,py=wy,tol=18;
+    ENV.walls=ENV.walls.filter(w=>!(px>=w.x-tol&&px<=w.x+w.w+tol&&py>=w.y-tol&&py<=w.y+w.h+tol));
+    ENV.waypoints=ENV.waypoints.filter(w=>w.id==='Base'||Math.hypot(w.x-px,w.y-py)>tol);
+    ENV.packages=ENV.packages.filter(p=>Math.hypot(p.x-px,p.y-py)>tol);
+    drawSim(); return;
+  }
+});
+
+let wallDrag=null;
+simCan.addEventListener('mousedown',e=>{
+  if(envMode!=='wall')return;
+  const r=simCan.getBoundingClientRect();
+  const sc=simScale();
+  wallDrag={x0:(e.clientX-r.left)/r.width*simCan.width/sc,
+            y0:(e.clientY-r.top)/r.height*simCan.height/sc};
+});
+simCan.addEventListener('mousemove',e=>{
+  if(!wallDrag||envMode!=='wall')return;
+  const r=simCan.getBoundingClientRect();
+  const sc=simScale();
+  wallDrag.x1=(e.clientX-r.left)/r.width*simCan.width/sc;
+  wallDrag.y1=(e.clientY-r.top)/r.height*simCan.height/sc;
+  drawSim();
+});
+simCan.addEventListener('mouseup',e=>{
+  if(!wallDrag||envMode!=='wall')return;
+  const r=simCan.getBoundingClientRect();
+  const sc=simScale();
+  const x1=(e.clientX-r.left)/r.width*simCan.width/sc;
+  const y1=(e.clientY-r.top)/r.height*simCan.height/sc;
+  const x=Math.min(wallDrag.x0,x1), y=Math.min(wallDrag.y0,y1);
+  const w=Math.abs(x1-wallDrag.x0), h=Math.abs(y1-wallDrag.y0);
+  if(w>5||h>5)ENV.walls.push({x,y,w:Math.max(w,5),h:Math.max(h,5)});
+  wallDrag=null;
+  drawSim();
+  log('<span class="log-i">// Wall added.</span>');
+});
+
+function resetEnv(){
+  ENV.walls=[];
+  ENV.waypoints=[
+    {id:'A',x:80,y:70,label:'A'},
+    {id:'B',x:230,y:50,label:'B'},
+    {id:'C',x:310,y:130,label:'C'},
+    {id:'Base',x:35,y:140,label:'⚡'},
+  ];
+  ENV.packages=[{x:285,y:115,collected:false}];
+  wpIdx=0;
+  drawSim();
+  log('<span class="log-i">// Environment reset.</span>');
+}
+
+// ═══════════════════════════ SIM CANVAS ═══════════════════════════
+function simScale(){return Math.min(simCan.width/380,simCan.height/175);}
+
+function resizeSim(){
+  const w=document.getElementById('simcanvaswrap');
+  simCan.width=w.clientWidth; simCan.height=w.clientHeight;
+  robots.forEach(r=>{
+    if(r.x===undefined||r.x===0){
+      const base=ENV.waypoints.find(wp=>wp.id==='Base')||{x:35,y:140};
+      r.x=(base.x+r.idx*30)*simScale(); r.y=base.y*simScale();
+    }
+  });
+  drawSim();
+}
+
+function drawSim(){
+  const W=simCan.width,H=simCan.height;
+  const sc=simScale();
+  simCtx.clearRect(0,0,W,H);
+
+  // bg
+  simCtx.fillStyle='#080c14'; simCtx.fillRect(0,0,W,H);
+  // grid
+  simCtx.strokeStyle='rgba(74,222,128,0.04)'; simCtx.lineWidth=1;
+  for(let x=0;x<W;x+=20){simCtx.beginPath();simCtx.moveTo(x,0);simCtx.lineTo(x,H);simCtx.stroke();}
+  for(let y=0;y<H;y+=20){simCtx.beginPath();simCtx.moveTo(0,y);simCtx.lineTo(W,y);simCtx.stroke();}
+
+  simCtx.save(); simCtx.scale(sc,sc);
+
+  // walls
+  ENV.walls.forEach(w=>{
+    simCtx.fillStyle='#374151'; simCtx.fillRect(w.x,w.y,w.w,w.h);
+    simCtx.strokeStyle='#6b7280'; simCtx.lineWidth=1.5; simCtx.strokeRect(w.x,w.y,w.w,w.h);
+  });
+
+  // wall preview
+  if(wallDrag&&wallDrag.x1!==undefined){
+    const x=Math.min(wallDrag.x0,wallDrag.x1),y=Math.min(wallDrag.y0,wallDrag.y1);
+    const w=Math.abs(wallDrag.x1-wallDrag.x0),h=Math.abs(wallDrag.y0-wallDrag.y1);
+    simCtx.fillStyle='rgba(107,114,128,0.3)'; simCtx.fillRect(x,y,w,h);
+    simCtx.strokeStyle='#9ca3af'; simCtx.lineWidth=1; simCtx.strokeRect(x,y,w,h);
+  }
+
+  // waypoints
+  ENV.waypoints.forEach(wp=>{
+    const isBase=wp.id==='Base';
+    const grad=simCtx.createRadialGradient(wp.x,wp.y,0,wp.x,wp.y,10);
+    grad.addColorStop(0,isBase?'rgba(74,222,128,0.3)':'rgba(34,211,238,0.25)');
+    grad.addColorStop(1,'transparent');
+    simCtx.beginPath(); simCtx.arc(wp.x,wp.y,10,0,Math.PI*2);
+    simCtx.fillStyle=grad; simCtx.fill();
+    simCtx.strokeStyle=isBase?'#4ade80':'#22d3ee'; simCtx.lineWidth=1.5; simCtx.stroke();
+    simCtx.fillStyle=isBase?'#4ade80':'#22d3ee';
+    simCtx.font='bold 8px JetBrains Mono,monospace';
+    simCtx.textAlign='center'; simCtx.textBaseline='middle';
+    simCtx.fillText(wp.label,wp.x,wp.y);
+  });
+
+  // packages
+  ENV.packages.forEach(p=>{
+    if(p.collected)return;
+    simCtx.fillStyle='rgba(245,158,11,0.25)'; simCtx.fillRect(p.x-5,p.y-5,10,10);
+    simCtx.strokeStyle='#f59e0b'; simCtx.lineWidth=1.5; simCtx.strokeRect(p.x-5,p.y-5,10,10);
+  });
+
+  // comm arcs
+  commLog.slice(0,3).forEach((c,i)=>{
+    if(globalTick-c.tick>3)return;
+    const fr=robots.find(r=>r.name===c.from), to=c.to==='ALL'?null:robots.find(r=>r.name===c.to);
+    if(!fr)return;
+    const sx=fr.x/sc,sy=fr.y/sc;
+    if(c.to==='ALL'){
+      simCtx.beginPath(); simCtx.arc(sx,sy,20+i*8,0,Math.PI*2);
+      simCtx.strokeStyle='rgba(251,146,60,0.4)'; simCtx.lineWidth=1; simCtx.stroke();
+    } else if(to){
+      const tx=to.x/sc,ty=to.y/sc;
+      simCtx.beginPath(); simCtx.moveTo(sx,sy); simCtx.lineTo(tx,ty);
+      simCtx.strokeStyle='rgba(34,211,238,0.5)'; simCtx.lineWidth=1.5; simCtx.stroke();
+      simCtx.fillStyle='rgba(34,211,238,0.5)';
+      simCtx.font='7px Inter,sans-serif'; simCtx.textAlign='center';
+      simCtx.fillText(c.key,(sx+tx)/2,(sy+ty)/2-4);
+    }
+  });
+
+  simCtx.restore();
+
+  // robots (in screen coords)
+  robots.forEach(rob=>{
+    const rx=rob.x, ry=rob.y;
+    // smooth move
+    const twp=ENV.waypoints.find(w=>w.id===rob.bb.target_wp)||ENV.waypoints[0];
+    if(twp&&running){
+      const tx=twp.x*sc,ty=twp.y*sc;
+      const dx=tx-rob.x,dy=ty-rob.y,d=Math.hypot(dx,dy);
+      if(d>3){const spd=2.5;rob.x+=dx/d*spd;rob.y+=dy/d*spd;rob.angle=Math.atan2(dy,dx);}
+    }
+
+    simCtx.save();
+    simCtx.translate(rx,ry);
+    // glow
+    const glow=simCtx.createRadialGradient(0,0,0,0,0,16);
+    glow.addColorStop(0,rob.color+'40'); glow.addColorStop(1,'transparent');
+    simCtx.beginPath(); simCtx.arc(0,0,16,0,Math.PI*2); simCtx.fillStyle=glow; simCtx.fill();
+
+    simCtx.rotate(rob.angle);
+    simCtx.beginPath(); simCtx.arc(0,0,9,0,Math.PI*2);
+    simCtx.fillStyle=rob.color+'cc'; simCtx.fill();
+    simCtx.strokeStyle=rob.color; simCtx.lineWidth=2; simCtx.stroke();
+    // direction
+    simCtx.beginPath(); simCtx.moveTo(0,0); simCtx.lineTo(11,0);
+    simCtx.strokeStyle='#fff'; simCtx.lineWidth=1.5; simCtx.stroke();
+    simCtx.restore();
+
+    // label
+    simCtx.fillStyle=rob.color; simCtx.font='bold 8px JetBrains Mono,monospace';
+    simCtx.textAlign='center'; simCtx.textBaseline='bottom';
+    simCtx.fillText(rob.name,rx,ry-11);
+
+    // carry indicator
+    if(rob.bb.carrying){
+      simCtx.fillStyle='#f59e0b'; simCtx.fillRect(rx-3,ry-18,6,5);
+    }
+
+    // battery mini bar
+    const bpct=rob.bb.battery/100;
+    simCtx.fillStyle='rgba(0,0,0,0.5)'; simCtx.fillRect(rx-10,ry+11,20,3);
+    simCtx.fillStyle=bpct>.5?'#4ade80':bpct>.25?'#f59e0b':'#ef4444';
+    simCtx.fillRect(rx-10,ry+11,20*bpct,3);
+  });
+}
+
+// ═══════════════════════════ STATUSBAR ═══════════════════════════
+function updateTick(){document.getElementById('ticklbl').textContent='Tick: '+globalTick;}
+function updateNodeCount(){document.getElementById('nodelbl').textContent='Nodes: '+Object.keys(nodes).length;}
+function updateStatusBar(){
+  const r=robots[activeRobot]||robots[0];
+  if(running)document.getElementById('stext').textContent=`Running — ${r.name} bat:${Math.round(r.bb.battery)}%`;
+}
+
+// ═══════════════════════════ TABS ═══════════════════════════
+function stab(el,name){
+  el.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  ['log','bb','comms'].forEach(n=>document.getElementById('tc-'+n).classList.remove('active'));
+  document.getElementById('tc-'+name).classList.add('active');
+}
+function rtab(el,name){
+  el.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  ['node','tpl','help'].forEach(n=>document.getElementById('rtc-'+n).classList.remove('active'));
+  document.getElementById('rtc-'+name).classList.add('active');
+}
+
+// ═══════════════════════════ IMPORT / EXPORT ═══════════════════════════
+function openImport(){document.getElementById('modal-overlay').classList.add('show');}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('show');}
+
+function exportBT(){
+  const data={
+    nodes:Object.values(nodes).map(n=>({id:n.id,type:n.type,label:n.label,p1:n.p1,p2:n.p2,x:n.x,y:n.y,robotAs:n.robotAs,children:n.children})),
+    edges:[...edges],
+    env:{walls:ENV.walls,waypoints:ENV.waypoints,packages:ENV.packages},
+    robots:robots.length,
+  };
+  const b=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(b);
+  a.download='bt_playground.json'; a.click();
+}
+
+function importFile(e){
+  const f=e.target.files[0]; if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{document.getElementById('import-json').value=ev.target.result;};
+  r.readAsText(f);
+}
+
+function doImport(){
+  try{
+    const data=JSON.parse(document.getElementById('import-json').value);
+    clearCanvas();
+
+    // restore env
+    if(data.env){
+      ENV.walls=data.env.walls||[];
+      ENV.waypoints=data.env.waypoints||ENV.waypoints;
+      ENV.packages=data.env.packages||[];
+    }
+
+    // restore robots count
+    if(data.robots&&data.robots>1){
+      while(robots.length<data.robots)addRobot();
+      while(robots.length>data.robots)robots.pop();
+      syncRobotUI();
+    }
+
+    // recreate nodes
+    const idMap={};
+    data.nodes.forEach(nd=>{
+      const newId=createNode(nd.type,nd.x,nd.y,nd.robotAs??-1);
+      idMap[nd.id]=newId;
+      const n=nodes[newId];
+      n.label=nd.label; n.p1=nd.p1||''; n.p2=nd.p2||'';
+      n.el.querySelector('.nlabel').textContent=n.label;
+      updateRobotBadge(newId);
+    });
+
+    // recreate edges
+    data.edges.forEach(e=>{
+      const f=idMap[e.from],t=idMap[e.to];
+      if(!f||!t)return;
+      if(!nodes[f].children.includes(t)){
+        nodes[f].children.push(t);
+        edges.push({from:f,to:t});
+      }
+    });
+
+    drawEdges(); drawSim();
+    closeModal();
+    log('<span class="log-i">// Import successful.</span>');
+  }catch(err){
+    alert('Import failed: '+err.message);
+  }
+}
+
+// ═══════════════════════════ CHALLENGE TEMPLATES ═══════════════════════════
+const CHALL={
+  patrol:{
+    text:'Program the robot to patrol waypoints A→B→C, recharging when battery drops below 25%. Uses Cooldown decorator to avoid constant charging.',
+    env:{walls:[{x:160,y:40,w:8,h:55},{x:200,y:80,w:55,h:8}],waypoints:[{id:'A',x:80,y:70,label:'A'},{id:'B',x:230,y:50,label:'B'},{id:'C',x:310,y:130,label:'C'},{id:'Base',x:35,y:140,label:'⚡'}],packages:[]},
+    tpl:[
+      {id:'root', type:'selector',   x:200,y:20},
+      {id:'n2',   type:'sequence',   x:60, y:120},
+      {id:'n3',   type:'sequence',   x:350,y:120},
+      {id:'n4',   type:'battery_ok', x:10, y:220,p1:'25'},
+      {id:'n5',   type:'move_to',    x:110,y:220,p1:'A'},
+      {id:'n6',   type:'inverter',   x:280,y:220},
+      {id:'n7',   type:'cooldown',   x:420,y:220,p1:'5'},
+      {id:'n8',   type:'battery_ok', x:280,y:320,p1:'25'},
+      {id:'n9',   type:'charge',     x:420,y:320},
+    ],
+    edges:[['root','n2'],['root','n3'],['n2','n4'],['n2','n5'],['n3','n6'],['n3','n7'],['n6','n8'],['n7','n9']],
+    robots:1,
+  },
+  delivery:{
+    text:'Scan for a package, pick it up, deliver to C. Use Retry decorator to retry pick-up, and Timeout to cap navigation time.',
+    env:{walls:[{x:140,y:60,w:8,h:70},{x:260,y:30,w:8,h:60}],waypoints:[{id:'A',x:80,y:70,label:'A'},{id:'B',x:230,y:50,label:'B'},{id:'C',x:310,y:130,label:'C'},{id:'Base',x:35,y:140,label:'⚡'}],packages:[{x:285,y:115,collected:false}]},
+    tpl:[
+      {id:'root',type:'sequence',    x:200,y:20},
+      {id:'n2',  type:'scan',        x:60, y:120},
+      {id:'n3',  type:'retry',       x:200,y:120,p1:'3'},
+      {id:'n4',  type:'timeout',     x:360,y:120,p1:'6'},
+      {id:'n5',  type:'selector',    x:200,y:220},
+      {id:'n6',  type:'move_to',     x:360,y:220,p1:'C'},
+      {id:'n7',  type:'sequence',    x:130,y:340},
+      {id:'n8',  type:'avoid_obstacle',x:280,y:340},
+      {id:'n9',  type:'obstacle_ahead',x:80, y:440},
+      {id:'n10', type:'pick_up',     x:190,y:440},
+    ],
+    edges:[['root','n2'],['root','n3'],['root','n4'],['n3','n5'],['n4','n6'],['n5','n7'],['n5','n8'],['n7','n9'],['n7','n10']],
+    robots:1,
+  },
+  swarm:{
+    text:'Two robots cooperate: R1 scans and broadcasts package location; R2 waits for the message, then picks up and delivers.',
+    env:{walls:[{x:170,y:30,w:8,h:80}],waypoints:[{id:'A',x:80,y:70,label:'A'},{id:'B',x:230,y:50,label:'B'},{id:'C',x:310,y:130,label:'C'},{id:'Base',x:35,y:140,label:'⚡'}],packages:[{x:285,y:115,collected:false}]},
+    tpl:[
+      // R1 tree
+      {id:'r1root',type:'sequence',    x:60, y:20,  robotAs:0},
+      {id:'r1a',   type:'scan',        x:20, y:120, robotAs:0},
+      {id:'r1b',   type:'broadcast',   x:120,y:120, robotAs:0,p1:'pkg_loc',p2:'C'},
+      {id:'r1c',   type:'move_to',     x:60, y:220, robotAs:0,p1:'A'},
+      // R2 tree
+      {id:'r2root',type:'sequence',    x:360,y:20,  robotAs:1},
+      {id:'r2a',   type:'msg_received',x:300,y:120, robotAs:1,p1:'pkg_loc'},
+      {id:'r2b',   type:'pick_up',     x:420,y:120, robotAs:1},
+      {id:'r2c',   type:'move_to',     x:360,y:220, robotAs:1,p1:'C'},
+      {id:'r2d',   type:'drop_off',    x:360,y:320, robotAs:1},
+    ],
+    edges:[['r1root','r1a'],['r1root','r1b'],['r1root','r1c'],['r2root','r2a'],['r2root','r2b'],['r2root','r2c'],['r2root','r2d']],
+    robots:2,
+  },
+  rescue:{
+    text:'Search & rescue: R1 scans and requests help; R2 responds with guard_zone. Both use Memory Sequence to resume state.',
+    env:{walls:[{x:150,y:50,w:10,h:90},{x:240,y:70,w:80,h:10}],waypoints:[{id:'A',x:80,y:70,label:'A'},{id:'B',x:230,y:50,label:'B'},{id:'C',x:310,y:130,label:'C'},{id:'Base',x:35,y:140,label:'⚡'}],packages:[{x:240,y:110,collected:false}]},
+    tpl:[
+      {id:'root', type:'memory_seq',  x:200,y:20},
+      {id:'n2',   type:'selector',    x:60, y:130},
+      {id:'n3',   type:'move_to',     x:280,y:130,p1:'B'},
+      {id:'n4',   type:'scan',        x:430,y:130},
+      {id:'n5',   type:'sequence',    x:0,  y:250},
+      {id:'n6',   type:'inverter',    x:130,y:250},
+      {id:'n7',   type:'request_help',x:260,y:250},
+      {id:'n8',   type:'area_clear',  x:0,  y:360},
+      {id:'n9',   type:'avoid_obstacle',x:130,y:360},
+    ],
+    edges:[['root','n2'],['root','n3'],['root','n4'],['n2','n5'],['n2','n6'],['n2','n7'],['n5','n8'],['n5','n9'],['n6','n8']],
+    robots:2,
+  },
+};
+
+function loadChallenge(key){
+  clearCanvas();
+  document.getElementById('chalsel').value=key;
+  if(key==='blank'){document.getElementById('challtext').textContent='Build from scratch.';return;}
+  const ch=CHALL[key]; if(!ch)return;
+  document.getElementById('challtext').textContent=ch.text;
+
+  // env
+  if(ch.env){ENV.walls=ch.env.walls||[];ENV.waypoints=ch.env.waypoints;ENV.packages=ch.env.packages||[];}
+
+  // robots
+  while(robots.length<(ch.robots||1))addRobot();
+  while(robots.length>(ch.robots||1))robots.pop();
+  syncRobotUI(); robots.forEach(resetRobotState);
+
+  const idMap={};
+  ch.tpl.forEach(nd=>{
+    const newId=createNode(nd.type,nd.x,nd.y,nd.robotAs??-1);
+    idMap[nd.id]=newId;
+    const n=nodes[newId];
+    if(nd.p1!==undefined)n.p1=nd.p1;
+    if(nd.p2!==undefined)n.p2=nd.p2;
+    if(nd.label)n.label=nd.label;
+    n.el.querySelector('.nlabel').textContent=n.label;
+    updateRobotBadge(newId);
+  });
+  ch.edges.forEach(([f,t])=>{
+    const fi=idMap[f],ti=idMap[t]; if(!fi||!ti)return;
+    if(!nodes[fi].children.includes(ti)){nodes[fi].children.push(ti);edges.push({from:fi,to:ti});}
+  });
+  drawEdges(); drawSim();
+  log(`<span class="log-i">// Template loaded: ${key}</span>`);
+}
+
+// ═══════════════════════════ UTIL ═══════════════════════════
+function rnd(a,b){return a+Math.random()*(b-a);}
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y);}
+function lerp(a,b,t){return a+(b-a)*t;}
+
+// ═══════════════════════════ INIT ═══════════════════════════
+window.addEventListener('resize',resizeSim);
+resizeSim();
+syncRobotUI();
+renderBB();
+renderComms();
+loadChallenge('patrol');
+document.getElementById('sdot').className='sdot ok';
+
+// Animation loop
+(function loop(){requestAnimationFrame(loop);if(running)drawSim();})();
+</script>
+</body>
+</html>
