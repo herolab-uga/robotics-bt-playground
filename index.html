@@ -199,6 +199,21 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
 /* download button */
 .btn-dl{background:transparent;color:var(--acc3);border-color:var(--acc3)}.btn-dl:hover{background:#b06aff15}
 
+/* params editor */
+.param-row{display:flex;gap:3px;align-items:center;margin-bottom:2px}
+.param-key{flex:1;background:var(--s2);border:1px solid var(--border2);color:var(--acc2);padding:2px 5px;border-radius:3px;font:9px 'JetBrains Mono',monospace}
+.param-val{flex:1;background:var(--s2);border:1px solid var(--border2);color:var(--acc);padding:2px 5px;border-radius:3px;font:9px 'JetBrains Mono',monospace}
+.param-del{background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:10px;padding:0 2px}
+.param-del:hover{color:var(--danger)}
+/* global params badge */
+.param-global{color:var(--acc4);font-size:7px;font-family:'JetBrains Mono',monospace}
+
+/* battery override panel */
+#bat-override-panel{background:var(--sf);border-top:1px solid var(--border);padding:5px 8px;flex-shrink:0}
+.bat-row{display:flex;align-items:center;gap:5px;padding:2px 0;font-size:9px}
+.bat-row input[type=range]{width:55px;accent-color:var(--warn)}
+.bat-row input[type=number]{width:40px;background:var(--s2);border:1px solid var(--border2);color:var(--warn);padding:1px 4px;border-radius:3px;font:9px 'JetBrains Mono',monospace}
+
 ::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 </style>
 </head>
@@ -217,15 +232,17 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
     <option value="blank">— Blank —</option>
   </select>
   <div class="vsep"></div>
-  <span class="tbl">Tick Hz:</span>
+  <span class="tbl">BT Speed:</span>
   <div class="slrow">
-    <input type="range" id="tickhz" min="1" max="20" value="2" step="1" oninput="updateTickHz()">
-    <span class="slval" id="tickhzval">2</span>
+    <span class="tbl" style="font-size:8px;opacity:.5">❚❚</span>
+    <input type="range" id="tickhz" min="0" max="10" value="2" step="1" oninput="updateTickHz()" style="width:72px">
+    <span class="tbl" style="font-size:8px;opacity:.5">▶▶</span>
+    <span class="slval" id="tickhzval">2 Hz</span>
   </div>
   <div class="vsep"></div>
-  <span class="tbl">Rob speed:</span>
+  <span class="tbl">Robot speed:</span>
   <div class="slrow">
-    <input type="range" id="robspeed" min="1" max="10" value="3" step="1" oninput="updateRobSpeed()">
+    <input type="range" id="robspeed" min="1" max="10" value="3" step="1" oninput="updateRobSpeed()" style="width:60px">
     <span class="slval" id="robspeedval">3</span>
   </div>
   <div class="vsep"></div>
@@ -394,6 +411,21 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
           <canvas id="metricscv" style="flex:1;min-height:0;width:100%;display:block"></canvas>
         </div>
       </div>
+      <!-- Battery override panel -->
+      <div id="bat-override-panel">
+        <div style="font-size:8px;color:var(--text3);margin-bottom:3px;display:flex;justify-content:space-between">
+          <span>⚡ Battery Override</span>
+          <span style="color:var(--text3);font-size:7px">drain/charge all robots</span>
+        </div>
+        <div id="bat-rob-rows"></div>
+        <div class="bat-row" style="margin-top:3px;border-top:1px solid var(--border);padding-top:3px">
+          <span style="color:var(--text3);min-width:28px">All:</span>
+          <input type="range" id="bat-drain-all" min="0" max="5" value="0.7" step="0.1" oninput="updateGlobalDrain(this.value)" style="width:65px;accent-color:var(--warn)">
+          <span id="bat-drain-all-val" style="color:var(--warn);font-size:8px;font-family:'JetBrains Mono',monospace">0.7%</span>
+          <button class="btn bg bsm" onclick="forceBattery(100)" style="margin-left:4px">⚡ Full</button>
+          <button class="btn bg bsm" onclick="forceBattery(20)">⚠ 20%</button>
+        </div>
+      </div>
       <div id="smctrl">
         <button class="btn bg bsm" onclick="stepOnce()">⏭ Step</button>
         <button class="btn bg bsm" onclick="resetSim()">⏮ Reset</button>
@@ -408,6 +440,7 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
 <div id="rpanel">
   <div class="tabbar">
     <div class="tab on" onclick="rtab(this,'node')">Node</div>
+    <div class="tab" onclick="rtab(this,'btlib')">BT Lib</div>
     <div class="tab" onclick="rtab(this,'tpl')">Templates</div>
     <div class="tab" onclick="rtab(this,'help')">Help</div>
   </div>
@@ -416,18 +449,45 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
     <div id="nprops" style="display:none">
       <div class="pr"><div class="prl">Type</div><div id="pt" class="prv" style="font-family:'JetBrains Mono',monospace;font-size:9px"></div></div>
       <div class="pr"><div class="prl">Label</div><input class="pri" id="plbl" type="text" oninput="updateLabel(this.value)"></div>
-      <div class="pr"><div class="prl">Robot Assignment</div><select class="pri" id="probotas" onchange="updateRobotAs(parseInt(this.value))"><option value="-1">All Robots</option></select></div>
+      <!-- Robot assignment is set at the BT level (Robot→BT bar above canvas). Node-level override hidden by default. -->
+      <div class="pr" id="probotas-row" style="display:none"><div class="prl">Node Robot Override</div><select class="pri" id="probotas" onchange="updateRobotAs(parseInt(this.value))"><option value="-1">All</option></select></div>
       <div class="pr" id="pp1r" style="display:none"><div class="prl" id="pp1l">Param 1</div><input class="pri" id="pp1" type="text" oninput="updateP1(this.value)"></div>
       <div class="pr" id="pp2r" style="display:none"><div class="prl" id="pp2l">Param 2</div><input class="pri" id="pp2" type="text" oninput="updateP2(this.value)"></div>
       <div class="pr" id="putilr" style="display:none"><div class="prl">Utility Score (0–100)</div><input class="pri" id="putil" type="number" min="0" max="100" oninput="updateUtil(this.value)"></div>
       <div class="pr"><div class="prl">Last Status</div><div id="pst" style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3)">—</div></div>
+      <!-- Custom Params (ROS-style local/global) -->
       <div class="pr">
-        <div class="prl">Node Note <span style="color:var(--text3);font-weight:400">(shown on canvas &amp; in export)</span></div>
+        <div class="prl" style="display:flex;justify-content:space-between;align-items:center">
+          <span>Config Params <span style="color:var(--text3);font-weight:400">(key: value)</span></span>
+          <button class="btn bg bsm" onclick="addParam()" style="padding:0 5px;font-size:9px">+ param</button>
+        </div>
+        <div id="params-list" style="margin-top:3px"></div>
+        <div style="font-size:8px;color:var(--text3);margin-top:3px">Prefix <code style="color:var(--acc2)">/</code> for global param (shared across all robots)</div>
+      </div>
+      <!-- Battery drain override for action nodes -->
+      <div class="pr" id="batdrain-row">
+        <div class="prl">Battery drain per tick <span style="color:var(--text3);font-weight:400">(0 = default)</span></div>
+        <input class="pri" id="pbatdrain" type="number" min="0" max="50" step="0.1" oninput="updateBatDrain(this.value)" placeholder="0 = use global drain">
+      </div>
+      <div class="pr">
+        <div class="prl">Node Note <span style="color:var(--text3);font-weight:400">(canvas &amp; export)</span></div>
         <textarea class="pri" id="pnote" rows="2" style="resize:vertical;font-size:9px;line-height:1.5" oninput="updateNote(this.value)" placeholder="e.g. 'Handles low battery fallback'"></textarea>
       </div>
       <div class="pr"><div class="prl">Node Type Description</div><div id="pdsc" style="font-size:9px;color:var(--text3);line-height:1.5"></div></div>
     </div>
   </div>
+  <!-- BT LIBRARY PANEL -->
+  <div id="rtc-btlib" class="tc" style="overflow:hidden;flex-direction:column">
+    <div style="padding:5px 8px;border-bottom:1px solid var(--border);font-size:9px;color:var(--text3);flex-shrink:0;display:flex;justify-content:space-between;align-items:center">
+      <span>Standalone BT Library</span>
+      <button class="btn bg bsm" onclick="addBT()" style="font-size:9px">+ New BT</button>
+    </div>
+    <div id="btlib-list" style="flex:1;overflow-y:auto;padding:5px"></div>
+    <div style="padding:5px 8px;border-top:1px solid var(--border);font-size:8px;color:var(--text3);flex-shrink:0">
+      Click BT to edit · Assign to robots in the bar above the canvas
+    </div>
+  </div>
+
   <div id="rtc-tpl" class="tc" style="padding:6px;overflow-y:auto">
     <button class="tplb" onclick="loadChallenge('patrol')">🤖 Patrol & Recharge</button>
     <button class="tplb" onclick="loadChallenge('delivery')">📦 Package Delivery</button>
@@ -609,10 +669,32 @@ function resetRobotState(r){
 // ═══════════════════════════════════════════
 // SLIDER CONTROLS
 // ═══════════════════════════════════════════
+// Speed slider: 0=freeze, 1=0.3Hz (slow), 10=10Hz (fast)
+// Maps slider value to interval ms. Left=slow/freeze, Right=fast.
+const SPEED_TABLE = [0, 3000, 2000, 1500, 1000, 700, 500, 350, 250, 150, 100];
+// SPEED_TABLE[0]=0 means paused; index 1..10 = ms per tick (decreasing = faster)
+
 function updateTickHz(){
-  TICK_HZ=parseInt(document.getElementById('tickhz').value);
-  document.getElementById('tickhzval').textContent=TICK_HZ;
-  if(running){clearInterval(interval);interval=setInterval(tickBT,Math.round(1000/TICK_HZ));}
+  const v = parseInt(document.getElementById('tickhz').value);
+  const ms = SPEED_TABLE[v] || 0;
+  const label = v===0 ? 'PAUSED' : (ms>=1000 ? (1000/ms).toFixed(1) : Math.round(1000/ms)) + ' Hz';
+  document.getElementById('tickhzval').textContent = label;
+  if(running){
+    clearInterval(interval);
+    if(v===0){
+      // freeze: don't schedule ticks, but keep running=true
+      interval=null;
+    } else {
+      interval=setInterval(tickBT, ms);
+    }
+  }
+  // store for toggleRun
+  TICK_HZ = v;
+}
+
+function getTickInterval(){
+  const v = parseInt(document.getElementById('tickhz').value||'2');
+  return SPEED_TABLE[Math.max(1,v)] || 500;
 }
 function updateRobSpeed(){
   ROB_SPEED=parseInt(document.getElementById('robspeed').value);
@@ -816,6 +898,159 @@ function renderRobAssign(){
 // ═══════════════════════════════════════════
 // LOG DOWNLOAD
 // ═══════════════════════════════════════════
+// ═══════════════════════════════════════════
+// GLOBAL PARAMS (ROS-param style, shared across all robots)
+// ═══════════════════════════════════════════
+const GLOBAL_PARAMS = {}; // /key → value, shared by all robots
+
+function getParam(node, key){
+  // Check local node params first, then global
+  if(node.params && key in node.params) return node.params[key];
+  if(GLOBAL_PARAMS[key] !== undefined) return GLOBAL_PARAMS[key];
+  return undefined;
+}
+
+function setParam(node, key, value){
+  if(!node.params) node.params={};
+  if(key.startsWith('/')){
+    // global namespace
+    GLOBAL_PARAMS[key] = value;
+  } else {
+    node.params[key] = value;
+  }
+}
+
+// ── Param editor UI ──
+function addParam(){
+  if(!selId||!nodes[selId])return;
+  const n=nodes[selId];
+  if(!n.params)n.params={};
+  n.params['param'+Object.keys(n.params).length]=0;
+  renderParamList();
+}
+
+function renderParamList(){
+  const el=document.getElementById('params-list'); if(!el)return;
+  if(!selId||!nodes[selId]){el.innerHTML='';return;}
+  const n=nodes[selId];
+  if(!n.params||!Object.keys(n.params).length){el.innerHTML='<div style="font-size:8px;color:var(--text3);padding:2px 0">No params. Click + param to add.</div>';return;}
+  el.innerHTML=Object.entries(n.params).map(([k,v],i)=>`
+    <div class="param-row">
+      <input class="param-key" value="${k}" onchange="updateParamKey(${i},'${k}',this.value)" placeholder="key (/ = global)">
+      <input class="param-val" value="${v}" onchange="updateParamVal('${k}',this.value)" placeholder="value">
+      ${k.startsWith('/')?'<span class="param-global" title="Global param">🌐</span>':''}
+      <button class="param-del" onclick="delParam('${k}')">✕</button>
+    </div>`).join('');
+}
+
+function updateParamKey(idx, oldKey, newKey){
+  if(!selId||!nodes[selId])return;
+  const n=nodes[selId]; if(!n.params)return;
+  const val=n.params[oldKey];
+  delete n.params[oldKey];
+  n.params[newKey]=val;
+  if(newKey.startsWith('/'))GLOBAL_PARAMS[newKey]=val;
+  renderParamList();
+}
+
+function updateParamVal(key, rawVal){
+  if(!selId||!nodes[selId])return;
+  const n=nodes[selId]; if(!n.params)return;
+  const v = rawVal==='true'?true:rawVal==='false'?false:isNaN(parseFloat(rawVal))?rawVal:parseFloat(rawVal);
+  n.params[key]=v;
+  if(key.startsWith('/'))GLOBAL_PARAMS[key]=v;
+}
+
+function delParam(key){
+  if(!selId||!nodes[selId])return;
+  delete nodes[selId].params[key];
+  renderParamList();
+}
+
+function updateBatDrain(v){
+  if(!selId||!nodes[selId])return;
+  nodes[selId].batDrain=parseFloat(v)||0;
+}
+
+// ── Battery override ──
+let globalBatDrain = 0.7; // %/tick applied to all robots
+
+function updateGlobalDrain(v){
+  globalBatDrain=parseFloat(v)||0;
+  document.getElementById('bat-drain-all-val').textContent=globalBatDrain.toFixed(1)+'%';
+  renderBatRobRows();
+}
+
+function forceBattery(pct){
+  robots.forEach(r=>r.bb.battery=pct);
+}
+
+function forceRobotBattery(idx, pct){
+  if(robots[idx]) robots[idx].bb.battery = Math.max(0,Math.min(100,pct));
+}
+
+function renderBatRobRows(){
+  const el=document.getElementById('bat-rob-rows'); if(!el)return;
+  el.innerHTML=robots.map((r,i)=>`
+    <div class="bat-row">
+      <div class="ra-dot" style="background:${r.color};width:6px;height:6px;border-radius:50%;margin-right:2px"></div>
+      <span style="color:${r.color};min-width:22px">${r.name}</span>
+      <input type="range" min="0" max="100" value="${Math.round(r.bb.battery||80)}" step="1"
+        oninput="forceRobotBattery(${i},parseInt(this.value));document.getElementById('batval${i}').textContent=this.value+'%'"
+        style="width:52px;accent-color:${r.color}">
+      <span id="batval${i}" style="color:${r.color};min-width:28px;font-size:8px;font-family:'JetBrains Mono',monospace">${Math.round(r.bb.battery||80)}%</span>
+    </div>`).join('');
+}
+
+// ── BT Library Panel ──
+function renderBTLibPanel(){
+  const el=document.getElementById('btlib-list'); if(!el)return;
+  const btIds=Object.keys(btLibrary);
+  el.innerHTML=btIds.map(id=>{
+    const bt=btLibrary[id];
+    const nodeCount=Object.keys(bt.nodes||{}).length;
+    const assignedTo=robots.filter((_,ri)=>(robBTAssign[ri]||'main')===id).map(r=>r.name).join(',');
+    const isActive=id===activeBTId;
+    return `<div style="background:${isActive?'var(--s3)':'var(--s2)'};border:1px solid ${isActive?'var(--acc)':'var(--border)'};border-radius:5px;padding:6px 8px;margin-bottom:4px;cursor:pointer" onclick="switchBTFromLib('${id}')">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <b style="font-size:10px;color:${isActive?'var(--acc)':'var(--text)'}">${bt.name||id}</b>
+        <div style="display:flex;gap:3px">
+          <button class="btn bg bsm" onclick="event.stopPropagation();renameBTPrompt('${id}')" style="font-size:8px">✏</button>
+          ${id!=='main'?`<button class="btn bd bsm" onclick="event.stopPropagation();removeBT('${id}',event)" style="font-size:8px">✕</button>`:''}
+        </div>
+      </div>
+      <div style="font-size:8px;color:var(--text3);margin-top:3px">${nodeCount} nodes · ${bt.edges?.length||0} edges</div>
+      ${assignedTo?`<div style="font-size:8px;color:var(--acc2);margin-top:2px">→ ${assignedTo}</div>`:'<div style="font-size:8px;color:var(--text3);margin-top:2px">unassigned</div>'}
+      <div style="margin-top:4px;display:flex;gap:3px;flex-wrap:wrap">
+        ${robots.map((r,ri)=>{
+          const cur=(robBTAssign[ri]||'main')===id;
+          return `<button class="btn bsm" style="font-size:8px;background:${cur?r.color+'30':'transparent'};color:${r.color};border-color:${r.color}" onclick="event.stopPropagation();toggleRobotBT(${ri},'${id}')">${r.name}</button>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function switchBTFromLib(btId){
+  const tab=document.querySelector(`.bt-tab[data-btid="${btId}"]`);
+  switchBT(btId, tab);
+  // switch right panel back to Node tab so user sees the canvas
+  const nodeTab=document.querySelector('.tab[onclick*="node"]');
+  if(nodeTab)rtab(nodeTab,'node');
+}
+
+function toggleRobotBT(robIdx, btId){
+  robBTAssign[robIdx] = (robBTAssign[robIdx]===btId) ? 'main' : btId;
+  renderBTLibPanel(); renderRobAssign();
+}
+
+function renameBTPrompt(btId){
+  const cur=btLibrary[btId]?.name||btId;
+  const newName=window.prompt('Rename BT:',cur);
+  if(newName&&newName.trim()) renameBT(btId,newName.trim());
+  renderBTLibPanel();
+}
+
 function downloadLog(){
   // build text with tick log + explain history
   const lines=['BT Playground Pro — Execution Log','Generated: '+new Date().toISOString(),'','=== TICK LOG ==='];
@@ -945,6 +1180,12 @@ function showProps(id){
   if(showUtil)document.getElementById('putil').value=n.utility||50;
   const pst=document.getElementById('pst'); pst.textContent=n.status||'—'; pst.style.color=stcol(n.status);
   document.getElementById('pnote').value=n.note||'';
+  renderParamList();
+  // battery drain field — show for all action nodes
+  const batRow=document.getElementById('batdrain-row');
+  if(batRow) batRow.style.display=(def.cat==='action')?'':'none';
+  const pbat=document.getElementById('pbatdrain');
+  if(pbat) pbat.value=n.batDrain||0;
 }
 
 function updateLabel(v){if(selId&&nodes[selId]){nodes[selId].label=v;nodes[selId].el.querySelector('.nl').textContent=v;}}
@@ -1003,7 +1244,7 @@ function tickBT(){
   if(!roots.length){logMsg('<span class="li">// No nodes.</span>');return;}
 
   robots.forEach(rob=>{
-    rob.bb.battery=Math.max(0,rob.bb.battery-0.7);
+    rob.bb.battery=Math.max(0,rob.bb.battery-globalBatDrain);
     // move robot toward target_wp
     const tw=ENV.waypoints.find(w=>w.id===rob.bb.target_wp);
     if(tw){
@@ -1216,17 +1457,25 @@ function tickCond(id,rob){
 
 function tickAct(id,rob){
   const n=nodes[id],bb=rob.bb;
+  // Apply per-node battery drain override (if set, adds on top of global drain)
+  if(n.batDrain && n.batDrain>0){
+    bb.battery=Math.max(0,bb.battery-n.batDrain);
+  }
+  // Resolve p1/p2 from node params if they reference a param key
+  const p1=resolveParam(n, n.p1||'', rob);
+  const p2=resolveParam(n, n.p2||'', rob);
+
   switch(n.type){
     case 'a_move':{
-      const wp=n.p1||'A'; bb.target_wp=wp;
+      const wp=p1||'A'; bb.target_wp=wp;
       const tw=ENV.waypoints.find(w=>w.id===wp);
       const arrived=tw&&wdist(rob,{wx:tw.x,wy:tw.y})<10;
       bb.at_goal=arrived;
       return arrived?'success':'running';
     }
     case 'a_charge':{
-      bb.target_wp='Base';
-      const base=ENV.waypoints.find(w=>w.id==='Base');
+      const dockId=p1||'Base'; bb.target_wp=dockId;
+      const base=ENV.waypoints.find(w=>w.id===dockId)||ENV.waypoints.find(w=>w.id==='Base');
       const atBase=base&&wdist(rob,{wx:base.x,wy:base.y})<10;
       if(atBase)bb.battery=Math.min(100,bb.battery+15);
       return bb.battery>=95?'success':'running';
@@ -1345,6 +1594,21 @@ function tickAct(id,rob){
 
 function pval(v){if(v==='true')return true;if(v==='false')return false;const n=parseFloat(v);return isNaN(n)?v:n;}
 
+// Resolve a param value: if it starts with ~ or /, look up in params/global
+function resolveParam(node, val, rob){
+  if(!val) return val;
+  // ~param_name → local node param
+  if(val.startsWith('~')){
+    const key=val.slice(1);
+    if(node.params && key in node.params) return String(node.params[key]);
+  }
+  // /param_name → global param
+  if(val.startsWith('/')){
+    if(GLOBAL_PARAMS[val] !== undefined) return String(GLOBAL_PARAMS[val]);
+  }
+  return val;
+}
+
 // Tick a snapshot BT (off-canvas) — no DOM updates, just logic
 function tickNodeSnapshot(id,rob,depth,snapNodes){
   const n=snapNodes[id]; if(!n)return 'failure';
@@ -1400,11 +1664,16 @@ function toggleRun(){
   if(running){
     btn.textContent='⏸ Pause';btn.className='btn bd';
     dot.className='sdot run';stxt.textContent='Running';
-    interval=setInterval(tickBT,Math.round(1000/TICK_HZ));
+    const v=parseInt(document.getElementById('tickhz').value||'2');
+    if(v>0){
+      interval=setInterval(tickBT, getTickInterval());
+    } else {
+      interval=null; // frozen at speed=0
+    }
   } else {
     btn.textContent='▶ Run';btn.className='btn bp';
     dot.className='sdot ok';stxt.textContent='Paused';
-    clearInterval(interval);
+    clearInterval(interval); interval=null;
   }
 }
 function stepOnce(){if(!running)tickBT();}
@@ -1433,7 +1702,7 @@ function syncRobotUI(){
   const rb=document.getElementById('robbar');
   rb.innerHTML=robots.map((r,i)=>`<button class="rsbtn" style="color:${r.color};border-color:${r.color};background:${i===activeRobot?r.color+'28':'transparent'}" onclick="setActiveRobot(${i})">${r.name}</button>`).join('');
   document.getElementById('roblbl').textContent='Robots: '+robots.length;
-  renderRobAssign();
+  renderRobAssign(); renderBatRobRows();
   const ras=document.getElementById('probotas');
   if(ras){const cv=ras.value;ras.innerHTML='<option value="-1">All Robots</option>'+robots.map((r,i)=>`<option value="${i}">${r.name}</option>`).join('');ras.value=cv;}
 }
@@ -1891,7 +2160,8 @@ function stab(el,name){
 function rtab(el,name){
   el.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
   el.classList.add('on');
-  ['node','tpl','help'].forEach(n=>{const tc=document.getElementById('rtc-'+n);if(tc)tc.classList.toggle('on',n===name);});
+  ['node','btlib','tpl','help'].forEach(n=>{const tc=document.getElementById('rtc-'+n);if(tc)tc.classList.toggle('on',n===name);});
+  if(name==='btlib')renderBTLibPanel();
 }
 
 // ═══════════════════════════════════════════
@@ -1903,7 +2173,7 @@ function exportBT(){
   // save current canvas into btLibrary before export
   saveBTSnapshot(activeBTId);
   const data={
-    nodes:Object.values(nodes).map(n=>({id:n.id,type:n.type,label:n.label,p1:n.p1,p2:n.p2,note:n.note||'',x:n.x,y:n.y,robotAs:n.robotAs,children:n.children,utility:n.utility})),
+    nodes:Object.values(nodes).map(n=>({id:n.id,type:n.type,label:n.label,p1:n.p1,p2:n.p2,note:n.note||'',params:n.params||{},batDrain:n.batDrain||0,x:n.x,y:n.y,robotAs:n.robotAs,children:n.children,utility:n.utility})),
     edges:[...edges],
     env:{walls:ENV.walls,waypoints:ENV.waypoints,packages:ENV.packages},
     robots:robots.length,
@@ -1924,7 +2194,7 @@ function doImport(){
     if(data.robots&&data.robots>1){while(robots.length<data.robots)addRobot();while(robots.length>data.robots)robots.pop();syncRobotUI();}
     robots.forEach(resetRobotState);
     const idMap={};
-    data.nodes.forEach(nd=>{const nid=createNode(nd.type,nd.x,nd.y,nd.robotAs??-1);idMap[nd.id]=nid;const n=nodes[nid];n.label=nd.label;n.p1=nd.p1||'';n.p2=nd.p2||'';n.note=nd.note||'';n.utility=nd.utility||50;n.el.querySelector('.nl').textContent=n.label;const ndesc=document.getElementById(nid+'desc');if(ndesc){ndesc.textContent=n.note;ndesc.style.display=n.note&&showDescOnCanvas?'block':'none';}updateBadge(nid);});
+    data.nodes.forEach(nd=>{const nid=createNode(nd.type,nd.x,nd.y,nd.robotAs??-1);idMap[nd.id]=nid;const n=nodes[nid];n.label=nd.label;n.p1=nd.p1||'';n.p2=nd.p2||'';n.note=nd.note||'';n.utility=nd.utility||50;n.params=nd.params||{};n.batDrain=nd.batDrain||0;n.el.querySelector('.nl').textContent=n.label;const ndesc=document.getElementById(nid+'desc');if(ndesc){ndesc.textContent=n.note;ndesc.style.display=n.note&&showDescOnCanvas?'block':'none';}updateBadge(nid);});
     data.edges.forEach(e=>{const f=idMap[e.from],t=idMap[e.to];if(!f||!t)return;if(!nodes[f].children.includes(t)){nodes[f].children.push(t);edges.push({from:f,to:t});}});
     // restore BT library
     if(data.btLibrary){
@@ -2159,7 +2429,9 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   robots.push(makeRobot(0));
   robBTAssign[0]='main';
-  syncRobotUI(); renderBB(); renderComms(); renderRobAssign();
+  syncRobotUI(); renderBB(); renderComms(); renderRobAssign(); renderBatRobRows();
+  // init battery drain display
+  document.getElementById('bat-drain-all-val').textContent=globalBatDrain.toFixed(1)+'%';
 
   window.addEventListener('resize',resizeSim);
   resizeSim(); initResizeHandles(); initRobotDrag();
@@ -2220,7 +2492,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   (function loop(ts){
     requestAnimationFrame(loop);
     if(running)drawSim();
-    if(ts-lastMetricRender>500){lastMetricRender=ts;renderMetrics();renderSensorTab();}
+    if(ts-lastMetricRender>500){lastMetricRender=ts;renderMetrics();renderSensorTab();renderBatRobRows();}
   })(0);
 });
 </script>
