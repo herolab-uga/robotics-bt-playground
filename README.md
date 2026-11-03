@@ -1,12 +1,12 @@
 # BT Playground Pro 🤖
 
-An interactive, web-based **Behavior Tree playground** for programming and simulating mobile robots — no installation required. Built as a single self-contained HTML file, deployable to GitHub Pages in minutes.
+An interactive, web-based **Behavior Tree playground** for programming and simulating mobile robots — no installation required. Built as a single self-contained HTML file, deployed in GitHub Pages.
 
 ![BT Playground Pro](https://img.shields.io/badge/status-live-4ade80?style=flat-square) ![License](https://img.shields.io/badge/license-MIT-a78bfa?style=flat-square) ![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-ready-22d3ee?style=flat-square)
 
 ## Live Demo
 
-> After deploying: `https://<your-username>.github.io/bt-playground/`
+> Check here: `https://herolab-uga.github.io/bt-playground/`
 
 ---
 
