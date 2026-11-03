@@ -166,6 +166,39 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
 #wpoverlay{position:absolute;background:var(--sf);border:1px solid var(--acc2);border-radius:6px;padding:8px 10px;z-index:200;font-size:10px;display:none;min-width:140px}
 #wpoverlay input{width:80px;background:var(--s2);border:1px solid var(--border2);color:var(--text);padding:2px 5px;border-radius:3px;font:11px 'JetBrains Mono',monospace}
 
+/* ── NODE USER DESCRIPTION (shown on canvas) ── */
+.ndesc{padding:1px 7px 4px;font-size:8px;color:var(--text3);font-style:italic;line-height:1.3;display:none;border-top:1px solid rgba(255,255,255,.06)}
+.btn-node.show-desc .ndesc{display:block}
+
+/* ── S/F/R STATUS BADGE (larger, prominent) ── */
+.nsfr{position:absolute;top:-9px;left:50%;transform:translateX(-50%);font-size:9px;font-family:'JetBrains Mono',monospace;font-weight:700;padding:1px 5px;border-radius:3px;display:none;z-index:25;white-space:nowrap;letter-spacing:.03em}
+.btn-node.st-success .nsfr{display:block;background:var(--tick-ok);color:#080b10}
+.btn-node.st-failure .nsfr{display:block;background:var(--tick-fail);color:#fff}
+.btn-node.st-running .nsfr{display:block;background:var(--tick-run);color:#080b10}
+
+/* ── BT LIBRARY TABS (top of canvas area) ── */
+#bt-tabs-bar{display:flex;align-items:center;gap:0;background:var(--sf);border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;min-height:28px}
+.bt-tab{padding:4px 11px;font-size:10px;font-weight:500;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:color .1s,border-color .1s;user-select:none}
+.bt-tab.on{color:var(--acc);border-bottom-color:var(--acc)}
+.bt-tab:hover:not(.on){color:var(--text2)}
+.bt-tab-add{padding:4px 8px;font-size:12px;color:var(--text3);cursor:pointer;transition:color .1s}
+.bt-tab-add:hover{color:var(--acc)}
+.bt-tab-close{font-size:9px;color:var(--text3);margin-left:4px;cursor:pointer;opacity:.5}
+.bt-tab-close:hover{color:var(--danger);opacity:1}
+
+/* ── ROBOT ASSIGNMENT PANEL (above sim) ── */
+#robassign{background:var(--sf);border-bottom:1px solid var(--border);padding:3px 8px;display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap;min-height:24px}
+.ra-item{display:flex;align-items:center;gap:4px;font-size:9px;font-family:'JetBrains Mono',monospace}
+.ra-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.ra-sel{background:var(--s2);border:1px solid var(--border2);color:var(--text);padding:1px 4px;border-radius:3px;font:9px 'JetBrains Mono',monospace;cursor:pointer}
+
+/* ── NAV ACTION NODES ── */
+/* reuse existing action colors, just different icon color for path-plan group */
+.pn-nav .pi{background:#0a2010!important;color:#22d3ee!important}
+
+/* download button */
+.btn-dl{background:transparent;color:var(--acc3);border-color:var(--acc3)}.btn-dl:hover{background:#b06aff15}
+
 ::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
 </style>
 </head>
@@ -250,11 +283,34 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
   <div class="pn" draggable="true" ondragstart="pdrag(event,'a_wait')" onclick="addCenter('a_wait')"><div class="pi" style="background:#021d10;color:#4ade80">⏳</div><div><div class="pnm">Wait</div><div class="pds">Idle N ticks</div></div></div>
   <div class="pn" draggable="true" ondragstart="pdrag(event,'a_setutil')" onclick="addCenter('a_setutil')"><div class="pi" style="background:#021d10;color:#fb923c">U=</div><div><div class="pnm">Set Utility</div><div class="pds">Write score to parent</div></div></div>
   <div class="pn" draggable="true" ondragstart="pdrag(event,'a_setbb')" onclick="addCenter('a_setbb')"><div class="pi" style="background:#021d10;color:#4ade80">✎</div><div><div class="pnm">Set Blackboard</div><div class="pds">Write key=value</div></div></div>
+
+  <div class="pgh">Navigation</div>
+  <div class="pn pn-nav" draggable="true" ondragstart="pdrag(event,'a_plan_path')" onclick="addCenter('a_plan_path')"><div class="pi" style="background:#0a2010;color:#22d3ee">🗺</div><div><div class="pnm">Plan Path</div><div class="pds">A* to waypoint</div></div></div>
+  <div class="pn pn-nav" draggable="true" ondragstart="pdrag(event,'a_nav_to')" onclick="addCenter('a_nav_to')"><div class="pi" style="background:#0a2010;color:#22d3ee">🧭</div><div><div class="pnm">Navigate To</div><div class="pds">Autonomous nav + avoid</div></div></div>
+  <div class="pn pn-nav" draggable="true" ondragstart="pdrag(event,'a_col_avoid')" onclick="addCenter('a_col_avoid')"><div class="pi" style="background:#0a2010;color:#22d3ee">🛑</div><div><div class="pnm">Collision Avoid</div><div class="pds">Emergency stop + reroute</div></div></div>
+  <div class="pn pn-nav" draggable="true" ondragstart="pdrag(event,'a_explore')" onclick="addCenter('a_explore')"><div class="pi" style="background:#0a2010;color:#22d3ee">🔭</div><div><div class="pnm">Explore Frontier</div><div class="pds">Frontier-based exploration</div></div></div>
+  <div class="pn pn-nav" draggable="true" ondragstart="pdrag(event,'a_patrol')" onclick="addCenter('a_patrol')"><div class="pi" style="background:#0a2010;color:#22d3ee">🔄</div><div><div class="pnm">Patrol Route</div><div class="pds">Loop through waypoints</div></div></div>
+  <div class="pn pn-nav" draggable="true" ondragstart="pdrag(event,'a_dock')" onclick="addCenter('a_dock')"><div class="pi" style="background:#0a2010;color:#22d3ee">⚓</div><div><div class="pnm">Dock</div><div class="pds">Precise docking align</div></div></div>
+  <div class="pn pn-nav" draggable="true" ondragstart="pdrag(event,'c_path_clear')" onclick="addCenter('c_path_clear')"><div class="pi" style="background:#3a1a00;color:#22d3ee">🛣</div><div><div class="pnm">Path Clear?</div><div class="pds">No obstacle on route</div></div></div>
+  <div class="pn pn-nav" draggable="true" ondragstart="pdrag(event,'c_collision')" onclick="addCenter('c_collision')"><div class="pi" style="background:#3a1a00;color:#ff3d5a">💥</div><div><div class="pnm">Collision?</div><div class="pds">Imminent impact check</div></div></div>
 </div>
 
 <div class="hrz-handle" id="pal-handle"></div>
 <!-- CENTER -->
 <div id="center">
+  <!-- BT Library Tabs -->
+  <div id="bt-tabs-bar">
+    <div class="bt-tab on" data-btid="main" onclick="switchBT('main',this)">BT: main</div>
+    <div class="bt-tab-add" onclick="addBT()" title="New BT">＋</div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:5px;padding:0 6px">
+      <span class="tbl">Show desc:</span>
+      <input type="checkbox" id="show-desc-chk" onchange="toggleShowDesc()" style="accent-color:var(--acc);cursor:pointer">
+      <span class="tbl" style="margin-left:6px">S/F/R badges:</span>
+      <input type="checkbox" id="show-sfr-chk" checked onchange="toggleSFR()" style="accent-color:var(--acc);cursor:pointer">
+    </div>
+  </div>
+  <!-- Robot → BT Assignment -->
+  <div id="robassign"></div>
   <div id="cwrap" ondragover="event.preventDefault()" ondrop="onDrop(event)">
     <div id="cgrid"></div>
     <div id="cprompt"></div>
@@ -341,6 +397,7 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
       <div id="smctrl">
         <button class="btn bg bsm" onclick="stepOnce()">⏭ Step</button>
         <button class="btn bg bsm" onclick="resetSim()">⏮ Reset</button>
+        <button class="btn btn-dl bsm" onclick="downloadLog()" title="Download log + explainability history">⬇ Log</button>
       </div>
     </div>
   </div>
@@ -364,7 +421,11 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
       <div class="pr" id="pp2r" style="display:none"><div class="prl" id="pp2l">Param 2</div><input class="pri" id="pp2" type="text" oninput="updateP2(this.value)"></div>
       <div class="pr" id="putilr" style="display:none"><div class="prl">Utility Score (0–100)</div><input class="pri" id="putil" type="number" min="0" max="100" oninput="updateUtil(this.value)"></div>
       <div class="pr"><div class="prl">Last Status</div><div id="pst" style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3)">—</div></div>
-      <div class="pr"><div class="prl">Description</div><div id="pdsc" style="font-size:9px;color:var(--text3);line-height:1.5"></div></div>
+      <div class="pr">
+        <div class="prl">Node Note <span style="color:var(--text3);font-weight:400">(shown on canvas &amp; in export)</span></div>
+        <textarea class="pri" id="pnote" rows="2" style="resize:vertical;font-size:9px;line-height:1.5" oninput="updateNote(this.value)" placeholder="e.g. 'Handles low battery fallback'"></textarea>
+      </div>
+      <div class="pr"><div class="prl">Node Type Description</div><div id="pdsc" style="font-size:9px;color:var(--text3);line-height:1.5"></div></div>
     </div>
   </div>
   <div id="rtc-tpl" class="tc" style="padding:6px;overflow-y:auto">
@@ -454,6 +515,15 @@ const ND = {
   a_wait:     {l:'Wait',          cat:'action',   bg:'#011a0a',bd:'#22c55e',ic:'⏳',sh:'DO',desc:'Idle N ticks then succeed.',p1:'Ticks',p1d:'3'},
   a_setutil:  {l:'Set Utility',   cat:'action',   bg:'#011a0a',bd:'#fb923c',ic:'U=',sh:'DO',desc:'Write utility score for parent. Value 0-100.',p1:'Score',p1d:'50'},
   a_setbb:    {l:'Set BB',        cat:'action',   bg:'#011a0a',bd:'#22c55e',ic:'✎',sh:'DO',desc:'Write blackboard key=value.',p1:'Key',p1d:'x',p2:'Value',p2d:'1'},
+  // Navigation actions
+  a_plan_path:{l:'Plan Path',     cat:'action',   bg:'#021520',bd:'#22d3ee',ic:'🗺',sh:'NAV',desc:'Compute A* path to waypoint. Stores path in blackboard.',p1:'Goal',p1d:'B'},
+  a_nav_to:   {l:'Navigate To',   cat:'action',   bg:'#021520',bd:'#22d3ee',ic:'🧭',sh:'NAV',desc:'Autonomous navigation with dynamic collision avoidance. RUNNING until arrived.',p1:'Goal',p1d:'B'},
+  a_col_avoid:{l:'Collision Avoid',cat:'action',  bg:'#021520',bd:'#22d3ee',ic:'🛑',sh:'NAV',desc:'Emergency stop and reroute when collision imminent. Clears obstacle.'},
+  a_explore:  {l:'Explore Frontier',cat:'action', bg:'#021520',bd:'#22d3ee',ic:'🔭',sh:'NAV',desc:'Frontier-based exploration: moves to nearest unexplored boundary.'},
+  a_patrol:   {l:'Patrol Route',  cat:'action',   bg:'#021520',bd:'#22d3ee',ic:'🔄',sh:'NAV',desc:'Loops through listed waypoints in order.',p1:'Waypoints',p1d:'A,B,C'},
+  a_dock:     {l:'Dock',          cat:'action',   bg:'#021520',bd:'#22d3ee',ic:'⚓',sh:'NAV',desc:'Precise docking approach to a waypoint.',p1:'Dock WP',p1d:'Base'},
+  c_path_clear:{l:'Path Clear?',  cat:'condition',bg:'#2a1000',bd:'#22d3ee',ic:'🛣',sh:'IF',desc:'SUCCESS if no obstacle detected on current planned path.'},
+  c_collision:{l:'Collision?',    cat:'condition',bg:'#2a1000',bd:'#ff3d5a',ic:'💥',sh:'IF',desc:'SUCCESS if collision is imminent (obstacle very close ahead).'},
 };
 
 // ═══════════════════════════════════════════
@@ -481,12 +551,29 @@ let ENV={
 };
 
 // metrics history
-const METRICS_HIST={}; // robotName -> [{tick, dist_to_goal, battery, victims}]
+const METRICS_HIST={}; // robotName -> [{tick, dist_to_goal, battery, victims, collisions}]
 const MAX_METRICS=120;
 
 // per-tick tick trace for explainability
 let lastTickTrace=[]; // [{nodeId, robName, status, label, type}]
 let utilityScores={}; // nodeId -> score (set by a_setutil this tick)
+
+// BT library: multiple named BTs, each with own nodes+edges
+// btLibrary[id] = { name, nodes:{}, edges:[] }
+const btLibrary = { main: { name:'main', nodes:{}, edges:[] } };
+let activeBTId = 'main';
+let btCounter = 1;
+
+// robot → BT assignment: robBTAssign[robotIdx] = btId (default 'main')
+const robBTAssign = {};
+
+// log history for download
+const LOG_HISTORY = []; // [{tick, robName, status, label, note, explain}]
+const MAX_LOG_HIST = 2000;
+
+// UI toggles
+let showSFR = true;
+let showDescOnCanvas = false;
 
 // DOM refs
 let canvasEl,esvg,simcv,simctx,logEl,fovCv,fovCtx,metricsCv,metricsCtx;
@@ -497,9 +584,11 @@ let canvasEl,esvg,simcv,simctx,logEl,fovCv,fovCtx,metricsCv,metricsCtx;
 function makeRobot(i){
   return{idx:i,color:RCOLS[i%RCOLS.length],name:'R'+(i+1),
     wx:35+i*22,wy:140,angle:0,
-    bb:{battery:80-i*5,obstacle:false,at_goal:false,package_found:false,carrying:false,target_wp:['A','B','C'][i]||'A',victims_found:0},
+    bb:{battery:80-i*5,obstacle:false,at_goal:false,package_found:false,carrying:false,target_wp:['A','B','C'][i]||'A',victims_found:0,collisions:0},
     inbox:[],
     memState:{},repeatC:{},retryC:{},timeoutC:{},cooldownC:{},waitC:{},
+    patrolIdx:{}, // per-node patrol waypoint index
+    planPath:null, // current computed path [{x,y}]
     status:'idle',distTraveled:0,
   };
 }
@@ -511,7 +600,8 @@ function resetRobotState(r){
   r.inbox=[];
   r.memState={}; r.repeatC={}; r.retryC={};
   r.timeoutC={}; r.cooldownC={}; r.waitC={};
-  r.status='idle'; r.distTraveled=0;
+  r.status='idle'; r.distTraveled=0; r.planPath=null; r.patrolIdx={};
+  r.bb.collisions=0;
   METRICS_HIST[r.name]=[];
   ENV.packages.forEach(p=>p.collected=false);
 }
@@ -555,11 +645,13 @@ function createNode(type,x,y,robotAs){
   el.className='btn-node'; el.id=id;
   el.style.cssText=`left:${x}px;top:${y}px;background:${def.bg};border-color:${def.bd}`;
   el.innerHTML=`
+    <div class="nsfr" id="${id}sfr"></div>
     <div class="nh" style="background:${def.bd}22">
       <span style="font-size:12px">${def.ic}</span>
       <span class="nt">${def.sh}</span>
     </div>
     <div class="nl">${def.l}</div>
+    <div class="ndesc" id="${id}desc"></div>
     <div class="nutility" id="${id}u"></div>
     <div class="nst" id="${id}s"></div>
     <div class="nrb" id="${id}r"></div>
@@ -575,8 +667,10 @@ function createNode(type,x,y,robotAs){
     selectNode(id);
   });
   canvasEl.appendChild(el);
-  nodes[id]={id,type,x,y,label:def.l,p1:def.p1d||'',p2:def.p2d||'',robotAs,el,children:[],status:'idle',utility:50};
+  nodes[id]={id,type,x,y,label:def.l,p1:def.p1d||'',p2:def.p2d||'',note:'',robotAs,el,children:[],status:'idle',utility:50};
   updateBadge(id); updateNodeCount();
+  if(showDescOnCanvas) el.classList.add('show-desc');
+  if(!showSFR) document.getElementById(id+'sfr')?.style.setProperty('display','none','important');
   return id;
 }
 
@@ -609,6 +703,135 @@ function clearAll(){
   robots.forEach(resetRobotState);
   logMsg('<span class="li">// Canvas cleared.</span>');
   lastTickTrace=[];
+}
+
+// ═══════════════════════════════════════════
+// BT LIBRARY MANAGEMENT
+// ═══════════════════════════════════════════
+function switchBT(btId, tabEl){
+  // save current canvas state to current BT slot
+  saveBTSnapshot(activeBTId);
+  activeBTId=btId;
+  // load target BT
+  loadBTSnapshot(btId);
+  // update tab UI
+  document.querySelectorAll('.bt-tab').forEach(t=>t.classList.remove('on'));
+  if(tabEl) tabEl.classList.add('on');
+  renderRobAssign();
+}
+
+function saveBTSnapshot(btId){
+  btLibrary[btId]={
+    name: btLibrary[btId]?.name||btId,
+    nodes: Object.fromEntries(Object.entries(nodes).map(([k,v])=>
+      [k,{id:v.id,type:v.type,x:v.x,y:v.y,label:v.label,p1:v.p1,p2:v.p2,note:v.note||'',robotAs:v.robotAs,children:[...v.children],status:'idle',utility:v.utility}]
+    )),
+    edges: edges.map(e=>({...e})),
+  };
+}
+
+function loadBTSnapshot(btId){
+  // clear canvas without clearing btLibrary
+  [...Object.keys(nodes)].forEach(id=>{nodes[id].el.remove();delete nodes[id];});
+  edges.length=0; esvg.querySelectorAll('.ep').forEach(e=>e.remove());
+  if(!btLibrary[btId]){btLibrary[btId]={name:btId,nodes:{},edges:[]};return;}
+  const snap=btLibrary[btId];
+  // recreate nodes
+  Object.values(snap.nodes).forEach(nd=>{
+    const id=createNode(nd.type,nd.x,nd.y,nd.robotAs??-1);
+    // override autogenerated id — remap
+    snap._idMap=snap._idMap||{};
+    snap._idMap[nd.id]=id;
+    const n=nodes[id];
+    n.label=nd.label; n.p1=nd.p1||''; n.p2=nd.p2||''; n.note=nd.note||''; n.utility=nd.utility||50;
+    n.el.querySelector('.nl').textContent=n.label;
+    const ndesc=document.getElementById(id+'desc');
+    if(ndesc){ndesc.textContent=n.note;ndesc.style.display=n.note&&showDescOnCanvas?'block':'none';}
+    updateBadge(id);
+  });
+  // remap edges
+  snap.edges.forEach(e=>{
+    const fi=snap._idMap?.[e.from]||e.from, ti=snap._idMap?.[e.to]||e.to;
+    if(!nodes[fi]||!nodes[ti])return;
+    if(!nodes[fi].children.includes(ti)){nodes[fi].children.push(ti);edges.push({from:fi,to:ti});}
+  });
+  drawEdges(); updateNodeCount();
+}
+
+function addBT(){
+  btCounter++;
+  const btId='bt'+btCounter;
+  const name='BT '+btCounter;
+  btLibrary[btId]={name,nodes:{},edges:[]};
+  // add tab
+  const bar=document.getElementById('bt-tabs-bar');
+  const addBtn=bar.querySelector('.bt-tab-add');
+  const tab=document.createElement('div');
+  tab.className='bt-tab';
+  tab.setAttribute('data-btid',btId);
+  tab.innerHTML=`${name} <span class="bt-tab-close" onclick="removeBT('${btId}',event)">✕</span>`;
+  tab.onclick=function(e){if(!e.target.classList.contains('bt-tab-close'))switchBT(btId,tab);};
+  bar.insertBefore(tab,addBtn);
+  switchBT(btId,tab);
+}
+
+function removeBT(btId,e){
+  e.stopPropagation();
+  if(btId==='main'){logMsg('<span class="lf">// Cannot remove main BT.</span>');return;}
+  delete btLibrary[btId];
+  // remove tab element
+  document.querySelector(`.bt-tab[data-btid="${btId}"]`)?.remove();
+  // reassign robots pointing to this BT to main
+  Object.keys(robBTAssign).forEach(ri=>{if(robBTAssign[ri]===btId)robBTAssign[ri]='main';});
+  if(activeBTId===btId){
+    const mainTab=document.querySelector('.bt-tab[data-btid="main"]');
+    switchBT('main',mainTab);
+  }
+  renderRobAssign();
+}
+
+function renameBT(btId,newName){
+  if(btLibrary[btId])btLibrary[btId].name=newName;
+  const tab=document.querySelector(`.bt-tab[data-btid="${btId}"]`);
+  if(tab){const close=tab.querySelector('.bt-tab-close');tab.textContent=newName;if(close)tab.appendChild(close);}
+  renderRobAssign();
+}
+
+// ── Robot → BT Assignment UI ──
+function renderRobAssign(){
+  const el=document.getElementById('robassign'); if(!el)return;
+  const btIds=Object.keys(btLibrary);
+  el.innerHTML=robots.map((r,i)=>{
+    const cur=robBTAssign[i]||'main';
+    return `<div class="ra-item">
+      <div class="ra-dot" style="background:${r.color}"></div>
+      <span style="color:${r.color}">${r.name}→</span>
+      <select class="ra-sel" onchange="robBTAssign[${i}]=this.value" >
+        ${btIds.map(id=>`<option value="${id}" ${cur===id?'selected':''}>${btLibrary[id]?.name||id}</option>`).join('')}
+      </select>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════
+// LOG DOWNLOAD
+// ═══════════════════════════════════════════
+function downloadLog(){
+  // build text with tick log + explain history
+  const lines=['BT Playground Pro — Execution Log','Generated: '+new Date().toISOString(),'','=== TICK LOG ==='];
+  Array.from(logEl.children).forEach(d=>lines.push(d.textContent.replace(/\s+/g,' ').trim()));
+  lines.push('','=== EXPLAINABILITY HISTORY ===');
+  LOG_HISTORY.forEach(e=>{
+    lines.push(`[t${e.tick}][${e.robName}] ${e.status.toUpperCase()} — ${e.label}${e.note?' | Note: '+e.note:''}`);
+    if(e.explain)lines.push(`  🧠 ${e.explain}`);
+  });
+  lines.push('','=== METRICS ===');
+  robots.forEach(rob=>{
+    const hist=METRICS_HIST[rob.name]||[];
+    lines.push(`${rob.name}: ${hist.length} ticks, final battery: ${hist[hist.length-1]?.battery?.toFixed(1)||'?'}%, victims: ${rob.bb.victims_found||0}, collisions: ${rob.bb.collisions||0}, dist: ${rob.distTraveled?.toFixed(0)||0}`);
+  });
+  const blob=new Blob([lines.join('\n')],{type:'text/plain'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`bt_log_t${tick}.txt`;a.click();
 }
 
 // ═══════════════════════════════════════════
@@ -721,6 +944,7 @@ function showProps(id){
   document.getElementById('putilr').style.display=showUtil?'':'none';
   if(showUtil)document.getElementById('putil').value=n.utility||50;
   const pst=document.getElementById('pst'); pst.textContent=n.status||'—'; pst.style.color=stcol(n.status);
+  document.getElementById('pnote').value=n.note||'';
 }
 
 function updateLabel(v){if(selId&&nodes[selId]){nodes[selId].label=v;nodes[selId].el.querySelector('.nl').textContent=v;}}
@@ -729,6 +953,30 @@ function updateP2(v){if(selId&&nodes[selId])nodes[selId].p2=v;}
 function updateRobotAs(v){if(selId&&nodes[selId]){nodes[selId].robotAs=v;updateBadge(selId);}}
 function updateUtil(v){if(selId&&nodes[selId]){nodes[selId].utility=parseInt(v)||50;refreshUtilityDisplay(selId);}}
 function stcol(s){return s==='success'?'var(--acc)':s==='failure'?'var(--danger)':s==='running'?'var(--warn)':'var(--text3)';}
+
+function updateNote(v){
+  if(!selId||!nodes[selId])return;
+  nodes[selId].note=v;
+  const nd=document.getElementById(selId+'desc');
+  if(nd){nd.textContent=v;nd.style.display=v&&showDescOnCanvas?'block':'none';}
+}
+
+function toggleShowDesc(){
+  showDescOnCanvas=document.getElementById('show-desc-chk').checked;
+  Object.values(nodes).forEach(n=>{
+    n.el.classList.toggle('show-desc',showDescOnCanvas&&!!n.note);
+    const nd=document.getElementById(n.id+'desc');
+    if(nd){nd.textContent=n.note||'';nd.style.display=n.note&&showDescOnCanvas?'block':'none';}
+  });
+}
+
+function toggleSFR(){
+  showSFR=document.getElementById('show-sfr-chk').checked;
+  Object.values(nodes).forEach(n=>{
+    const sfr=document.getElementById(n.id+'sfr');
+    if(sfr) sfr.style.display=showSFR?'':'none';
+  });
+}
 
 function refreshUtilityDisplay(id){
   const n=nodes[id]; if(!n)return;
@@ -771,9 +1019,26 @@ function tickBT(){
     // update sensor readings
     rob.bb.obstacle=checkObstacle(rob);
     rob.bb.package_found=checkPackage(rob);
+
+    // determine which BT to tick for this robot
+    const assignedBTId=robBTAssign[rob.idx]||'main';
+    // if assigned BT is not currently displayed, we need to tick its snapshot
+    let tickNodes_=nodes, tickEdges_=edges;
+    if(assignedBTId!==activeBTId&&btLibrary[assignedBTId]){
+      // use snapshot nodes (read-only tick — no DOM updates for off-canvas BTs)
+      tickNodes_=btLibrary[assignedBTId].nodes;
+      tickEdges_=btLibrary[assignedBTId].edges;
+    }
+
     // tick tree
-    roots.forEach(r=>{
-      const res=tickNode(r.id,rob,0);
+    const childSet2=new Set();
+    Object.values(tickNodes_).forEach(n=>n.children.forEach(c=>childSet2.add(c)));
+    const roots2=Object.values(tickNodes_).filter(n=>!childSet2.has(n.id));
+
+    roots2.forEach(r=>{
+      const res=assignedBTId===activeBTId
+        ? tickNode(r.id,rob,0)
+        : tickNodeSnapshot(r.id,rob,0,tickNodes_);
       logMsg(`<span class="li">[${rob.name} t${tick}]→<b>${res}</b></span>`);
       rob.status=res;
     });
@@ -935,6 +1200,16 @@ function tickCond(id,rob){
       const tw=ENV.waypoints.find(w=>w.id===(n.p1||'B'));
       return tw&&inFOV(rob,tw.x,tw.y,SENSOR_RANGE)?'success':'failure';
     }
+    case 'c_path_clear': return !bb.obstacle?'success':'failure';
+    case 'c_collision':{
+      // imminent: obstacle within 20% of sensor range directly ahead
+      const ahead=ENV.walls.some(w=>{
+        const ax=rob.wx+Math.cos(rob.angle)*SENSOR_RANGE*0.2;
+        const ay=rob.wy+Math.sin(rob.angle)*SENSOR_RANGE*0.2;
+        return ax>=w.x&&ax<=w.x+w.w&&ay>=w.y&&ay<=w.y+w.h;
+      });
+      return ahead?'success':'failure';
+    }
     default: return Math.random()>.4?'success':'failure';
   }
 }
@@ -989,19 +1264,130 @@ function tickAct(id,rob){
       return 'success';
     }
     case 'a_setbb': bb[n.p1||'x']=pval(n.p2||''); return 'success';
+
+    // ── NAVIGATION ACTIONS ──
+    case 'a_plan_path':{
+      const goal=ENV.waypoints.find(w=>w.id===(n.p1||'B'));
+      if(!goal)return 'failure';
+      // Simple straight-line path with waypoints as steps (simulated A*)
+      rob.planPath=[{x:rob.wx,y:rob.wy},{x:goal.x,y:goal.y}];
+      bb.target_wp=n.p1||'B';
+      logMsg(`<span class="lc">[${rob.name}] Path planned → ${n.p1||'B'}</span>`);
+      return 'success';
+    }
+    case 'a_nav_to':{
+      const goal=ENV.waypoints.find(w=>w.id===(n.p1||'B'));
+      if(!goal)return 'failure';
+      bb.target_wp=n.p1||'B';
+      // detect and log collision events
+      const prevObs=bb.obstacle;
+      bb.obstacle=checkObstacle(rob);
+      if(bb.obstacle&&!prevObs){
+        bb.collisions=(bb.collisions||0)+1;
+        logMsg(`<span class="lf">[${rob.name}] ⚠ Collision avoided! Total: ${bb.collisions}</span>`);
+        // deflect angle 45°
+        rob.angle+=0.78;
+        return 'running';
+      }
+      const arrived=wdist(rob,{wx:goal.x,wy:goal.y})<10;
+      return arrived?'success':'running';
+    }
+    case 'a_col_avoid':{
+      // Emergency: stop, back up slightly, re-angle
+      bb.obstacle=false;
+      rob.wx-=Math.cos(rob.angle)*4;
+      rob.wy-=Math.sin(rob.angle)*4;
+      rob.angle+=Math.PI/3;
+      bb.collisions=(bb.collisions||0)+1;
+      return 'success';
+    }
+    case 'a_explore':{
+      // Frontier exploration: pick the waypoint furthest from visited set
+      const unvisited=ENV.waypoints.filter(w=>w.id!=='Base'&&wdist(rob,{wx:w.x,wy:w.y})>SENSOR_RANGE);
+      if(!unvisited.length){return 'success';}
+      const frontier=unvisited.reduce((best,w)=>{
+        const d=wdist(rob,{wx:w.x,wy:w.y});
+        return(!best||d<best.d)?{w,d}:best;
+      },null);
+      if(frontier){bb.target_wp=frontier.w.id;}
+      const tw=ENV.waypoints.find(w=>w.id===bb.target_wp);
+      return(tw&&wdist(rob,{wx:tw.x,wy:tw.y})<10)?'success':'running';
+    }
+    case 'a_patrol':{
+      const wps=(n.p1||'A,B,C').split(',').map(s=>s.trim()).filter(Boolean);
+      if(!wps.length)return 'failure';
+      if(!rob.patrolIdx[id])rob.patrolIdx[id]=0;
+      const curWp=wps[rob.patrolIdx[id]%wps.length];
+      bb.target_wp=curWp;
+      const tw=ENV.waypoints.find(w=>w.id===curWp);
+      if(tw&&wdist(rob,{wx:tw.x,wy:tw.y})<10){
+        rob.patrolIdx[id]=(rob.patrolIdx[id]+1)%wps.length;
+      }
+      return 'running'; // patrol never ends
+    }
+    case 'a_dock':{
+      const dockWp=ENV.waypoints.find(w=>w.id===(n.p1||'Base'));
+      if(!dockWp)return 'failure';
+      bb.target_wp=n.p1||'Base';
+      const d=wdist(rob,{wx:dockWp.x,wy:dockWp.y});
+      if(d<4){rob.wx=dockWp.x;rob.wy=dockWp.y;return 'success';}
+      // slow precise approach
+      const dx=dockWp.x-rob.wx,dy=dockWp.y-rob.wy;
+      rob.wx+=dx/d*Math.min(1,d*0.15);
+      rob.wy+=dy/d*Math.min(1,d*0.15);
+      rob.angle=Math.atan2(dy,dx);
+      return 'running';
+    }
+
     default: return Math.random()>.35?'success':'running';
   }
 }
 
 function pval(v){if(v==='true')return true;if(v==='false')return false;const n=parseFloat(v);return isNaN(n)?v:n;}
 
+// Tick a snapshot BT (off-canvas) — no DOM updates, just logic
+function tickNodeSnapshot(id,rob,depth,snapNodes){
+  const n=snapNodes[id]; if(!n)return 'failure';
+  if(n.robotAs>=0&&n.robotAs!==rob.idx)return 'success';
+  const def=ND[n.type]; if(!def)return 'failure';
+  let res;
+  if(def.cat==='composite') res=tickCompositeSnap(id,rob,depth,snapNodes);
+  else if(def.cat==='decorator') res=tickDecoratorSnap(id,rob,depth,snapNodes);
+  else if(def.cat==='condition') res=tickCond(id,rob); // reuse — no DOM
+  else res=tickAct(id,rob); // reuse — blackboard writes still happen
+  n.status=res;
+  return res;
+}
+function tickCompositeSnap(id,rob,depth,sn){
+  const n=sn[id];
+  if(n.type==='sequence'){for(const c of n.children){const r=tickNodeSnapshot(c,rob,depth+1,sn);if(r!=='success')return r;}return n.children.length?'success':'failure';}
+  if(n.type==='selector'){for(const c of n.children){const r=tickNodeSnapshot(c,rob,depth+1,sn);if(r==='success')return 'success';}return 'failure';}
+  if(n.type==='parallel'){let ok=0;n.children.forEach(c=>{if(tickNodeSnapshot(c,rob,depth+1,sn)==='success')ok++;});return ok>=Math.ceil(n.children.length/2)?'success':'failure';}
+  return 'failure';
+}
+function tickDecoratorSnap(id,rob,depth,sn){
+  const n=sn[id],ch=n.children[0];
+  if(n.type==='inverter'){if(!ch)return 'failure';const r=tickNodeSnapshot(ch,rob,depth+1,sn);return r==='success'?'failure':r==='failure'?'success':'running';}
+  if(n.type==='force_ok'){if(ch)tickNodeSnapshot(ch,rob,depth+1,sn);return 'success';}
+  return 'failure';
+}
+
 function setNodeSt(id,st){
   const n=nodes[id]; if(!n)return;
   n.status=st;
   n.el.classList.remove('st-running','st-success','st-failure');
   if(st!=='idle')n.el.classList.add('st-'+st);
+  // small corner status dot
   const sel=document.getElementById(id+'s');
   if(sel){sel.textContent=st==='success'?'✓':st==='failure'?'✗':'…';sel.style.color=stcol(st);}
+  // S/F/R top badge
+  const sfr=document.getElementById(id+'sfr');
+  if(sfr&&showSFR){
+    if(st==='success') sfr.textContent='SUCCESS';
+    else if(st==='failure') sfr.textContent='FAILURE';
+    else if(st==='running') sfr.textContent='RUNNING';
+    else sfr.textContent='';
+  }
   if(selId===id){const ps=document.getElementById('pst');if(ps){ps.textContent=st;ps.style.color=stcol(st);}}
 }
 
@@ -1047,18 +1433,23 @@ function syncRobotUI(){
   const rb=document.getElementById('robbar');
   rb.innerHTML=robots.map((r,i)=>`<button class="rsbtn" style="color:${r.color};border-color:${r.color};background:${i===activeRobot?r.color+'28':'transparent'}" onclick="setActiveRobot(${i})">${r.name}</button>`).join('');
   document.getElementById('roblbl').textContent='Robots: '+robots.length;
+  renderRobAssign();
   const ras=document.getElementById('probotas');
   if(ras){const cv=ras.value;ras.innerHTML='<option value="-1">All Robots</option>'+robots.map((r,i)=>`<option value="${i}">${r.name}</option>`).join('');ras.value=cv;}
 }
 function setActiveRobot(i){activeRobot=i;document.getElementById('robsel').value=String(i);syncRobotUI();renderBB();renderSensorTab();}
 function addRobot(){
   if(robots.length>=6){logMsg('<span class="lf">// Max 6 robots.</span>');return;}
-  const r=makeRobot(robots.length);robots.push(r);resetRobotState(r);
+  const i=robots.length;
+  const r=makeRobot(i);robots.push(r);resetRobotState(r);
+  robBTAssign[i]='main';
   syncRobotUI();drawSim();logMsg(`<span class="li">// Added ${r.name}.</span>`);
 }
 function removeRobot(){
   if(robots.length<=1){logMsg('<span class="lf">// Need ≥1 robot.</span>');return;}
-  const rem=robots.pop();if(activeRobot>=robots.length)activeRobot=robots.length-1;
+  const rem=robots.pop();
+  delete robBTAssign[rem.idx];
+  if(activeRobot>=robots.length)activeRobot=robots.length-1;
   syncRobotUI();drawSim();logMsg(`<span class="li">// Removed ${rem.name}.</span>`);
 }
 
@@ -1123,10 +1514,14 @@ function updateExplainability(){
       what=`✗ ${robName} failed to execute its current task.`;
       why=`A node returned FAILURE. ${fail_nodes[0]?.label} could not proceed.`;
     }
+    // include user notes from active nodes
+    const noteTexts=trace.filter(t=>nodes[t.nodeId]?.note).map(t=>`<i>"${nodes[t.nodeId].note}"</i>`).join(', ');
+    const noteHtml=noteTexts?`<div style="font-size:8px;color:var(--acc3);margin-top:2px">📝 Notes: ${noteTexts}</div>`:'';
     html+=`<div class="exp-card ${cls}">
       <b style="color:${rob.color}">${robName}</b> — tick ${tick} — <span style="color:${stcol(overallSt)}">${overallSt}</span><br>
       ${what}
       <div class="exp-why">🧠 Why: ${why}</div>
+      ${noteHtml}
     </div>`;
   }
   el.innerHTML=html||'<div style="padding:8px;font-size:9px;color:var(--text3)">Tree is empty.</div>';
@@ -1240,8 +1635,17 @@ function recordMetrics(rob){
   if(!METRICS_HIST[rob.name])METRICS_HIST[rob.name]=[];
   const tw=ENV.waypoints.find(w=>w.id===rob.bb.target_wp);
   const dist=tw?Math.round(wdist(rob,{wx:tw.x,wy:tw.y})):0;
-  METRICS_HIST[rob.name].push({tick,dist,battery:rob.bb.battery,victims:rob.bb.victims_found||0});
+  METRICS_HIST[rob.name].push({tick,dist,battery:rob.bb.battery,victims:rob.bb.victims_found||0,collisions:rob.bb.collisions||0});
   if(METRICS_HIST[rob.name].length>MAX_METRICS)METRICS_HIST[rob.name].shift();
+  // push explain entry to history
+  if(lastTickTrace.length){
+    const entry=lastTickTrace.find(t=>t.robName===rob.name&&ND[t.type]?.cat==='action'&&t.status==='running');
+    if(entry){
+      const noteNode=nodes[entry.nodeId];
+      LOG_HISTORY.push({tick,robName:rob.name,status:entry.status,label:entry.label,note:noteNode?.note||'',explain:''});
+      if(LOG_HISTORY.length>MAX_LOG_HIST)LOG_HISTORY.shift();
+    }
+  }
 }
 
 function renderMetrics(){
@@ -1252,9 +1656,9 @@ function renderMetrics(){
   ctx.clearRect(0,0,cv.width,cv.height);
   ctx.fillStyle='#040810'; ctx.fillRect(0,0,cv.width,cv.height);
   const W=cv.width,H=cv.height;
-  const metrics=['battery','dist','victims'];
-  const mcols={battery:'#f59e0b',dist:'#a78bfa',victims:'#4ade80'};
-  const maxVals={battery:100,dist:300,victims:10};
+  const metrics=['battery','dist','victims','collisions'];
+  const mcols={battery:'#f59e0b',dist:'#a78bfa',victims:'#4ade80',collisions:'#ff3d5a'};
+  const maxVals={battery:100,dist:300,victims:10,collisions:20};
   // draw grid
   ctx.strokeStyle='#1a2540'; ctx.lineWidth=1;
   for(let y=0;y<H;y+=H/4){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
@@ -1286,7 +1690,8 @@ function renderMetrics(){
       <span class="mk" style="color:${rob.color}">${rob.name}</span>
       <span class="mv">bat:${last.battery.toFixed(0)}%</span>
       <span class="mv">d:${last.dist}</span>
-      <span class="mv">v:${last.victims}</span>
+      <span class="mv" style="color:#4ade80">v:${last.victims}</span>
+      <span class="mv" style="color:#ff3d5a">col:${last.collisions||0}</span>
     </div>`;
   }).join('');
 }
@@ -1495,7 +1900,19 @@ function rtab(el,name){
 function openImport(){document.getElementById('moverlay').classList.add('show');}
 function closeModal(){document.getElementById('moverlay').classList.remove('show');}
 function exportBT(){
-  const data={nodes:Object.values(nodes).map(n=>({id:n.id,type:n.type,label:n.label,p1:n.p1,p2:n.p2,x:n.x,y:n.y,robotAs:n.robotAs,children:n.children,utility:n.utility})),edges:[...edges],env:{walls:ENV.walls,waypoints:ENV.waypoints,packages:ENV.packages},robots:robots.length};
+  // save current canvas into btLibrary before export
+  saveBTSnapshot(activeBTId);
+  const data={
+    nodes:Object.values(nodes).map(n=>({id:n.id,type:n.type,label:n.label,p1:n.p1,p2:n.p2,note:n.note||'',x:n.x,y:n.y,robotAs:n.robotAs,children:n.children,utility:n.utility})),
+    edges:[...edges],
+    env:{walls:ENV.walls,waypoints:ENV.waypoints,packages:ENV.packages},
+    robots:robots.length,
+    activeBTId,
+    btLibrary: Object.fromEntries(Object.entries(btLibrary).map(([k,v])=>[k,{name:v.name,
+      nodes:Object.fromEntries(Object.entries(v.nodes||{}).map(([nk,nv])=>[nk,{...nv}])),
+      edges:(v.edges||[]).map(e=>({...e}))}])),
+    robBTAssign:{...robBTAssign},
+  };
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='bt_tree.json';a.click();
 }
 function importFile(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>document.getElementById('ijson').value=ev.target.result;r.readAsText(f);}
@@ -1507,8 +1924,25 @@ function doImport(){
     if(data.robots&&data.robots>1){while(robots.length<data.robots)addRobot();while(robots.length>data.robots)robots.pop();syncRobotUI();}
     robots.forEach(resetRobotState);
     const idMap={};
-    data.nodes.forEach(nd=>{const nid=createNode(nd.type,nd.x,nd.y,nd.robotAs??-1);idMap[nd.id]=nid;const n=nodes[nid];n.label=nd.label;n.p1=nd.p1||'';n.p2=nd.p2||'';n.utility=nd.utility||50;n.el.querySelector('.nl').textContent=n.label;updateBadge(nid);});
+    data.nodes.forEach(nd=>{const nid=createNode(nd.type,nd.x,nd.y,nd.robotAs??-1);idMap[nd.id]=nid;const n=nodes[nid];n.label=nd.label;n.p1=nd.p1||'';n.p2=nd.p2||'';n.note=nd.note||'';n.utility=nd.utility||50;n.el.querySelector('.nl').textContent=n.label;const ndesc=document.getElementById(nid+'desc');if(ndesc){ndesc.textContent=n.note;ndesc.style.display=n.note&&showDescOnCanvas?'block':'none';}updateBadge(nid);});
     data.edges.forEach(e=>{const f=idMap[e.from],t=idMap[e.to];if(!f||!t)return;if(!nodes[f].children.includes(t)){nodes[f].children.push(t);edges.push({from:f,to:t});}});
+    // restore BT library
+    if(data.btLibrary){
+      Object.entries(data.btLibrary).forEach(([k,v])=>{if(k!==activeBTId)btLibrary[k]=v;});
+      // add tabs for extra BTs
+      const bar=document.getElementById('bt-tabs-bar');
+      const addBtn=bar.querySelector('.bt-tab-add');
+      Object.entries(data.btLibrary).forEach(([k,v])=>{
+        if(k==='main')return;
+        if(document.querySelector(`.bt-tab[data-btid="${k}"]`))return;
+        const tab=document.createElement('div');tab.className='bt-tab';tab.setAttribute('data-btid',k);
+        tab.innerHTML=`${v.name} <span class="bt-tab-close" onclick="removeBT('${k}',event)">✕</span>`;
+        tab.onclick=function(e){if(!e.target.classList.contains('bt-tab-close'))switchBT(k,tab);};
+        bar.insertBefore(tab,addBtn);
+      });
+    }
+    if(data.robBTAssign)Object.assign(robBTAssign,data.robBTAssign);
+    renderRobAssign();
     drawEdges();drawSim();closeModal();logMsg('<span class="li">// Import OK.</span>');
   }catch(err){alert('Import failed: '+err.message);}
 }
@@ -1724,7 +2158,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   metricsCtx=metricsCv?.getContext('2d');
 
   robots.push(makeRobot(0));
-  syncRobotUI(); renderBB(); renderComms();
+  robBTAssign[0]='main';
+  syncRobotUI(); renderBB(); renderComms(); renderRobAssign();
 
   window.addEventListener('resize',resizeSim);
   resizeSim(); initResizeHandles(); initRobotDrag();
