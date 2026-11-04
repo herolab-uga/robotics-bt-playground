@@ -6,7 +6,7 @@ An interactive, web-based **Behavior Tree playground** for programming and simul
 
 ## Live Demo
 
-> After deploying: `https://<your-username>.github.io/bt-playground/`
+> `https://herolab-uga.github.io/robotics-bt-playground/`
 
 ---
 
@@ -57,71 +57,7 @@ An interactive, web-based **Behavior Tree playground** for programming and simul
 
 ---
 
-## Deploying to GitHub Pages
 
-### Option A — GitHub Web UI (no git required)
-
-1. Create a new repository at [github.com/new](https://github.com/new)  
-   - Name it `bt-playground` (or anything you like)  
-   - Set visibility to **Public**  
-   - Check **Add a README file**  
-   - Click **Create repository**
-
-2. In your new repo, click **Add file → Upload files**
-
-3. Drag `index.html` into the upload area, then click **Commit changes**
-
-4. Go to **Settings → Pages**  
-   - Under *Source*, select **Deploy from a branch**  
-   - Branch: `main`, folder: `/ (root)`  
-   - Click **Save**
-
-5. Wait ~60 seconds, then visit:  
-   `https://<your-username>.github.io/bt-playground/`
-
----
-
-### Option B — Git CLI
-
-```bash
-# 1. Clone your empty repo (create it on GitHub first)
-git clone https://github.com/<your-username>/bt-playground.git
-cd bt-playground
-
-# 2. Copy index.html into the folder
-cp /path/to/index.html .
-
-# 3. Commit and push
-git add index.html README.md
-git commit -m "Initial deploy: BT Playground Pro"
-git push origin main
-
-# 4. Enable GitHub Pages in Settings → Pages → main branch / root
-```
-
----
-
-### Option C — GitHub CLI (`gh`)
-
-```bash
-gh repo create bt-playground --public --source=. --remote=origin --push
-# Then enable Pages in Settings → Pages
-```
-
----
-
-## Customising
-
-The playground is a **single self-contained HTML file** (`index.html`). All CSS and JS are inlined — no build step, no dependencies, no CDN calls beyond Google Fonts.
-
-To add a new node type:
-1. Add an entry to the `NDEF` object in the `<script>` block  
-2. Add a `.pnode` entry in the palette `<div id="palette">`  
-3. Add a `case` in `tickCondition()` or `tickAction()` as appropriate
-
-To change the default environment, edit the `ENV` object near the top of the script.
-
----
 
 ## Project Structure
 
