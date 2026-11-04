@@ -57,6 +57,35 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
 #esvg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
 #cprompt{position:absolute;top:6px;left:50%;transform:translateX(-50%);background:rgba(15,21,32,.95);border:1px solid var(--border2);border-radius:5px;padding:4px 12px;font-size:10px;color:var(--text2);pointer-events:none;z-index:40;max-width:460px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
+/* ── CANVAS TRANSFORM (zoom/pan) ── */
+#canvas-transform{position:absolute;top:0;left:0;transform-origin:0 0;will-change:transform}
+#cwrap{cursor:grab}
+#cwrap.panning{cursor:grabbing}
+#cwrap.connecting{cursor:crosshair}
+/* zoom controls overlay */
+#zoom-ctrl{position:absolute;bottom:8px;right:8px;z-index:50;display:flex;flex-direction:column;gap:3px}
+.zoom-btn{width:22px;height:22px;border-radius:4px;background:var(--sf);border:1px solid var(--border2);color:var(--text2);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;user-select:none}
+.zoom-btn:hover{background:var(--s2);color:var(--acc)}
+#zoom-label{font-size:8px;color:var(--text3);text-align:center;font-family:'JetBrains Mono',monospace}
+/* edge click target — invisible wide stroke over visible edge */
+.ep-hit{stroke:transparent;stroke-width:14;fill:none;cursor:pointer;pointer-events:stroke}
+.ep-hit:hover+.ep-vis{stroke-width:4;stroke-opacity:1}
+.ep-vis{transition:stroke-width .1s}
+.ep-sel{stroke:var(--danger)!important;stroke-width:3!important;stroke-dasharray:4,2}
+
+/* ── FLOATING PANES ── */
+.fpane{position:fixed;background:var(--sf);border:1px solid var(--border2);border-radius:7px;z-index:400;min-width:160px;min-height:80px;display:flex;flex-direction:column;box-shadow:0 8px 32px rgba(0,0,0,.5);overflow:hidden}
+.fpane-hdr{display:flex;align-items:center;padding:4px 8px;background:var(--s2);border-bottom:1px solid var(--border);cursor:move;user-select:none;flex-shrink:0}
+.fpane-title{font-size:10px;font-weight:600;color:var(--text2);flex:1}
+.fpane-close{font-size:11px;color:var(--text3);cursor:pointer;padding:0 2px}.fpane-close:hover{color:var(--danger)}
+.fpane-body{flex:1;overflow:auto;min-height:0}
+/* detach buttons on sim/BT panels */
+.detach-btn{font-size:9px;padding:1px 5px;border-radius:3px;background:transparent;border:1px solid var(--border);color:var(--text3);cursor:pointer;margin-left:4px}
+.detach-btn:hover{background:var(--s2);color:var(--acc2)}
+
+/* ── COPY/PASTE selection box ── */
+#sel-box{position:absolute;border:1px dashed var(--acc2);background:rgba(0,212,255,.05);pointer-events:none;display:none;z-index:5}
+
 /* BT NODES — high-contrast tick path colors */
 .btn-node{position:absolute;border-radius:6px;border:2px solid;cursor:move;user-select:none;min-width:104px;z-index:10;transition:border-color .08s,box-shadow .08s,opacity .08s}
 .btn-node.dimmed{opacity:.35}
@@ -96,8 +125,35 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
 
 /* ── SIM PANEL ── */
 #smpanel{flex-shrink:0;border-top:1px solid var(--border);display:flex;overflow:hidden;min-height:120px}
-#scwrap{position:relative;overflow:hidden;flex:1;background:#040810}
+#scwrap{position:relative;overflow:hidden;flex:1;background:#040810;cursor:default}
+#scwrap.sim-panning{cursor:grabbing!important}
+#scwrap.sim-drag-obj{cursor:move!important}
 #simcv{display:block;width:100%;height:100%}
+
+/* sim object property overlay */
+#obj-prop-overlay{
+  position:absolute;background:var(--sf);border:1px solid var(--acc2);
+  border-radius:6px;padding:8px 10px;z-index:300;min-width:200px;
+  display:none;font-size:10px;box-shadow:0 4px 20px rgba(0,0,0,.6);
+}
+#obj-prop-overlay .oph{font-size:9px;color:var(--acc2);font-weight:600;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+#obj-prop-overlay .opr{display:flex;align-items:center;gap:5px;margin-bottom:4px}
+#obj-prop-overlay .opl{font-size:8px;color:var(--text3);min-width:68px}
+#obj-prop-overlay input,#obj-prop-overlay select,#obj-prop-overlay textarea{
+  flex:1;background:var(--s2);border:1px solid var(--border2);color:var(--text);
+  padding:2px 5px;border-radius:3px;font:9px 'JetBrains Mono',monospace;
+}
+#obj-prop-overlay textarea{height:40px;resize:vertical;font-size:8px}
+#obj-prop-overlay .op-tabs{display:flex;gap:2px;margin-bottom:6px}
+#obj-prop-overlay .op-tab{padding:2px 7px;border-radius:3px;font-size:8px;cursor:pointer;border:1px solid var(--border);color:var(--text3)}
+#obj-prop-overlay .op-tab.on{border-color:var(--acc2);color:var(--acc2);background:var(--s2)}
+#obj-prop-overlay .schedule-row{background:var(--s2);border:1px solid var(--border);border-radius:4px;padding:5px 7px;margin-bottom:3px;font-size:8px}
+
+/* sim object selected highlight */
+.sim-obj-sel{outline:2px solid var(--acc);outline-offset:2px}
+
+/* sim zoom badge */
+#sim-zoom-badge{position:absolute;bottom:28px;right:5px;font:8px 'JetBrains Mono',monospace;color:var(--text3);pointer-events:none;z-index:60}
 #envbar{position:absolute;top:4px;left:4px;display:flex;gap:3px;z-index:50;flex-wrap:wrap;max-width:380px}
 #robbar{position:absolute;top:4px;right:4px;display:flex;gap:3px;z-index:50;flex-wrap:wrap;max-width:150px;justify-content:flex-end}
 .rsbtn{padding:1px 6px;border-radius:3px;font:500 8px 'JetBrains Mono',monospace;cursor:pointer;border:1px solid;transition:all .1s}
@@ -229,6 +285,7 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
     <option value="delivery">Package Delivery</option>
     <option value="swarm">Swarm Coordination</option>
     <option value="rescue">Search & Rescue</option>
+    <option value="foraging">🍃 Foraging (3 robots)</option>
     <option value="blank">— Blank —</option>
   </select>
   <div class="vsep"></div>
@@ -251,9 +308,11 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
   <button class="btn bg bsm" onclick="addRobot()">+R</button>
   <button class="btn bg bsm" onclick="removeRobot()">−R</button>
   <div class="trb">
-    <button class="btn bg bsm" onclick="openImport()">⬆</button>
-    <button class="btn bg bsm" onclick="exportBT()">⬇</button>
-    <button class="btn bg bsm" onclick="clearAll()">✕</button>
+    <button class="btn bg" onclick="openImport()" style="font-size:11px;padding:3px 10px" title="Import BT from JSON">⬆ Import</button>
+    <button class="btn bg" onclick="exportBT()" style="font-size:11px;padding:3px 10px" title="Export BT to JSON">⬇ Export</button>
+    <button class="btn bg bsm" onclick="clearAll()" title="Clear canvas">✕ Clear</button>
+    <button class="btn bg bsm" onclick="copySelected()" title="Copy selected subtree (C)">⎘ Copy</button>
+    <button class="btn bg bsm" onclick="pasteNodes()" title="Paste subtree (V)">⎙ Paste</button>
     <button class="btn bp" id="runbtn" onclick="toggleRun()">▶ Run</button>
   </div>
 </div>
@@ -310,6 +369,16 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
   <div class="pn pn-nav" draggable="true" ondragstart="pdrag(event,'a_dock')" onclick="addCenter('a_dock')"><div class="pi" style="background:#0a2010;color:#22d3ee">⚓</div><div><div class="pnm">Dock</div><div class="pds">Precise docking align</div></div></div>
   <div class="pn pn-nav" draggable="true" ondragstart="pdrag(event,'c_path_clear')" onclick="addCenter('c_path_clear')"><div class="pi" style="background:#3a1a00;color:#22d3ee">🛣</div><div><div class="pnm">Path Clear?</div><div class="pds">No obstacle on route</div></div></div>
   <div class="pn pn-nav" draggable="true" ondragstart="pdrag(event,'c_collision')" onclick="addCenter('c_collision')"><div class="pi" style="background:#3a1a00;color:#ff3d5a">💥</div><div><div class="pnm">Collision?</div><div class="pds">Imminent impact check</div></div></div>
+
+  <div class="pgh">Robot/Object ID</div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'c_robot_id')" onclick="addCenter('c_robot_id')"><div class="pi" style="background:#3a1a00;color:#fbbf24">🆔</div><div><div class="pnm">My ID is?</div><div class="pds">Check robot index</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'c_wp_near')" onclick="addCenter('c_wp_near')"><div class="pi" style="background:#3a1a00;color:#fbbf24">📍</div><div><div class="pnm">WP Near?</div><div class="pds">Specific WP in range</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'c_pkg_id')" onclick="addCenter('c_pkg_id')"><div class="pi" style="background:#3a1a00;color:#fbbf24">🏷</div><div><div class="pnm">Package[n] Near?</div><div class="pds">Specific pkg in range</div></div></div>
+
+  <div class="pgh">ROS Topics</div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_pub_topic')" onclick="addCenter('a_pub_topic')"><div class="pi" style="background:#021d10;color:#4ade80">📤</div><div><div class="pnm">Publish Topic</div><div class="pds">Broadcast to /topic</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_sub_topic')" onclick="addCenter('a_sub_topic')"><div class="pi" style="background:#021d10;color:#4ade80">📥</div><div><div class="pnm">Read Topic</div><div class="pds">Topic → BB key</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'c_topic')" onclick="addCenter('c_topic')"><div class="pi" style="background:#3a1a00;color:#fbbf24">📡</div><div><div class="pnm">Topic Has?</div><div class="pds">Recent msg on topic</div></div></div>
 </div>
 
 <div class="hrz-handle" id="pal-handle"></div>
@@ -326,113 +395,189 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
       <input type="checkbox" id="show-sfr-chk" checked onchange="toggleSFR()" style="accent-color:var(--acc);cursor:pointer">
     </div>
   </div>
-  <!-- Robot → BT Assignment -->
+  <!-- Robot → BT Assignment bar -->
   <div id="robassign"></div>
-  <div id="cwrap" ondragover="event.preventDefault()" ondrop="onDrop(event)">
-    <div id="cgrid"></div>
-    <div id="cprompt"></div>
-    <svg id="esvg">
-      <defs>
-        <marker id="arr-idle" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 Z" fill="#263858"/></marker>
-        <marker id="arr-run"  markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 Z" fill="#ffb800"/></marker>
-        <marker id="arr-ok"   markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 Z" fill="#00ff88"/></marker>
-        <marker id="arr-fail" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 Z" fill="#ff3d5a"/></marker>
-      </defs>
-      <path id="tempedge" d="" style="display:none"/>
-    </svg>
-    <div id="canvas"></div>
-  </div>
-  <div id="resize-handle"></div>
-  <div id="smpanel">
-    <div id="scwrap">
-      <canvas id="simcv"></canvas>
-      <div id="envbar">
-        <button class="btn bg bsm" id="eb-view" onclick="setEnvMode('view')" style="color:var(--acc)">👁 View</button>
-        <button class="btn bg bsm" id="eb-wall" onclick="setEnvMode('wall')">🧱 Wall</button>
-        <button class="btn bg bsm" id="eb-wp"   onclick="setEnvMode('wp')">📍 WP</button>
-        <button class="btn bg bsm" id="eb-pkg"  onclick="setEnvMode('pkg')">📦 Pkg</button>
-        <button class="btn bg bsm" id="eb-erase" onclick="setEnvMode('erase')">✕</button>
-        <button class="btn bg bsm" onclick="resetEnv()">↺</button>
-        <div class="vsep"></div>
-        <span class="tbl">FOV°:</span>
-        <input type="range" id="fovsl" min="30" max="360" value="180" step="10" oninput="updateFOV()" style="width:48px">
-        <span class="slval" id="fovval">180</span>
-        <div class="vsep"></div>
-        <span class="tbl">Sensor:</span>
-        <input type="range" id="sensorsl" min="20" max="200" value="80" step="5" oninput="updateSensor()" style="width:48px">
-        <span class="slval" id="sensorval">80</span>
-        <div class="vsep"></div>
-        <span class="tbl">Comm:</span>
-        <input type="range" id="commsl" min="30" max="300" value="120" step="10" oninput="updateComm()" style="width:48px">
-        <span class="slval" id="commval">120</span>
+
+  <!-- TOP ROW: BT Editor | Sim World (side by side) -->
+  <div id="top-row" style="display:flex;flex:1;overflow:hidden;min-height:0">
+
+    <!-- BT EDITOR PANE -->
+    <div id="bt-pane" style="display:flex;flex-direction:column;flex:1;min-width:200px;overflow:hidden;position:relative">
+      <div style="display:flex;align-items:center;padding:2px 6px;background:var(--sf);border-bottom:1px solid var(--border);flex-shrink:0;gap:4px">
+        <span style="font-size:9px;font-weight:600;color:var(--text3)">BT EDITOR</span>
+        <div style="flex:1"></div>
+        <button class="zoom-btn" onclick="zoomCanvas(1.2)" title="Zoom in">+</button>
+        <button class="zoom-btn" onclick="zoomCanvas(0.8)" title="Zoom out">−</button>
+        <button class="zoom-btn" onclick="resetZoom()" title="Reset zoom" style="font-size:9px">1:1</button>
+        <span id="zoom-label" class="slval">100%</span>
+        <button class="detach-btn" onclick="detachPane('bt-pane','BT Editor')" title="Float pane">⧉</button>
       </div>
-      <div id="robbar"></div>
-      <!-- waypoint edit overlay -->
-      <div id="wpoverlay">
-        <div style="font-size:9px;color:var(--acc2);margin-bottom:4px">Edit Waypoint</div>
-        <div style="display:flex;gap:4px;align-items:center;margin-bottom:3px">
-          <span class="tbl">ID:</span><input id="wp-id-input" type="text" maxlength="4" style="width:50px">
-        </div>
-        <div style="display:flex;gap:5px;margin-top:4px">
-          <button class="btn bg bsm" onclick="confirmWpEdit()">OK</button>
-          <button class="btn bg bsm" onclick="cancelWpEdit()">Cancel</button>
-          <button class="btn bd bsm" onclick="deleteWpEdit()">Del</button>
-        </div>
+      <div id="cwrap" ondragover="event.preventDefault()" ondrop="onDrop(event)" style="flex:1;position:relative;overflow:hidden;background:var(--bg)">
+        <div id="cgrid"></div>
+        <div id="cprompt"></div>
+        <div id="sel-box"></div>
+        <svg id="esvg" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible">
+          <defs>
+            <marker id="arr-idle" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 Z" fill="#263858"/></marker>
+            <marker id="arr-run"  markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 Z" fill="#ffb800"/></marker>
+            <marker id="arr-ok"   markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 Z" fill="#00ff88"/></marker>
+            <marker id="arr-fail" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L6,3 Z" fill="#ff3d5a"/></marker>
+          </defs>
+          <g id="edges-g"></g>
+          <path id="tempedge" d="" style="display:none"/>
+        </svg>
+        <div id="canvas-transform"><div id="canvas"></div></div>
       </div>
     </div>
-    <div class="hrz-handle" id="smside-handle"></div>
-    <div id="smside">
-      <div class="tabbar">
-        <div class="tab on" onclick="stab(this,'log')">Log</div>
-        <div class="tab" onclick="stab(this,'bb')">BB</div>
-        <div class="tab" onclick="stab(this,'comms')">Comms</div>
-        <div class="tab" onclick="stab(this,'explain')">Explain</div>
-        <div class="tab" onclick="stab(this,'sensor')">Sensor</div>
-        <div class="tab" onclick="stab(this,'metrics')">Metrics</div>
+
+    <!-- HORIZONTAL RESIZE between BT and Sim -->
+    <div class="hrz-handle" id="btsim-handle"></div>
+
+    <!-- SIMULATION PANE -->
+    <div id="sim-pane" style="display:flex;flex-direction:column;width:420px;min-width:200px;overflow:hidden">
+      <div style="display:flex;align-items:center;padding:2px 6px;background:var(--sf);border-bottom:1px solid var(--border);flex-shrink:0;gap:3px">
+        <span style="font-size:9px;font-weight:600;color:var(--text3)">SIMULATOR</span>
+        <div style="flex:1"></div>
+        <button class="btn bg bsm" id="eb-view" onclick="setEnvMode('view')" style="color:var(--acc)">👁</button>
+        <button class="btn bg bsm" id="eb-wall" onclick="setEnvMode('wall')" title="Draw wall">🧱</button>
+        <button class="btn bg bsm" id="eb-wp"   onclick="setEnvMode('wp')" title="Place waypoint">📍</button>
+        <button class="btn bg bsm" id="eb-pkg"  onclick="setEnvMode('pkg')" title="Place package">📦</button>
+        <button class="btn bg bsm" id="eb-erase" onclick="setEnvMode('erase')" title="Erase">✕</button>
+        <button class="btn bg bsm" onclick="resetEnv()" title="Reset environment">↺</button>
+        <div class="vsep"></div>
+        <span class="tbl">FOV:</span>
+        <input type="range" id="fovsl" min="30" max="360" value="180" step="10" oninput="updateFOV()" style="width:40px">
+        <span class="slval" id="fovval" style="min-width:30px">180°</span>
+        <span class="tbl">Snsr:</span>
+        <input type="range" id="sensorsl" min="20" max="200" value="80" step="5" oninput="updateSensor()" style="width:40px">
+        <span class="slval" id="sensorval" style="min-width:24px">80</span>
+        <span class="tbl">Comm:</span>
+        <input type="range" id="commsl" min="30" max="300" value="120" step="10" oninput="updateComm()" style="width:40px">
+        <span class="slval" id="commval" style="min-width:24px">120</span>
+        <div class="vsep"></div>
+        <button class="zoom-btn" onclick="zoomSim(1.25)" title="Zoom in (+)">+</button>
+        <button class="zoom-btn" onclick="zoomSim(0.8)" title="Zoom out (-)">−</button>
+        <button class="zoom-btn" onclick="resetSimZoom()" title="Reset zoom (0)" style="font-size:9px">1:1</button>
+        <button class="detach-btn" onclick="detachPane('sim-pane','Simulator')" title="Float pane">⧉</button>
       </div>
-      <div id="tc-log" class="tc on"><div id="logwrap"></div></div>
-      <div id="tc-bb" class="tc">
-        <div style="padding:3px 5px;font-size:8px;color:var(--text3);flex-shrink:0">
-          <select class="ts" id="bbrobsel" style="font-size:8px;padding:1px 4px" onchange="renderBB()"></select>
+      <div id="scwrap" style="flex:1;position:relative;overflow:hidden;background:#040810">
+        <canvas id="simcv" style="display:block;width:100%;height:100%"></canvas>
+        <div id="robbar" style="position:absolute;top:4px;right:4px;display:flex;gap:3px;z-index:50;flex-wrap:wrap;justify-content:flex-end;max-width:140px"></div>
+        <div id="sim-zoom-badge">100%</div>
+        <!-- object property overlay -->
+        <div id="obj-prop-overlay">
+          <div class="oph">
+            <span id="obj-prop-title">Object Properties</span>
+            <span style="cursor:pointer;color:var(--text3)" onclick="closeObjProp()">✕</span>
+          </div>
+          <div class="op-tabs">
+            <div class="op-tab on" onclick="objPropTab(this,'basic')">Basic</div>
+            <div class="op-tab" onclick="objPropTab(this,'schedule')">Schedule</div>
+          </div>
+          <div id="op-basic">
+            <div id="obj-prop-fields"></div>
+            <div style="display:flex;gap:5px;margin-top:6px">
+              <button class="btn bg bsm" onclick="applyObjProp()">Apply</button>
+              <button class="btn bd bsm" onclick="deleteObj()">Delete</button>
+            </div>
+          </div>
+          <div id="op-schedule" style="display:none">
+            <div style="font-size:8px;color:var(--text3);margin-bottom:4px">Dynamic schedules (evaluated per tick)</div>
+            <div id="obj-schedule-list"></div>
+            <button class="btn bg bsm" onclick="addScheduleEntry()" style="margin-top:4px">+ Add event</button>
+          </div>
         </div>
-        <div id="bbwrap" style="flex:1;overflow-y:auto;min-height:0"></div>
+        <!-- waypoint edit overlay -->
+        <div id="wpoverlay">
+          <div style="font-size:9px;color:var(--acc2);margin-bottom:4px">✏ Waypoint</div>
+          <div style="display:flex;gap:4px;align-items:center;margin-bottom:3px">
+            <span class="tbl">ID:</span>
+            <input id="wp-id-input" type="text" maxlength="6" style="width:55px;background:var(--s2);border:1px solid var(--border2);color:var(--acc);padding:2px 5px;border-radius:3px;font:11px 'JetBrains Mono',monospace">
+          </div>
+          <div style="display:flex;gap:5px;margin-top:4px">
+            <button class="btn bg bsm" onclick="confirmWpEdit()">OK</button>
+            <button class="btn bg bsm" onclick="cancelWpEdit()">✕</button>
+            <button class="btn bd bsm" onclick="deleteWpEdit()">Del</button>
+          </div>
+        </div>
       </div>
-      <div id="tc-comms" class="tc"><div id="commwrap"></div></div>
-      <div id="tc-explain" class="tc"><div id="expwrap"></div></div>
-      <div id="tc-sensor" class="tc">
-        <div id="sensorwrap">
-          <canvas id="fovcanvas"></canvas>
-          <div id="sensorrows" style="padding:4px"></div>
-        </div>
-      </div>
-      <div id="tc-metrics" class="tc">
-        <div id="metricswrap">
-          <div id="metricsrows" style="padding:4px;flex-shrink:0"></div>
-          <canvas id="metricscv" style="flex:1;min-height:0;width:100%;display:block"></canvas>
-        </div>
-      </div>
-      <!-- Battery override panel -->
-      <div id="bat-override-panel">
-        <div style="font-size:8px;color:var(--text3);margin-bottom:3px;display:flex;justify-content:space-between">
-          <span>⚡ Battery Override</span>
-          <span style="color:var(--text3);font-size:7px">drain/charge all robots</span>
-        </div>
-        <div id="bat-rob-rows"></div>
-        <div class="bat-row" style="margin-top:3px;border-top:1px solid var(--border);padding-top:3px">
-          <span style="color:var(--text3);min-width:28px">All:</span>
-          <input type="range" id="bat-drain-all" min="0" max="5" value="0.7" step="0.1" oninput="updateGlobalDrain(this.value)" style="width:65px;accent-color:var(--warn)">
-          <span id="bat-drain-all-val" style="color:var(--warn);font-size:8px;font-family:'JetBrains Mono',monospace">0.7%</span>
-          <button class="btn bg bsm" onclick="forceBattery(100)" style="margin-left:4px">⚡ Full</button>
-          <button class="btn bg bsm" onclick="forceBattery(20)">⚠ 20%</button>
-        </div>
-      </div>
-      <div id="smctrl">
+      <div style="display:flex;gap:4px;padding:4px 6px;background:var(--sf);border-top:1px solid var(--border);flex-shrink:0;align-items:center;flex-wrap:wrap">
         <button class="btn bg bsm" onclick="stepOnce()">⏭ Step</button>
         <button class="btn bg bsm" onclick="resetSim()">⏮ Reset</button>
-        <button class="btn btn-dl bsm" onclick="downloadLog()" title="Download log + explainability history">⬇ Log</button>
+        <button class="btn btn-dl bsm" onclick="downloadLog()">⬇ Log</button>
+        <div class="vsep"></div>
+        <span class="tbl">⚡ Drain:</span>
+        <input type="range" id="bat-drain-all" min="0" max="5" value="0.7" step="0.1" oninput="updateGlobalDrain(this.value)" style="width:50px;accent-color:var(--warn)">
+        <span id="bat-drain-all-val" style="color:var(--warn);font-size:8px;font-family:'JetBrains Mono',monospace;min-width:40px">0.7%</span>
+        <button class="btn bg bsm" onclick="forceBattery(100)">Full</button>
+        <button class="btn bg bsm" onclick="forceBattery(10)">10%</button>
+      </div>
+    </div>
+
+  </div><!-- end top-row -->
+
+  <!-- VERTICAL RESIZE between top-row and bottom pane -->
+  <div id="resize-handle"></div>
+
+  <!-- BOTTOM PANE: Log | BB | Comms | Explain | Sensor | Metrics -->
+  <div id="bottom-pane" style="height:200px;flex-shrink:0;display:flex;overflow:hidden;border-top:1px solid var(--border)">
+    <div id="smpanel" style="display:flex;flex:1;overflow:hidden">
+      <div id="smside" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+        <div class="tabbar" style="flex-shrink:0">
+          <div class="tab on" onclick="stab(this,'log')">Log</div>
+          <div class="tab" onclick="stab(this,'bb')">Blackboard</div>
+          <div class="tab" onclick="stab(this,'comms')">Comms</div>
+          <div class="tab" onclick="stab(this,'explain')">Explain</div>
+          <div class="tab" onclick="stab(this,'sensor')">Sensor</div>
+          <div class="tab" onclick="stab(this,'metrics')">Metrics</div>
+          <div class="tab" onclick="stab(this,'battery')">Battery</div>
+        </div>
+        <div id="tc-log" class="tc on"><div id="logwrap"></div></div>
+        <div id="tc-bb" class="tc">
+          <div style="padding:3px 5px;font-size:8px;color:var(--text3);flex-shrink:0;display:flex;align-items:center;gap:5px">
+            Robot: <select class="ts" id="bbrobsel" style="font-size:8px;padding:1px 4px" onchange="renderBB()"></select>
+            <label style="display:flex;align-items:center;gap:3px;cursor:pointer"><input type="checkbox" id="bb-global-chk" onchange="renderBB()" style="accent-color:var(--acc)"> Global only</label>
+          </div>
+          <div id="bbwrap" style="flex:1;overflow-y:auto;min-height:0;padding:4px"></div>
+        </div>
+        <div id="tc-comms" class="tc">
+          <div style="padding:3px 5px;font-size:8px;color:var(--text3);flex-shrink:0">ROS-like topic messages — only delivered within comm range</div>
+          <div id="commwrap" style="flex:1;overflow-y:auto;min-height:0;padding:4px"></div>
+        </div>
+        <div id="tc-explain" class="tc"><div id="expwrap" style="flex:1;overflow-y:auto;min-height:0;padding:5px"></div></div>
+        <div id="tc-sensor" class="tc">
+          <div id="sensorwrap" style="flex:1;overflow-y:auto;min-height:0;padding:4px">
+            <div style="display:flex;gap:5px;align-items:center;margin-bottom:4px;flex-wrap:wrap">
+              <span style="font-size:8px;color:var(--text3)">Robot:</span>
+              <select class="ts" id="sensor-robsel" style="font-size:8px;padding:1px 4px" onchange="renderSensorTab()"></select>
+              <span style="font-size:8px;color:var(--text3)">Sensor range:</span>
+              <input type="range" id="rob-sensor-sl" min="20" max="200" value="80" step="5" oninput="setRobotSensor(this.value)" style="width:50px;accent-color:var(--acc2)">
+              <span id="rob-sensor-val" style="font-size:8px;color:var(--acc2);font-family:'JetBrains Mono',monospace">80</span>
+              <span style="font-size:8px;color:var(--text3)">Comm range:</span>
+              <input type="range" id="rob-comm-sl" min="30" max="300" value="120" step="10" oninput="setRobotComm(this.value)" style="width:50px;accent-color:var(--acc3)">
+              <span id="rob-comm-val" style="font-size:8px;color:var(--acc3);font-family:'JetBrains Mono',monospace">120</span>
+            </div>
+            <canvas id="fovcanvas" style="width:100%;height:120px;background:var(--bg);border-radius:4px;display:block"></canvas>
+            <div id="sensorrows" style="margin-top:4px"></div>
+          </div>
+        </div>
+        <div id="tc-metrics" class="tc">
+          <div id="metricswrap" style="flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden">
+            <div id="metricsrows" style="padding:4px;flex-shrink:0"></div>
+            <canvas id="metricscv" style="flex:1;min-height:0;width:100%;display:block"></canvas>
+          </div>
+        </div>
+        <div id="tc-battery" class="tc">
+          <div style="padding:5px 8px;flex:1;overflow-y:auto">
+            <div style="font-size:8px;color:var(--text3);margin-bottom:4px">Per-robot battery control (drag slider or type value)</div>
+            <div id="bat-rob-rows"></div>
+            <div style="margin-top:6px;padding-top:4px;border-top:1px solid var(--border);font-size:8px;color:var(--text3)">Global drain is set in the Sim toolbar above ⬆</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+
 </div>
 
 <div class="hrz-handle" id="rpanel-handle"></div>
@@ -584,6 +729,14 @@ const ND = {
   a_dock:     {l:'Dock',          cat:'action',   bg:'#021520',bd:'#22d3ee',ic:'⚓',sh:'NAV',desc:'Precise docking approach to a waypoint.',p1:'Dock WP',p1d:'Base'},
   c_path_clear:{l:'Path Clear?',  cat:'condition',bg:'#2a1000',bd:'#22d3ee',ic:'🛣',sh:'IF',desc:'SUCCESS if no obstacle detected on current planned path.'},
   c_collision:{l:'Collision?',    cat:'condition',bg:'#2a1000',bd:'#ff3d5a',ic:'💥',sh:'IF',desc:'SUCCESS if collision is imminent (obstacle very close ahead).'},
+  // Robot/Object ID awareness
+  c_robot_id: {l:'My ID is?',     cat:'condition',bg:'#2a1000',bd:'#f59e0b',ic:'🆔',sh:'IF',desc:'SUCCESS if this robot\'s index equals param.',p1:'Index',p1d:'0'},
+  c_wp_near:  {l:'WP Near?',      cat:'condition',bg:'#2a1000',bd:'#f59e0b',ic:'📍',sh:'IF',desc:'SUCCESS if waypoint ID (p1) is within sensor range.',p1:'WP ID',p1d:'A'},
+  c_pkg_id:   {l:'Package Near?', cat:'condition',bg:'#2a1000',bd:'#f59e0b',ic:'🏷',sh:'IF',desc:'SUCCESS if package with given index (0-based) is in sensor range.',p1:'Pkg idx',p1d:'0'},
+  // ROS topics
+  a_pub_topic:{l:'Publish Topic', cat:'action',   bg:'#011a0a',bd:'#22c55e',ic:'📤',sh:'ROS',desc:'Publish value to a named ROS-like topic (broadcast within comm range).',p1:'Topic',p1d:'/alert',p2:'Value',p2d:'true'},
+  a_sub_topic:{l:'Read Topic',    cat:'action',   bg:'#011a0a',bd:'#22c55e',ic:'📥',sh:'ROS',desc:'Read latest value from topic into blackboard key.',p1:'Topic',p1d:'/alert',p2:'BB key',p2d:'got_alert'},
+  c_topic:    {l:'Topic Has?',    cat:'condition',bg:'#2a1000',bd:'#f59e0b',ic:'📡',sh:'IF',desc:'SUCCESS if topic has a recent message (within N ticks).',p1:'Topic',p1d:'/alert',p2:'Max age',p2d:'5'},
 };
 
 // ═══════════════════════════════════════════
@@ -635,8 +788,48 @@ const MAX_LOG_HIST = 2000;
 let showSFR = true;
 let showDescOnCanvas = false;
 
+// Canvas zoom / pan
+let canvasScale = 1, canvasOffX = 0, canvasOffY = 0;
+let isPanning = false, panStartX = 0, panStartY = 0;
+
+// Edge selection
+let selectedEdge = null; // {from, to, el}
+
+// Copy/paste clipboard
+let clipboard = null; // {nodes:[...], edges:[...]}
+// Lasso selection
+let lassoActive = false, lassoStart = {x:0,y:0}, lassoBox = null;
+let selectedNodes = new Set();
+
+// Per-robot sensor/comm overrides (index → value, undefined = use global)
+const robSensorRange = {}, robCommRange = {};
+
+// ROS-style topic system
+const topicBus = {}; // topicName → [{value, publisherIdx, tick}]
+
+// Foraging state
+let foragingPackagesTotal = 0;
+
+// ── Sim zoom/pan ──
+let simScale_ = 1;         // zoom multiplier
+let simOffX = 0, simOffY = 0;  // pan offset in world-units (not screen)
+let simPanning = false, simPanStartX = 0, simPanStartY = 0;
+
+// ── Sim object drag ──
+// selectedObj = {type:'wp'|'pkg'|'wall'|'robot', idx, startWx, startWy, startMx, startMy}
+let selectedObj = null;
+let simDraggingObj = false;
+
+// ── Object property panel ──
+let objPropTarget = null; // {type, idx}
+
+// ── Dynamic object schedules ──
+// Each ENV object can have a .schedule = [{event:'appear'|'disappear'|'toggle', atTick, repeatEvery, duration, label}]
+// evaluated each tick in tickBT
+
 // DOM refs
 let canvasEl,esvg,simcv,simctx,logEl,fovCv,fovCtx,metricsCv,metricsCtx;
+let edgesG; // SVG group for edges
 
 // ═══════════════════════════════════════════
 // ROBOTS
@@ -676,25 +869,19 @@ const SPEED_TABLE = [0, 3000, 2000, 1500, 1000, 700, 500, 350, 250, 150, 100];
 
 function updateTickHz(){
   const v = parseInt(document.getElementById('tickhz').value);
-  const ms = SPEED_TABLE[v] || 0;
-  const label = v===0 ? 'PAUSED' : (ms>=1000 ? (1000/ms).toFixed(1) : Math.round(1000/ms)) + ' Hz';
+  const ms = SPEED_TABLE[Math.min(v, SPEED_TABLE.length-1)] || 0;
+  const label = v===0 ? '❚❚ 0Hz' : (ms>=1000 ? (1000/ms).toFixed(2) : Math.round(1000/ms)) + ' Hz';
   document.getElementById('tickhzval').textContent = label;
-  if(running){
-    clearInterval(interval);
-    if(v===0){
-      // freeze: don't schedule ticks, but keep running=true
-      interval=null;
-    } else {
-      interval=setInterval(tickBT, ms);
-    }
-  }
-  // store for toggleRun
   TICK_HZ = v;
+  if(running){
+    clearInterval(interval); interval=null;
+    if(v>0){ interval=setInterval(tickBT, ms); }
+  }
 }
 
 function getTickInterval(){
-  const v = parseInt(document.getElementById('tickhz').value||'2');
-  return SPEED_TABLE[Math.max(1,v)] || 500;
+  const v = Math.max(1, parseInt(document.getElementById('tickhz').value||'2'));
+  return SPEED_TABLE[Math.min(v, SPEED_TABLE.length-1)] || 500;
 }
 function updateRobSpeed(){
   ROB_SPEED=parseInt(document.getElementById('robspeed').value);
@@ -977,7 +1164,8 @@ let globalBatDrain = 0.7; // %/tick applied to all robots
 
 function updateGlobalDrain(v){
   globalBatDrain=parseFloat(v)||0;
-  document.getElementById('bat-drain-all-val').textContent=globalBatDrain.toFixed(1)+'%';
+  const lbl=document.getElementById('bat-drain-all-val');
+  if(lbl)lbl.textContent=globalBatDrain.toFixed(2)+'%/tick';
   renderBatRobRows();
 }
 
@@ -1051,6 +1239,86 @@ function renameBTPrompt(btId){
   renderBTLibPanel();
 }
 
+// ═══════════════════════════════════════════
+// FLOATING / DETACHABLE PANES
+// ═══════════════════════════════════════════
+function detachPane(paneId, title){
+  const src=document.getElementById(paneId); if(!src)return;
+  const rect=src.getBoundingClientRect();
+  // Create floating pane
+  const fp=document.createElement('div');
+  fp.className='fpane';
+  fp.style.cssText=`left:${rect.left+20}px;top:${rect.top+20}px;width:${Math.max(300,rect.width)}px;height:${Math.max(200,rect.height)}px`;
+  fp.innerHTML=`
+    <div class="fpane-hdr" onmousedown="dragFpane(event,this.parentElement)">
+      <span class="fpane-title">${title}</span>
+      <span class="fpane-close" onclick="closeFpane(this.parentElement,'${paneId}')">✕</span>
+    </div>
+    <div class="fpane-body" id="fp-body-${paneId}"></div>`;
+  document.body.appendChild(fp);
+  // Move pane content into floating window
+  const body=fp.querySelector('.fpane-body');
+  body.appendChild(src);
+  src._fpane=fp; src._fpaneParent=src.parentElement;
+  // Add a placeholder
+  const ph=document.createElement('div');
+  ph.id=paneId+'-placeholder';
+  ph.style.cssText='display:flex;align-items:center;justify-content:center;flex:1;min-height:40px;color:var(--text3);font-size:10px';
+  ph.textContent=`${title} (floating)`;
+  src._fpaneParent.insertBefore(ph,null);
+  resizeSim();
+}
+
+function closeFpane(fp, paneId){
+  const src=document.getElementById(paneId); if(!src)return;
+  const ph=document.getElementById(paneId+'-placeholder');
+  if(ph&&src._fpaneParent){src._fpaneParent.insertBefore(src,ph);ph.remove();}
+  fp.remove();
+  resizeSim();
+}
+
+function dragFpane(e, fp){
+  const ox=e.clientX-fp.offsetLeft, oy=e.clientY-fp.offsetTop;
+  const mv=ev=>{fp.style.left=(ev.clientX-ox)+'px';fp.style.top=(ev.clientY-oy)+'px';};
+  const up=()=>{document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);};
+  document.addEventListener('mousemove',mv); document.addEventListener('mouseup',up);
+}
+
+// ═══════════════════════════════════════════
+// GLOBAL / LOCAL BB DISPLAY
+// ═══════════════════════════════════════════
+function renderBB(){
+  const ri=parseInt(document.getElementById('bbrobsel')?.value||'0');
+  const rob=robots[Math.min(ri,robots.length-1)]||robots[0]; if(!rob)return;
+  const globalOnly=document.getElementById('bb-global-chk')?.checked;
+  let entries=Object.entries(rob.bb);
+  if(globalOnly){
+    // Show global params (GLOBAL_PARAMS) and filter local bb
+    entries=Object.entries(GLOBAL_PARAMS);
+  }
+  const el=document.getElementById('bbwrap'); if(!el)return;
+  el.innerHTML=`<div style="font-size:8px;color:var(--text3);margin-bottom:3px">${globalOnly?'🌐 Global params':'🤖 '+rob.name+' local blackboard'}</div>`+
+    entries.map(([k,v])=>`<div class="bbr"><span class="bbk">${k}</span><span class="bbv">${JSON.stringify(v)}</span></div>`).join('');
+  if(!globalOnly&&Object.keys(GLOBAL_PARAMS).length){
+    el.innerHTML+=`<div style="font-size:8px;color:var(--text3);margin-top:4px;border-top:1px solid var(--border);padding-top:3px">🌐 Global params</div>`+
+      Object.entries(GLOBAL_PARAMS).map(([k,v])=>`<div class="bbr"><span class="bbk" style="color:var(--acc4)">${k}</span><span class="bbv">${JSON.stringify(v)}</span></div>`).join('');
+  }
+}
+
+// ═══════════════════════════════════════════
+// SENSOR TAB — per-robot range sync
+// ═══════════════════════════════════════════
+function syncSensorRobSel(){
+  const sel=document.getElementById('sensor-robsel'); if(!sel)return;
+  sel.innerHTML=robots.map((r,i)=>`<option value="${i}">${r.name}</option>`).join('');
+  sel.value=String(activeRobot);
+  const ri=activeRobot;
+  const sl1=document.getElementById('rob-sensor-sl');
+  const sl2=document.getElementById('rob-comm-sl');
+  if(sl1){sl1.value=robSensorRange[ri]||SENSOR_RANGE; document.getElementById('rob-sensor-val').textContent=sl1.value;}
+  if(sl2){sl2.value=robCommRange[ri]||COMM_RANGE; document.getElementById('rob-comm-val').textContent=sl2.value;}
+}
+
 function downloadLog(){
   // build text with tick log + explain history
   const lines=['BT Playground Pro — Execution Log','Generated: '+new Date().toISOString(),'','=== TICK LOG ==='];
@@ -1070,13 +1338,194 @@ function downloadLog(){
 }
 
 // ═══════════════════════════════════════════
+// CANVAS ZOOM / PAN
+// ═══════════════════════════════════════════
+function applyCanvasTransform(){
+  const ct=document.getElementById('canvas-transform');
+  if(ct) ct.style.transform=`translate(${canvasOffX}px,${canvasOffY}px) scale(${canvasScale})`;
+  // edges-g is inside esvg, transform it via its own group attribute
+  if(edgesG) edgesG.setAttribute('transform',`translate(${canvasOffX},${canvasOffY}) scale(${canvasScale})`);
+  const lbl=document.getElementById('zoom-label');
+  if(lbl) lbl.textContent=Math.round(canvasScale*100)+'%';
+}
+
+function zoomCanvas(factor, cx, cy){
+  const wrap=document.getElementById('cwrap');
+  const wx=cx!==undefined?cx:wrap.clientWidth/2;
+  const wy=cy!==undefined?cy:wrap.clientHeight/2;
+  const newScale=Math.max(0.2,Math.min(4,canvasScale*factor));
+  const sf=newScale/canvasScale;
+  canvasOffX=wx-(wx-canvasOffX)*sf;
+  canvasOffY=wy-(wy-canvasOffY)*sf;
+  canvasScale=newScale;
+  applyCanvasTransform();
+}
+
+function resetZoom(){
+  canvasScale=1; canvasOffX=0; canvasOffY=0; applyCanvasTransform();
+}
+
+function canvasClientToWorld(cx,cy){
+  return{x:(cx-canvasOffX)/canvasScale, y:(cy-canvasOffY)/canvasScale};
+}
+
+function initCanvasPanZoom(){
+  const wrap=document.getElementById('cwrap');
+
+  // Wheel zoom
+  wrap.addEventListener('wheel',e=>{
+    e.preventDefault();
+    const r=wrap.getBoundingClientRect();
+    zoomCanvas(e.deltaY<0?1.1:0.9, e.clientX-r.left, e.clientY-r.top);
+    drawEdges();
+  },{passive:false});
+
+  // Middle-mouse or space+drag pan
+  let spaceDown=false;
+  document.addEventListener('keydown',e=>{
+    if(e.code==='Space'&&!e.target.matches('input,textarea')){spaceDown=true;e.preventDefault();}
+    if((e.ctrlKey||e.metaKey)&&e.code==='KeyC') copySelected();
+    if((e.ctrlKey||e.metaKey)&&e.code==='KeyV') pasteNodes();
+    if(e.code==='Delete'||e.code==='Backspace'){
+      if(!e.target.matches('input,textarea')){
+        [...selectedNodes].forEach(id=>delNode(id));
+        selectedNodes.clear();
+        if(selectedEdge){deleteSelectedEdge();selectedEdge=null;}
+      }
+    }
+    if((e.ctrlKey||e.metaKey)&&e.code==='KeyA'&&!e.target.matches('input,textarea')){
+      selectAllNodes(); e.preventDefault();
+    }
+  });
+  document.addEventListener('keyup',e=>{if(e.code==='Space')spaceDown=false;});
+
+  wrap.addEventListener('mousedown',e=>{
+    if(e.button===1||(e.button===0&&spaceDown)){
+      // pan
+      isPanning=true;
+      panStartX=e.clientX-canvasOffX;
+      panStartY=e.clientY-canvasOffY;
+      wrap.classList.add('panning');
+      e.preventDefault();
+      const mv=ev=>{if(!isPanning)return;canvasOffX=ev.clientX-panStartX;canvasOffY=ev.clientY-panStartY;applyCanvasTransform();drawEdges();};
+      const up=()=>{isPanning=false;wrap.classList.remove('panning');document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);};
+      document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
+    } else if(e.button===0&&!e.target.closest('.btn-node')&&!e.target.closest('.port')){
+      // lasso
+      const r=wrap.getBoundingClientRect();
+      lassoStart=canvasClientToWorld(e.clientX-r.left,e.clientY-r.top);
+      lassoActive=true;
+      const sb=document.getElementById('sel-box');
+      if(sb){sb.style.display='block';sb.style.left=sb.style.top=sb.style.width=sb.style.height='0px';}
+      if(!e.shiftKey) clearSelection();
+      const mv=ev=>{
+        if(!lassoActive)return;
+        const r2=wrap.getBoundingClientRect();
+        const cur=canvasClientToWorld(ev.clientX-r2.left,ev.clientY-r2.top);
+        const lx=Math.min(lassoStart.x,cur.x),ly=Math.min(lassoStart.y,cur.y);
+        const lw=Math.abs(cur.x-lassoStart.x),lh=Math.abs(cur.y-lassoStart.y);
+        if(sb){
+          sb.style.left=(lx*canvasScale+canvasOffX)+'px';
+          sb.style.top=(ly*canvasScale+canvasOffY)+'px';
+          sb.style.width=(lw*canvasScale)+'px';
+          sb.style.height=(lh*canvasScale)+'px';
+          sb.style.display='block';
+        }
+        lassoBox={lx,ly,lw,lh};
+      };
+      const up=()=>{
+        lassoActive=false;
+        if(sb)sb.style.display='none';
+        if(lassoBox){
+          Object.values(nodes).forEach(n=>{
+            if(n.x>=lassoBox.lx&&n.x<=lassoBox.lx+lassoBox.lw&&n.y>=lassoBox.ly&&n.y<=lassoBox.ly+lassoBox.lh){
+              selectedNodes.add(n.id); n.el.classList.add('sel');
+            }
+          });
+          lassoBox=null;
+        }
+        document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);
+      };
+      document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
+    }
+  });
+}
+
+function selectAllNodes(){
+  Object.values(nodes).forEach(n=>{selectedNodes.add(n.id);n.el.classList.add('sel');});
+}
+
+function clearSelection(){
+  selectedNodes.forEach(id=>nodes[id]?.el.classList.remove('sel'));
+  selectedNodes.clear();
+  if(selectedEdge){
+    selectedEdge.el?.classList.remove('ep-sel');
+    selectedEdge=null;
+  }
+}
+
+// ═══════════════════════════════════════════
+// EDGE CLICK-TO-DELETE
+// ═══════════════════════════════════════════
+function deleteSelectedEdge(){
+  if(!selectedEdge)return;
+  const idx=edges.findIndex(e=>e.from===selectedEdge.from&&e.to===selectedEdge.to);
+  if(idx>=0){
+    edges.splice(idx,1);
+    const par=nodes[selectedEdge.from];
+    if(par) par.children=par.children.filter(c=>c!==selectedEdge.to);
+  }
+  selectedEdge=null; drawEdges();
+}
+
+// ═══════════════════════════════════════════
+// COPY / PASTE SUBTREE
+// ═══════════════════════════════════════════
+function copySelected(){
+  const ids=selectedNodes.size>0?[...selectedNodes]:(selId?[selId]:[]);
+  if(!ids.length){logMsg('<span class="li">// Nothing selected to copy.</span>');return;}
+  // include all descendants
+  const toInclude=new Set(ids);
+  const addDesc=(id)=>{nodes[id]?.children.forEach(c=>{toInclude.add(c);addDesc(c);});};
+  ids.forEach(addDesc);
+  clipboard={
+    nodes:[...toInclude].map(id=>{const n=nodes[id];return{...n,children:[...n.children],params:{...n.params}};}),
+    edges:edges.filter(e=>toInclude.has(e.from)&&toInclude.has(e.to)),
+  };
+  logMsg(`<span class="li">// Copied ${toInclude.size} nodes.</span>`);
+}
+
+function pasteNodes(){
+  if(!clipboard){logMsg('<span class="li">// Nothing to paste.</span>');return;}
+  clearSelection();
+  const idMap={};
+  const offsetX=40,offsetY=40;
+  clipboard.nodes.forEach(n=>{
+    const newId=createNode(n.type,n.x+offsetX,n.y+offsetY,n.robotAs);
+    idMap[n.id]=newId;
+    const nn=nodes[newId];
+    nn.label=n.label;nn.p1=n.p1;nn.p2=n.p2;nn.note=n.note||'';nn.utility=n.utility||50;nn.params={...n.params};nn.batDrain=n.batDrain||0;
+    nn.el.querySelector('.nl').textContent=nn.label;
+    selectedNodes.add(newId); nn.el.classList.add('sel');
+  });
+  clipboard.edges.forEach(e=>{
+    const fi=idMap[e.from],ti=idMap[e.to];
+    if(!fi||!ti)return;
+    if(!nodes[fi].children.includes(ti)){nodes[fi].children.push(ti);edges.push({from:fi,to:ti});}
+  });
+  drawEdges(); logMsg(`<span class="li">// Pasted ${clipboard.nodes.length} nodes.</span>`);
+}
+
+// ═══════════════════════════════════════════
 // DRAG PALETTE
 // ═══════════════════════════════════════════
 function pdrag(e,t){dragType=t;}
 function onDrop(e){
   if(!dragType)return;
   const r=document.getElementById('cwrap').getBoundingClientRect();
-  createNode(dragType,e.clientX-r.left-52,e.clientY-r.top-24);
+  const wx=(e.clientX-r.left-canvasOffX)/canvasScale;
+  const wy=(e.clientY-r.top-canvasOffY)/canvasScale;
+  createNode(dragType,wx-52,wy-24);
   dragType=null;
 }
 
@@ -1102,21 +1551,29 @@ function dragNodeEl(e,id){
 function startConn(e,id,port){
   e.stopPropagation(); e.preventDefault();
   const tmp=document.getElementById('tempedge'); tmp.style.display='';
+  document.getElementById('cwrap').classList.add('connecting');
   const mv=ev=>{
     const r=document.getElementById('cwrap').getBoundingClientRect();
     const n=nodes[id];
-    const sx=n.x+53,sy=port==='out'?n.y+66:n.y;
-    tmp.setAttribute('d',bez(sx,sy,ev.clientX-r.left,ev.clientY-r.top));
+    // source in world coords → screen coords
+    const sx=n.x*canvasScale+canvasOffX+53*canvasScale;
+    const sy=(port==='out'?n.y*canvasScale+canvasOffY+66*canvasScale:n.y*canvasScale+canvasOffY);
+    const mx=ev.clientX-r.left, my=ev.clientY-r.top;
+    tmp.setAttribute('d',bez(sx,sy,mx,my));
+    tmp.style.transform=''; // temp edge is in screen space
   };
   const up=ev=>{
     tmp.style.display='none';
+    document.getElementById('cwrap').classList.remove('connecting');
     document.removeEventListener('mousemove',mv); document.removeEventListener('mouseup',up);
     const r=document.getElementById('cwrap').getBoundingClientRect();
-    const mx=ev.clientX-r.left,my=ev.clientY-r.top;
+    const mx=ev.clientX-r.left, my=ev.clientY-r.top;
+    // convert to world
+    const wx=(mx-canvasOffX)/canvasScale, wy=(my-canvasOffY)/canvasScale;
     let target=null;
     Object.values(nodes).forEach(n=>{
       if(n.id===id)return;
-      if(mx>n.x&&mx<n.x+106&&my>n.y&&my<n.y+68)target=n.id;
+      if(wx>n.x&&wx<n.x+106&&wy>n.y&&wy<n.y+68)target=n.id;
     });
     if(target){
       let par=id,ch=target;
@@ -1128,27 +1585,64 @@ function startConn(e,id,port){
 }
 
 function bez(x1,y1,x2,y2){const cy=(y1+y2)/2;return `M${x1},${y1} C${x1},${cy} ${x2},${cy} ${x2},${y2}`;}
+// screen bezier (temp edge, not in transformed space)
+function bezScreen(x1,y1,x2,y2){const cy=(y1+y2)/2;return `M${x1},${y1} C${x1},${cy} ${x2},${cy} ${x2},${y2}`;}
 
 function drawEdges(){
-  esvg.querySelectorAll('.ep').forEach(e=>e.remove());
+  if(!edgesG) edgesG=document.getElementById('edges-g');
+  if(!edgesG) return;
+  edgesG.innerHTML='';
   edges.forEach(e=>{
     const f=nodes[e.from],t=nodes[e.to]; if(!f||!t)return;
-    const p=document.createElementNS('http://www.w3.org/2000/svg','path');
-    p.setAttribute('class','ep');
-    p.setAttribute('d',bez(f.x+53,f.y+66,t.x+53,t.y));
-    // color based on child node status
     const st=t.status||'idle';
     const col=st==='success'?'#00ff8880':st==='failure'?'#ff3d5a80':st==='running'?'#ffb80080':'#1e2d45';
     const mk=st==='success'?'arr-ok':st==='failure'?'arr-fail':st==='running'?'arr-run':'arr-idle';
-    p.setAttribute('stroke',col); p.setAttribute('stroke-width',st==='idle'?'1.5':'2.5');
-    p.setAttribute('fill','none'); p.setAttribute('marker-end',`url(#${mk})`);
-    esvg.appendChild(p);
+    const d=bez(f.x+53,f.y+66,t.x+53,t.y);
+    const isSel=selectedEdge&&selectedEdge.from===e.from&&selectedEdge.to===e.to;
+
+    // visible stroke
+    const vis=document.createElementNS('http://www.w3.org/2000/svg','path');
+    vis.setAttribute('d',d);
+    vis.setAttribute('stroke',isSel?'var(--danger)':col);
+    vis.setAttribute('stroke-width',st==='idle'?'1.5':'2.5');
+    vis.setAttribute('fill','none');
+    vis.setAttribute('marker-end',`url(#${mk})`);
+    if(isSel) vis.setAttribute('stroke-dasharray','5,3');
+
+    // invisible wide hit target
+    const hit=document.createElementNS('http://www.w3.org/2000/svg','path');
+    hit.setAttribute('d',d);
+    hit.setAttribute('stroke','transparent');
+    hit.setAttribute('stroke-width','14');
+    hit.setAttribute('fill','none');
+    hit.style.cursor='pointer';
+    hit.style.pointerEvents='stroke';
+    hit.addEventListener('click',ev=>{
+      ev.stopPropagation();
+      clearSelection();
+      selectedEdge={from:e.from,to:e.to};
+      drawEdges(); // re-render with selection
+    });
+    hit.addEventListener('dblclick',ev=>{
+      ev.stopPropagation();
+      selectedEdge={from:e.from,to:e.to};
+      deleteSelectedEdge();
+    });
+
+    // tooltip on hover
+    const title=document.createElementNS('http://www.w3.org/2000/svg','title');
+    title.textContent=`${f.label} → ${t.label}  (dbl-click or Del to remove)`;
+    hit.appendChild(title);
+
+    edgesG.appendChild(vis);
+    edgesG.appendChild(hit);
   });
   // dim idle nodes when any node is active
   const hasActive=Object.values(nodes).some(n=>n.status!=='idle');
   Object.values(nodes).forEach(n=>{
     n.el.classList.toggle('dimmed',hasActive&&n.status==='idle');
   });
+  applyCanvasTransform();
 }
 
 // ═══════════════════════════════════════════
@@ -1185,7 +1679,7 @@ function showProps(id){
   const batRow=document.getElementById('batdrain-row');
   if(batRow) batRow.style.display=(def.cat==='action')?'':'none';
   const pbat=document.getElementById('pbatdrain');
-  if(pbat) pbat.value=n.batDrain||0;
+  if(pbat) pbat.value=(n.batDrain!==undefined&&n.batDrain!=='') ? n.batDrain : 0;
 }
 
 function updateLabel(v){if(selId&&nodes[selId]){nodes[selId].label=v;nodes[selId].el.querySelector('.nl').textContent=v;}}
@@ -1237,6 +1731,7 @@ function tickBT(){
   tick++; updateTick();
   utilityScores={};
   lastTickTrace=[];
+  evaluateSchedules();
 
   const childSet=new Set();
   Object.values(nodes).forEach(n=>n.children.forEach(c=>childSet.add(c)));
@@ -1250,7 +1745,7 @@ function tickBT(){
     if(tw){
       const dx=tw.x-rob.wx,dy=tw.y-rob.wy,d=Math.hypot(dx,dy);
       if(d>2){
-        const spd=ROB_SPEED*0.6;
+        const spd=ROB_SPEED*0.6*(rob.speedMult||1);
         const mx=dx/d*spd, my=dy/d*spd;
         rob.wx+=mx; rob.wy+=my;
         rob.angle=Math.atan2(dy,dx);
@@ -1293,16 +1788,33 @@ function tickBT(){
   updateExplainability(); renderSensorTab(); updateSbar();
 }
 
+function getRobSensor(rob){ return robSensorRange[rob.idx]||SENSOR_RANGE; }
+function getRobComm(rob){ return robCommRange[rob.idx]||COMM_RANGE; }
+
 function checkObstacle(rob){
+  const sr=getRobSensor(rob);
   return ENV.walls.some(w=>{
     const cx=Math.max(w.x,Math.min(rob.wx,w.x+w.w));
     const cy=Math.max(w.y,Math.min(rob.wy,w.y+w.h));
-    return Math.hypot(cx-rob.wx,cy-rob.wy)<SENSOR_RANGE*0.5;
+    return Math.hypot(cx-rob.wx,cy-rob.wy)<sr*0.5;
   });
 }
 
 function checkPackage(rob){
-  return ENV.packages.some(p=>!p.collected&&inFOV(rob,p.x,p.y,SENSOR_RANGE));
+  return ENV.packages.some(p=>!p.collected&&inFOV(rob,p.x,p.y,getRobSensor(rob)));
+}
+
+function setRobotSensor(v){
+  const ri=parseInt(document.getElementById('sensor-robsel')?.value||'0');
+  robSensorRange[ri]=parseInt(v);
+  const lbl=document.getElementById('rob-sensor-val'); if(lbl)lbl.textContent=v;
+  renderSensorTab();
+}
+
+function setRobotComm(v){
+  const ri=parseInt(document.getElementById('sensor-robsel')?.value||'0');
+  robCommRange[ri]=parseInt(v);
+  const lbl=document.getElementById('rob-comm-val'); if(lbl)lbl.textContent=v;
 }
 
 function inFOV(rob,tx,ty,range){
@@ -1443,7 +1955,6 @@ function tickCond(id,rob){
     }
     case 'c_path_clear': return !bb.obstacle?'success':'failure';
     case 'c_collision':{
-      // imminent: obstacle within 20% of sensor range directly ahead
       const ahead=ENV.walls.some(w=>{
         const ax=rob.wx+Math.cos(rob.angle)*SENSOR_RANGE*0.2;
         const ay=rob.wy+Math.sin(rob.angle)*SENSOR_RANGE*0.2;
@@ -1451,15 +1962,34 @@ function tickCond(id,rob){
       });
       return ahead?'success':'failure';
     }
+    case 'c_robot_id': return rob.idx===parseInt(n.p1||'0')?'success':'failure';
+    case 'c_wp_near':{
+      const srange=robSensorRange[rob.idx]||SENSOR_RANGE;
+      const wp=ENV.waypoints.find(w=>w.id===(n.p1||'A'));
+      return wp&&inFOV(rob,wp.x,wp.y,srange)?'success':'failure';
+    }
+    case 'c_pkg_id':{
+      const srange=robSensorRange[rob.idx]||SENSOR_RANGE;
+      const pi=parseInt(n.p1||'0');
+      const pkg=ENV.packages[pi];
+      return pkg&&!pkg.collected&&inFOV(rob,pkg.x,pkg.y,srange)?'success':'failure';
+    }
+    case 'c_topic':{
+      const tname=n.p1||'/alert', maxAge=parseInt(n.p2||'5');
+      const msgs=topicBus[tname]||[];
+      return msgs.some(m=>tick-m.tick<=maxAge)?'success':'failure';
+    }
     default: return Math.random()>.4?'success':'failure';
   }
 }
 
 function tickAct(id,rob){
   const n=nodes[id],bb=rob.bb;
-  // Apply per-node battery drain override (if set, adds on top of global drain)
-  if(n.batDrain && n.batDrain>0){
-    bb.battery=Math.max(0,bb.battery-n.batDrain);
+  // Apply per-node extra battery drain (action nodes have default 1% if unset)
+  const def2=ND[n.type];
+  const perNodeDrain = (n.batDrain!==undefined && n.batDrain!==null && n.batDrain!=='') ? parseFloat(n.batDrain) : (def2&&def2.cat==='action' ? 0.0 : 0.0);
+  if(perNodeDrain>0){
+    bb.battery=Math.max(0,bb.battery-perNodeDrain);
   }
   // Resolve p1/p2 from node params if they reference a param key
   const p1=resolveParam(n, n.p1||'', rob);
@@ -1513,6 +2043,25 @@ function tickAct(id,rob){
       return 'success';
     }
     case 'a_setbb': bb[n.p1||'x']=pval(n.p2||''); return 'success';
+    case 'a_pub_topic':{
+      const tname=p1||'/alert', val=pval(p2||'true');
+      const crange=robCommRange[rob.idx]||COMM_RANGE;
+      if(!topicBus[tname])topicBus[tname]=[];
+      // Only push to robots within comm range (ROS-like broadcast)
+      topicBus[tname].push({value:val,publisherIdx:rob.idx,tick,range:crange});
+      if(topicBus[tname].length>50)topicBus[tname].shift();
+      addComm(rob.name,'topic:'+tname,String(tname),String(val),'ros');
+      return 'success';
+    }
+    case 'a_sub_topic':{
+      const tname=p1||'/alert', bbkey=p2||'got_alert';
+      const crange=robCommRange[rob.idx]||COMM_RANGE;
+      const msgs=topicBus[tname]||[];
+      // find latest message within range
+      const nearby=msgs.filter(m=>m.publisherIdx!==rob.idx&&wdist(robots[m.publisherIdx]||{wx:0,wy:0},rob)<Math.min(crange,(m.range||crange)));
+      if(nearby.length){bb[bbkey]=nearby[nearby.length-1].value;return 'success';}
+      return 'failure';
+    }
 
     // ── NAVIGATION ACTIONS ──
     case 'a_plan_path':{
@@ -1682,10 +2231,14 @@ function resetSim(){
   tick=0;updateTick();
   robots.forEach(resetRobotState);
   Object.values(nodes).forEach(n=>{setNodeSt(n.id,'idle');n.status='idle';});
-  logEl.innerHTML='<span class="li">// Reset.</span>';
+  // restore packages
+  ENV.packages.forEach(p=>{p.collected=false;});
+  // clear topic bus
+  Object.keys(topicBus).forEach(k=>delete topicBus[k]);
+  if(logEl) logEl.innerHTML='<span class="li">// ⏮ Reset. Workspace restored.</span>';
   document.getElementById('sdot').className='sdot ok';
   document.getElementById('stxt').textContent='Ready';
-  lastTickTrace=[];
+  lastTickTrace=[]; commLog=[];
   renderBB();renderComms();drawEdges();drawSim();
   updateExplainability();
 }
@@ -1702,7 +2255,7 @@ function syncRobotUI(){
   const rb=document.getElementById('robbar');
   rb.innerHTML=robots.map((r,i)=>`<button class="rsbtn" style="color:${r.color};border-color:${r.color};background:${i===activeRobot?r.color+'28':'transparent'}" onclick="setActiveRobot(${i})">${r.name}</button>`).join('');
   document.getElementById('roblbl').textContent='Robots: '+robots.length;
-  renderRobAssign(); renderBatRobRows();
+  renderRobAssign(); renderBatRobRows(); syncSensorRobSel();
   const ras=document.getElementById('probotas');
   if(ras){const cv=ras.value;ras.innerHTML='<option value="-1">All Robots</option>'+robots.map((r,i)=>`<option value="${i}">${r.name}</option>`).join('');ras.value=cv;}
 }
@@ -1751,7 +2304,7 @@ function logMsg(html){
 // ═══════════════════════════════════════════
 function updateExplainability(){
   const el=document.getElementById('expwrap'); if(!el)return;
-  if(!lastTickTrace.length){el.innerHTML='<div style="padding:8px;font-size:9px;color:var(--text3)">No tick data yet. Press Run.</div>';return;}
+  if(!lastTickTrace.length){el.innerHTML='<div style="padding:8px;font-size:9px;color:var(--text3)">No tick data yet. Press Run ▶</div>';return;}
   const byRobot={};
   lastTickTrace.forEach(t=>{if(!byRobot[t.robName])byRobot[t.robName]=[];byRobot[t.robName].push(t);});
   let html='';
@@ -1760,36 +2313,56 @@ function updateExplainability(){
     const running_nodes=trace.filter(t=>t.status==='running');
     const success_nodes=trace.filter(t=>t.status==='success');
     const fail_nodes=trace.filter(t=>t.status==='failure');
-    // find deepest running action
     const active=running_nodes.filter(t=>ND[t.type]?.cat==='action');
     const lastAct=active[active.length-1]||running_nodes[running_nodes.length-1];
-    // overall status
     const rootTrace=trace.find(t=>t.depth===0);
     const overallSt=rootTrace?.status||'—';
     const cls=overallSt==='running'?'exp-run':overallSt==='success'?'exp-ok':'exp-fail';
-    // build sentence
-    let what='Robot is idle.';
-    let why='No active behavior found in tree.';
+
+    let what='Robot is idle.', why='No active behavior.';
     if(lastAct){
       what=naturalAction(lastAct.label,lastAct.type,rob);
-      // find parent sequence/selector to explain why
       const parentTrace=trace.filter(t=>t.depth<lastAct.depth&&(ND[t.type]?.cat==='composite'||ND[t.type]?.cat==='decorator'));
       const par=parentTrace[parentTrace.length-1];
-      why=par?naturalParent(par.label,par.type,rob,trace):`Executing the top-level goal in the behavior tree.`;
+      why=par?naturalParent(par.label,par.type,rob,trace):`Executing the top-level goal.`;
     } else if(success_nodes.length){
-      what=`✓ ${robName} completed all current goals successfully this tick.`;
+      what=`✓ ${robName} completed all current goals.`;
       why=`The behavior tree returned SUCCESS at tick ${tick}.`;
     } else if(fail_nodes.length){
-      what=`✗ ${robName} failed to execute its current task.`;
-      why=`A node returned FAILURE. ${fail_nodes[0]?.label} could not proceed.`;
+      what=`✗ ${robName} could not execute its task.`;
+      why=`A node returned FAILURE — ${fail_nodes[0]?.label} could not proceed.`;
     }
-    // include user notes from active nodes
+
+    // ── PROACTIVE: preconditions achieved vs remaining ──
+    const condNodes=trace.filter(t=>ND[t.type]?.cat==='condition');
+    const preAchieved=condNodes.filter(t=>t.status==='success').map(t=>t.label);
+    const preRemaining=condNodes.filter(t=>t.status==='failure').map(t=>t.label);
+
+    const preHtml=preAchieved.length||preRemaining.length?`
+      <div style="font-size:8px;margin-top:4px;border-top:1px solid var(--border);padding-top:3px">
+        ${preAchieved.length?`<div style="color:var(--acc)">✓ Achieved: ${preAchieved.join(' · ')}</div>`:''}
+        ${preRemaining.length?`<div style="color:var(--danger)">✗ Remaining: ${preRemaining.join(' · ')}</div>`:''}
+      </div>`:'' ;
+
+    // ── Root goal progress ──
+    const totalNodes=trace.length;
+    const doneNodes=success_nodes.length;
+    const pct=totalNodes>0?Math.round(doneNodes/totalNodes*100):0;
+    const progressBar=`<div style="margin-top:4px;background:var(--border);border-radius:2px;height:3px"><div style="width:${pct}%;background:var(--acc);height:100%;border-radius:2px;transition:width .3s"></div></div>
+      <div style="font-size:7px;color:var(--text3);margin-top:1px">${pct}% of tree nodes succeeded this tick</div>`;
+
     const noteTexts=trace.filter(t=>nodes[t.nodeId]?.note).map(t=>`<i>"${nodes[t.nodeId].note}"</i>`).join(', ');
-    const noteHtml=noteTexts?`<div style="font-size:8px;color:var(--acc3);margin-top:2px">📝 Notes: ${noteTexts}</div>`:'';
-    html+=`<div class="exp-card ${cls}">
-      <b style="color:${rob.color}">${robName}</b> — tick ${tick} — <span style="color:${stcol(overallSt)}">${overallSt}</span><br>
-      ${what}
-      <div class="exp-why">🧠 Why: ${why}</div>
+    const noteHtml=noteTexts?`<div style="font-size:8px;color:var(--acc3);margin-top:3px">📝 ${noteTexts}</div>`:'';
+
+    html+=`<div class="exp-card ${cls}" style="margin-bottom:6px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
+        <b style="color:${rob.color}">${robName}</b>
+        <span style="font-size:8px;color:${stcol(overallSt)};font-family:'JetBrains Mono',monospace">${overallSt} · t${tick}</span>
+      </div>
+      <div style="font-size:10px">${what}</div>
+      <div class="exp-why">🧠 ${why}</div>
+      ${preHtml}
+      ${progressBar}
       ${noteHtml}
     </div>`;
   }
@@ -1982,13 +2555,48 @@ function resetEnv(){
   wpIdx=0; drawSim(); logMsg('<span class="li">// Environment reset.</span>');
 }
 
+// Base scale that fits 400×190 world into canvas (before user zoom)
+function simBaseScale(){
+  if(!simcv||!simcv.clientWidth)return 1;
+  return Math.min(simcv.clientWidth/400, simcv.clientHeight/190);
+}
+// Total effective scale: base × user zoom
+function simScale(){ return simBaseScale() * simScale_; }
+
+// Convert screen mouse event to world coordinates (accounting for zoom+pan)
 function simCoords(e){
   const r=simcv.getBoundingClientRect();
   const sc=simScale();
-  return{x:(e.clientX-r.left)/sc,y:(e.clientY-r.top)/sc};
+  const bsc=simBaseScale();
+  // screen → world: subtract pan offset then divide by effective scale
+  return {
+    x: (e.clientX - r.left) / sc - simOffX,
+    y: (e.clientY - r.top)  / sc - simOffY
+  };
 }
-function simScale(){
-  return Math.min(simcv.clientWidth/400,simcv.clientHeight/190);
+
+function zoomSim(factor, screenX, screenY){
+  const r=simcv.getBoundingClientRect();
+  const mx = screenX!==undefined ? screenX-r.left : simcv.clientWidth/2;
+  const my = screenY!==undefined ? screenY-r.top  : simcv.clientHeight/2;
+  const sc = simScale();
+  // world point under cursor before zoom
+  const wx = mx/sc - simOffX;
+  const wy = my/sc - simOffY;
+  simScale_ = Math.max(0.2, Math.min(8, simScale_ * factor));
+  // adjust offset so world point stays under cursor
+  const sc2 = simScale();
+  simOffX = mx/sc2 - wx;
+  simOffY = my/sc2 - wy;
+  drawSim();
+  const badge=document.getElementById('sim-zoom-badge');
+  if(badge) badge.textContent=Math.round(simScale_*100)+'%';
+}
+
+function resetSimZoom(){
+  simScale_=1; simOffX=0; simOffY=0; drawSim();
+  const badge=document.getElementById('sim-zoom-badge');
+  if(badge) badge.textContent='100%';
 }
 
 // wp edit runtime
@@ -2023,26 +2631,61 @@ function cancelWpEdit(){wpEditTarget=null;document.getElementById('wpoverlay').s
 // ═══════════════════════════════════════════
 function resizeSim(){
   const w=document.getElementById('scwrap');
+  if(!w||!simcv)return;
   simcv.width=w.clientWidth; simcv.height=w.clientHeight;
   drawSim();
 }
 
 function drawSim(){
   if(!simctx)return;
-  const W=simcv.width,H=simcv.height,sc=simScale();
+  const W=simcv.width,H=simcv.height;
+  const sc=simScale();
   simctx.clearRect(0,0,W,H);
   simctx.fillStyle='#040810'; simctx.fillRect(0,0,W,H);
-  // grid
-  simctx.strokeStyle='rgba(0,255,136,.03)'; simctx.lineWidth=1;
-  for(let x=0;x<W;x+=20){simctx.beginPath();simctx.moveTo(x,0);simctx.lineTo(x,H);simctx.stroke();}
-  for(let y=0;y<H;y+=20){simctx.beginPath();simctx.moveTo(0,y);simctx.lineTo(W,y);simctx.stroke();}
+  // adaptive grid in world-space
+  const gridStep=20;
+  simctx.strokeStyle='rgba(0,255,136,.025)'; simctx.lineWidth=1;
+  const startX=Math.floor(-simOffX/gridStep)*gridStep;
+  const startY=Math.floor(-simOffY/gridStep)*gridStep;
+  for(let wx=startX;wx<W/sc-simOffX;wx+=gridStep){
+    const sx=(wx+simOffX)*sc;
+    simctx.beginPath();simctx.moveTo(sx,0);simctx.lineTo(sx,H);simctx.stroke();
+  }
+  for(let wy=startY;wy<H/sc-simOffY;wy+=gridStep){
+    const sy=(wy+simOffY)*sc;
+    simctx.beginPath();simctx.moveTo(0,sy);simctx.lineTo(W,sy);simctx.stroke();
+  }
 
-  simctx.save(); simctx.scale(sc,sc);
+  // All world objects rendered with translate(offset)*scale
+  simctx.save();
+  simctx.scale(sc, sc);
+  simctx.translate(simOffX, simOffY);
 
-  // walls
-  ENV.walls.forEach(w=>{
+  // walls — with hatch texture, skip hidden ones
+  ENV.walls.forEach((w,wi)=>{
+    if(w.hidden)return;
+    const isSel=selectedObj&&selectedObj.type==='wall'&&selectedObj.idx===wi;
     simctx.fillStyle='#1f2937'; simctx.fillRect(w.x,w.y,w.w,w.h);
-    simctx.strokeStyle='#374151'; simctx.lineWidth=1.5; simctx.strokeRect(w.x,w.y,w.w,w.h);
+    simctx.strokeStyle=isSel?'var(--acc)':'#374151';
+    simctx.lineWidth=isSel?2.5:1.5; simctx.strokeRect(w.x,w.y,w.w,w.h);
+    // hatch lines
+    simctx.save(); simctx.rect(w.x,w.y,w.w,w.h); simctx.clip();
+    simctx.strokeStyle='#ffffff08'; simctx.lineWidth=1;
+    for(let i=-w.h;i<w.w+w.h;i+=8){
+      simctx.beginPath(); simctx.moveTo(w.x+i,w.y); simctx.lineTo(w.x+i+w.h,w.y+w.h); simctx.stroke();
+    }
+    simctx.restore();
+    // wall id/label
+    simctx.fillStyle=isSel?'#00ff88':'#4b5563';
+    simctx.font='7px JetBrains Mono,monospace'; simctx.textAlign='center'; simctx.textBaseline='middle';
+    simctx.fillText(w.label||('W'+(wi+1)),w.x+w.w/2,w.y+w.h/2);
+    // drag handle corners when selected
+    if(isSel){
+      simctx.fillStyle='#00ff88';
+      [[w.x,w.y],[w.x+w.w,w.y],[w.x,w.y+w.h],[w.x+w.w,w.y+w.h]].forEach(([cx,cy])=>{
+        simctx.beginPath();simctx.arc(cx,cy,3,0,Math.PI*2);simctx.fill();
+      });
+    }
   });
   if(wallDrag&&wallDrag.x1!==undefined){
     const x=Math.min(wallDrag.x0,wallDrag.x1),y=Math.min(wallDrag.y0,wallDrag.y1);
@@ -2088,23 +2731,56 @@ function drawSim(){
     }
   });
 
-  // packages
-  ENV.packages.forEach(p=>{
-    if(p.collected)return;
-    simctx.fillStyle='rgba(245,158,11,.2)'; simctx.fillRect(p.x-5,p.y-5,10,10);
-    simctx.strokeStyle='#f59e0b'; simctx.lineWidth=1.4; simctx.strokeRect(p.x-5,p.y-5,10,10);
-  });
-
-  // waypoints
-  ENV.waypoints.forEach(wp=>{
-    const isB=wp.id==='Base';
-    simctx.beginPath(); simctx.arc(wp.x,wp.y,8,0,Math.PI*2);
-    simctx.fillStyle=isB?'rgba(0,255,136,.18)':'rgba(0,212,255,.15)'; simctx.fill();
-    simctx.strokeStyle=isB?'#00ff88':'#00d4ff'; simctx.lineWidth=1.5; simctx.stroke();
-    simctx.fillStyle=isB?'#00ff88':'#00d4ff';
+  // packages — with index label, selection, hidden state
+  ENV.packages.forEach((p,pi)=>{
+    if(p.hidden)return;
+    const isSel=selectedObj&&selectedObj.type==='pkg'&&selectedObj.idx===pi;
+    if(p.collected){
+      simctx.beginPath();
+      simctx.moveTo(p.x,p.y-7);simctx.lineTo(p.x+6,p.y);simctx.lineTo(p.x,p.y+7);simctx.lineTo(p.x-6,p.y);simctx.closePath();
+      simctx.fillStyle='rgba(245,158,11,.06)';simctx.fill();
+      simctx.strokeStyle='rgba(245,158,11,.18)';simctx.lineWidth=1;simctx.stroke();
+      return;
+    }
+    simctx.beginPath();
+    simctx.moveTo(p.x,p.y-8);simctx.lineTo(p.x+7,p.y);simctx.lineTo(p.x,p.y+8);simctx.lineTo(p.x-7,p.y);simctx.closePath();
+    simctx.fillStyle=isSel?'rgba(245,158,11,.4)':'rgba(245,158,11,.22)'; simctx.fill();
+    simctx.strokeStyle=isSel?'#00ff88':'#f59e0b';
+    simctx.lineWidth=isSel?2.5:1.4; simctx.stroke();
+    simctx.fillStyle=isSel?'#00ff88':'#f59e0b';
     simctx.font='bold 7px JetBrains Mono,monospace';
     simctx.textAlign='center'; simctx.textBaseline='middle';
-    simctx.fillText(isB?'⚡':wp.id,wp.x,wp.y);
+    simctx.fillText(p.label!==undefined?p.label:pi, p.x, p.y);
+    // value/utility badge
+    if(p.value!==undefined){
+      simctx.fillStyle='rgba(245,158,11,.7)'; simctx.font='6px Inter,sans-serif';
+      simctx.fillText('v:'+p.value, p.x, p.y+12);
+    }
+  });
+
+  // waypoints — with selection, hidden state, value badges
+  ENV.waypoints.forEach((wp,wi)=>{
+    if(wp.hidden)return;
+    const isB=wp.id==='Base';
+    const isSel=selectedObj&&selectedObj.type==='wp'&&selectedObj.idx===wi;
+    const r=isSel?10:8;
+    simctx.beginPath(); simctx.arc(wp.x,wp.y,r,0,Math.PI*2);
+    simctx.fillStyle=isB?'rgba(0,255,136,.18)':'rgba(0,212,255,.15)'; simctx.fill();
+    simctx.strokeStyle=isSel?'#00ff88':(isB?'#00ff88':'#00d4ff');
+    simctx.lineWidth=isSel?2.5:1.5; simctx.stroke();
+    simctx.fillStyle=isSel?'#00ff88':(isB?'#00ff88':'#00d4ff');
+    simctx.font='bold 7px JetBrains Mono,monospace';
+    simctx.textAlign='center'; simctx.textBaseline='middle';
+    simctx.fillText(isB?'⚡':wp.id, wp.x, wp.y);
+    // utility/value label below
+    if(wp.utility!==undefined||wp.value!==undefined){
+      simctx.font='6px Inter,sans-serif'; simctx.fillStyle='rgba(0,212,255,.7)';
+      simctx.fillText((wp.utility!==undefined?'u:'+wp.utility:'')+(wp.value!==undefined?' v:'+wp.value:''), wp.x, wp.y+12);
+    }
+    if(wp.description){
+      simctx.font='6px Inter,sans-serif'; simctx.fillStyle='rgba(255,255,255,.35)';
+      simctx.fillText(wp.description.slice(0,10), wp.x, wp.y-12);
+    }
   });
 
   // robots
@@ -2154,7 +2830,7 @@ function stab(el,name){
     const tc=document.getElementById('tc-'+n);
     if(tc)tc.classList.toggle('on',n===name);
   });
-  if(name==='sensor')renderSensorTab();
+  if(name==='sensor'){syncSensorRobSel();renderSensorTab();}
   if(name==='metrics')renderMetrics();
 }
 function rtab(el,name){
@@ -2243,10 +2919,58 @@ const CHALL={
     edges:[['root','n1'],['root','n2'],['root','n3'],['n1','n1a'],['n1','n1b'],['n2','n2a'],['n2','n2b'],['n3','n3a'],['n3','n3b']],robots:1},
 };
 
+const CHALL_FORAGING = {
+  text:'Foraging: 3 robots must collectively collect ALL 5 packages scattered in the workspace. Each robot scans, picks up and returns to base.',
+  env:{
+    walls:[{x:170,y:40,w:8,h:70},{x:280,y:60,w:8,h:60},{x:100,y:110,w:60,h:8}],
+    waypoints:[{id:'A',x:80,y:70},{id:'B',x:200,y:60},{id:'C',x:310,y:100},{id:'D',x:150,y:140},{id:'Base',x:30,y:150}],
+    packages:[{x:90,y:65,collected:false},{x:220,y:55,collected:false},{x:320,y:95,collected:false},{x:160,y:135,collected:false},{x:260,y:130,collected:false}],
+  },
+  tpl:[
+    // Shared BT for all robots: scan → move to nearest package → pick up → return to base → drop off
+    {id:'root',type:'sequence',x:220,y:10},
+    {id:'n1',type:'selector',x:80,y:110},
+    {id:'n2',type:'sequence',x:380,y:110},
+    // selector: if carrying, go home; else scan+collect
+    {id:'n1a',type:'sequence',x:30,y:220},
+    {id:'n1b',type:'a_explore',x:160,y:220},
+    {id:'n1a1',type:'c_package',x:0,y:330},
+    {id:'n1a2',type:'a_pickup',x:100,y:330},
+    // return branch
+    {id:'n2a',type:'c_battery',x:300,y:220,p1:'20'},
+    {id:'n2b',type:'sequence',x:450,y:220},
+    {id:'n2b1',type:'a_move',x:400,y:330,p1:'Base'},
+    {id:'n2b2',type:'a_dropoff',x:510,y:330},
+    {id:'n2b3',type:'a_charge',x:410,y:430},
+  ],
+  edges:[
+    ['root','n1'],['root','n2'],
+    ['n1','n1a'],['n1','n1b'],
+    ['n1a','n1a1'],['n1a','n1a2'],
+    ['n2','n2a'],['n2','n2b'],
+    ['n2b','n2b1'],['n2b','n2b2'],['n2b','n2b3'],
+  ],
+  robots:3,
+};
+
 function loadChallenge(key){
   clearAll();
   document.getElementById('chalsel').value=key;
   if(key==='blank'){document.getElementById('cprompt').textContent='Build your own behavior tree.';return;}
+  if(key==='foraging'){
+    const ch=CHALL_FORAGING;
+    document.getElementById('cprompt').textContent=ch.text;
+    if(ch.env){ENV.walls=[...ch.env.walls];ENV.waypoints=ch.env.waypoints.map(w=>({...w}));ENV.packages=ch.env.packages.map(p=>({...p}));}
+    while(robots.length<ch.robots)addRobot();
+    while(robots.length>ch.robots)robots.pop();
+    syncRobotUI(); robots.forEach(resetRobotState);
+    const idMap={};
+    ch.tpl.forEach(nd=>{const nid=createNode(nd.type,nd.x,nd.y,nd.robotAs??-1);idMap[nd.id]=nid;const n=nodes[nid];if(nd.p1)n.p1=nd.p1;if(nd.p2)n.p2=nd.p2;n.el.querySelector('.nl').textContent=n.label;});
+    ch.edges.forEach(([f,t])=>{const fi=idMap[f],ti=idMap[t];if(!fi||!ti)return;if(!nodes[fi].children.includes(ti)){nodes[fi].children.push(ti);edges.push({from:fi,to:ti});}});
+    drawEdges(); drawSim();
+    logMsg('<span class="li">// 🍃 Foraging challenge loaded. 5 packages to collect with 3 robots!</span>');
+    return;
+  }
   const ch=CHALL[key]; if(!ch)return;
   document.getElementById('cprompt').textContent=ch.text;
   if(ch.env){ENV.walls=ch.env.walls||[];ENV.waypoints=ch.env.waypoints;ENV.packages=ch.env.packages||[];}
@@ -2340,70 +3064,389 @@ function initResizeHandles(){
   makeHrzHandle('pal-handle',
     document.getElementById('pal'),
     document.getElementById('center'),
-    80, 200);
+    80, 300);
   // center ↔ right panel
   makeHrzHandle('rpanel-handle',
     document.getElementById('center'),
     document.getElementById('rpanel'),
-    200, 120);
-  // sim canvas ↔ sim side panel
-  makeHrzHandle('smside-handle',
-    document.getElementById('scwrap'),
-    document.getElementById('smside'),
-    120, 100);
-  // canvas area ↕ sim panel
+    300, 120);
+  // BT editor ↔ Simulator (new side-by-side)
+  makeHrzHandle('btsim-handle',
+    document.getElementById('bt-pane'),
+    document.getElementById('sim-pane'),
+    150, 150);
+  // top-row ↕ bottom-pane
   makeVrtHandle('resize-handle',
-    document.getElementById('cwrap'),
-    document.getElementById('smpanel'),
-    80, 80);
+    document.getElementById('top-row'),
+    document.getElementById('bottom-pane'),
+    100, 60);
 }
 
 // ═══════════════════════════════════════════
-// ROBOT DRAG & DROP in sim canvas
+// SIM CANVAS — UNIFIED INTERACTION SYSTEM
+// zoom/pan + drag all objects + right-click props
 // ═══════════════════════════════════════════
-let robDrag = null; // { robot, offsetX, offsetY }
 
-function initRobotDrag(){
-  simcv.addEventListener('mousedown', e=>{
-    // only in view mode and when not drawing walls
-    if(envMode === 'wall') return;
+function hitTestSim(x, y){
+  // Returns {type, idx, obj} for the topmost object at world coords (x,y)
+  // Priority: robot > waypoint > package > wall
+  for(let i=0;i<robots.length;i++){
+    if(Math.hypot(robots[i].wx-x,robots[i].wy-y)<12) return {type:'robot',idx:i,obj:robots[i]};
+  }
+  for(let i=0;i<ENV.waypoints.length;i++){
+    const w=ENV.waypoints[i]; if(w.hidden)continue;
+    if(Math.hypot(w.x-x,w.y-y)<12) return {type:'wp',idx:i,obj:w};
+  }
+  for(let i=0;i<ENV.packages.length;i++){
+    const p=ENV.packages[i]; if(p.hidden||p.collected)continue;
+    if(Math.hypot(p.x-x,p.y-y)<10) return {type:'pkg',idx:i,obj:p};
+  }
+  for(let i=0;i<ENV.walls.length;i++){
+    const w=ENV.walls[i]; if(w.hidden)continue;
+    if(x>=w.x&&x<=w.x+w.w&&y>=w.y&&y<=w.y+w.h) return {type:'wall',idx:i,obj:w};
+  }
+  return null;
+}
 
-    const {x, y} = simCoords(e);
-    // find robot under cursor (hit radius 12 world-units)
-    const hit = robots.find(r => Math.hypot(r.wx - x, r.wy - y) < 12);
-    if(!hit) return;
+function initSimInteraction(){
+  const sc = document.getElementById('scwrap');
 
-    e.stopPropagation();
+  // ── Wheel zoom ──
+  simcv.addEventListener('wheel', e=>{
     e.preventDefault();
-    robDrag = { robot: hit, ox: x - hit.wx, oy: y - hit.wy };
-    simcv.classList.add('rob-drag');
+    zoomSim(e.deltaY<0?1.12:0.9, e.clientX, e.clientY);
+  },{passive:false});
 
-    const mv = ev => {
-      if(!robDrag) return;
-      const {x: nx, y: ny} = simCoords(ev);
-      robDrag.robot.wx = nx - robDrag.ox;
-      robDrag.robot.wy = ny - robDrag.oy;
-      // also update the robot's target_wp if it was just placed near a waypoint
-      const nearest = ENV.waypoints.reduce((best, wp)=>{
-        const d = Math.hypot(wp.x - robDrag.robot.wx, wp.y - robDrag.robot.wy);
-        return (!best || d < best.d) ? {wp, d} : best;
-      }, null);
-      if(nearest && nearest.d < 18){
-        robDrag.robot.bb.target_wp = nearest.wp.id;
+  // ── Mousedown: start drag (object or pan) or wall-draw ──
+  simcv.addEventListener('mousedown', e=>{
+    const {x,y}=simCoords(e);
+    cancelWpEdit(); closeObjProp();
+
+    if(envMode==='wall'){
+      if(!robots.some(r=>Math.hypot(r.wx-x,r.wy-y)<12)){
+        wallDrag={x0:x,y0:y}; return;
       }
+    }
+    if(envMode==='erase') return; // handled on click
+    if(envMode==='wp'||envMode==='pkg') return; // handled on click
+
+    // view mode: check for objects to drag
+    const hit=hitTestSim(x,y);
+    if(hit){
+      e.preventDefault();
+      selectedObj=hit; drawSim();
+      const startWx=hit.type==='robot'?hit.obj.wx:hit.obj.x;
+      const startWy=hit.type==='robot'?hit.obj.wy:hit.obj.y;
+      const osx=x, osy=y;
+      sc.style.cursor='move';
+      let moved=false;
+
+      const mv=ev=>{
+        const {x:nx,y:ny}=simCoords(ev);
+        moved=true;
+        if(hit.type==='robot'){
+          hit.obj.wx=startWx+(nx-osx); hit.obj.wy=startWy+(ny-osy);
+          // snap to nearby waypoint
+          const near=ENV.waypoints.reduce((b,wp)=>{const d=Math.hypot(wp.x-hit.obj.wx,wp.y-hit.obj.wy);return(!b||d<b.d)?{wp,d}:b;},null);
+          if(near&&near.d<18) hit.obj.bb.target_wp=near.wp.id;
+        } else if(hit.type==='wp'){
+          hit.obj.x=startWx+(nx-osx); hit.obj.y=startWy+(ny-osy);
+        } else if(hit.type==='pkg'){
+          hit.obj.x=startWx+(nx-osx); hit.obj.y=startWy+(ny-osy);
+        } else if(hit.type==='wall'){
+          hit.obj.x=startWx+(nx-osx); hit.obj.y=startWy+(ny-osy);
+        }
+        drawSim();
+      };
+      const up=()=>{
+        sc.style.cursor='';
+        document.removeEventListener('mousemove',mv);
+        document.removeEventListener('mouseup',up);
+        if(!moved){ openObjProp(hit,e); } // click without drag → open props
+        drawSim();
+      };
+      document.addEventListener('mousemove',mv);
+      document.addEventListener('mouseup',up);
+      return;
+    }
+
+    // No object hit → pan
+    simPanning=true;
+    const startPanX=e.clientX-simOffX*simScale();
+    const startPanY=e.clientY-simOffY*simScale();
+    sc.classList.add('sim-panning');
+    const mv=ev=>{
+      if(!simPanning)return;
+      const sc2=simScale();
+      simOffX=(ev.clientX-startPanX)/sc2;
+      simOffY=(ev.clientY-startPanY)/sc2;
       drawSim();
     };
-
-    const up = () => {
-      simcv.classList.remove('rob-drag');
-      robDrag = null;
-      document.removeEventListener('mousemove', mv);
-      document.removeEventListener('mouseup', up);
-      drawSim();
+    const up=()=>{
+      simPanning=false; sc.classList.remove('sim-panning');
+      document.removeEventListener('mousemove',mv); document.removeEventListener('mouseup',up);
     };
+    document.addEventListener('mousemove',mv); document.addEventListener('mouseup',up);
+  });
 
-    document.addEventListener('mousemove', mv);
-    document.addEventListener('mouseup', up);
+  // ── Wall draw mousemove/up ──
+  simcv.addEventListener('mousemove',e=>{
+    if(!wallDrag||envMode!=='wall')return;
+    const{x,y}=simCoords(e); wallDrag.x1=x; wallDrag.y1=y; drawSim();
+  });
+  simcv.addEventListener('mouseup',e=>{
+    if(!wallDrag||envMode!=='wall')return;
+    const{x,y}=simCoords(e);
+    const wx=Math.min(wallDrag.x0,x),wy=Math.min(wallDrag.y0,y);
+    const ww=Math.abs(x-wallDrag.x0),wh=Math.abs(y-wallDrag.y0);
+    if(ww>4||wh>4){
+      ENV.walls.push({x:wx,y:wy,w:Math.max(ww,4),h:Math.max(wh,4)});
+      logMsg('<span class="li">// Wall added.</span>');
+    }
+    wallDrag=null; drawSim();
+  });
+
+  // ── Click: place objects, erase ──
+  simcv.addEventListener('click',e=>{
+    const{x,y}=simCoords(e);
+    if(envMode==='wp'){
+      const id=WP_IDS[wpIdx%WP_IDS.length]+(wpIdx>=WP_IDS.length?Math.floor(wpIdx/WP_IDS.length):'');
+      wpIdx++; ENV.waypoints.push({id,x,y});
+      drawSim(); logMsg(`<span class="li">// Waypoint ${id} added.</span>`);
+    }
+    if(envMode==='pkg'){
+      const pi=ENV.packages.length;
+      ENV.packages.push({x,y,collected:false,label:pi});
+      drawSim();
+    }
+    if(envMode==='erase'){
+      const tol=14;
+      ENV.walls=ENV.walls.filter(w=>!(x>=w.x-tol&&x<=w.x+w.w+tol&&y>=w.y-tol&&y<=w.y+w.h+tol));
+      ENV.waypoints=ENV.waypoints.filter(w=>w.id==='Base'||Math.hypot(w.x-x,w.y-y)>tol);
+      ENV.packages=ENV.packages.filter(p=>Math.hypot(p.x-x,p.y-y)>tol);
+      selectedObj=null; drawSim();
+    }
+  });
+
+  // ── Right-click: open property panel ──
+  simcv.addEventListener('contextmenu',e=>{
+    e.preventDefault();
+    const{x,y}=simCoords(e);
+    const hit=hitTestSim(x,y);
+    if(hit) openObjProp(hit,e);
+    else { closeObjProp(); cancelWpEdit(); selectedObj=null; drawSim(); }
+  });
+
+  // ── Double-click waypoint: quick rename ──
+  simcv.addEventListener('dblclick',e=>{
+    const{x,y}=simCoords(e);
+    const wp=ENV.waypoints.find(w=>Math.hypot(w.x-x,w.y-y)<12);
+    if(wp){ const r=simcv.getBoundingClientRect(); openWpEdit(wp,e.clientX-r.left,e.clientY-r.top); }
+  });
+
+  // ── Keyboard: delete selected object, zoom shortcuts ──
+  document.addEventListener('keydown',e=>{
+    if(e.target.matches('input,textarea,select'))return;
+    if((e.key==='Delete'||e.key==='Backspace')&&selectedObj&&!e.target.matches('input,textarea')){
+      deleteObj(); return;
+    }
+    if(e.key==='='||e.key==='+') zoomSim(1.2);
+    if(e.key==='-') zoomSim(0.85);
+    if(e.key==='0') resetSimZoom();
+  });
+}
+
+// ── Object property panel functions ──
+function openObjProp(hit, e){
+  objPropTarget=hit;
+  const ov=document.getElementById('obj-prop-overlay');
+  const r=simcv.getBoundingClientRect();
+  const mx=e.clientX-r.left, my=e.clientY-r.top;
+  ov.style.left=Math.min(mx+8,simcv.clientWidth-220)+'px';
+  ov.style.top=Math.min(my+8,simcv.clientHeight-250)+'px';
+  renderObjPropFields();
+  renderObjSchedule();
+  ov.style.display='block';
+  objPropTab(ov.querySelector('.op-tab.on')||ov.querySelector('.op-tab'),'basic');
+}
+
+function closeObjProp(){ document.getElementById('obj-prop-overlay').style.display='none'; objPropTarget=null; }
+
+function objPropTab(el,name){
+  document.querySelectorAll('#obj-prop-overlay .op-tab').forEach(t=>t.classList.remove('on'));
+  if(el) el.classList.add('on');
+  document.getElementById('op-basic').style.display=name==='basic'?'':'none';
+  document.getElementById('op-schedule').style.display=name==='schedule'?'':'none';
+}
+
+function renderObjPropFields(){
+  if(!objPropTarget) return;
+  const {type,idx,obj}=objPropTarget;
+  const title=document.getElementById('obj-prop-title');
+  const fields=document.getElementById('obj-prop-fields');
+  let html='', t='';
+  if(type==='robot'){ t=`Robot ${obj.name}`;
+    html=`<div class="opr"><span class="opl">Name</span><input id="op-name" value="${obj.name}"></div>
+          <div class="opr"><span class="opl">Battery %</span><input id="op-battery" type="number" min="0" max="100" value="${Math.round(obj.bb.battery)}"></div>
+          <div class="opr"><span class="opl">Target WP</span><input id="op-twp" value="${obj.bb.target_wp||''}"></div>
+          <div class="opr"><span class="opl">Speed mult.</span><input id="op-speed" type="number" min="0.1" max="5" step="0.1" value="${obj.speedMult||1}"></div>`;
+  } else if(type==='wp'){ t=`Waypoint ${obj.id}`;
+    html=`<div class="opr"><span class="opl">ID</span><input id="op-id" value="${obj.id}"></div>
+          <div class="opr"><span class="opl">Utility</span><input id="op-utility" type="number" value="${obj.utility||''}"></div>
+          <div class="opr"><span class="opl">Value</span><input id="op-value" type="number" value="${obj.value||''}"></div>
+          <div class="opr"><span class="opl">Timeout (ticks)</span><input id="op-timeout" type="number" value="${obj.timeout||''}"></div>
+          <div class="opr"><span class="opl">Description</span><textarea id="op-desc">${obj.description||''}</textarea></div>
+          <div class="opr"><span class="opl">Hidden</span><input id="op-hidden" type="checkbox" ${obj.hidden?'checked':''}></div>`;
+  } else if(type==='pkg'){ t=`Package #${idx}`;
+    html=`<div class="opr"><span class="opl">Label</span><input id="op-label" value="${obj.label!==undefined?obj.label:idx}"></div>
+          <div class="opr"><span class="opl">Value</span><input id="op-value" type="number" value="${obj.value||''}"></div>
+          <div class="opr"><span class="opl">Weight</span><input id="op-weight" type="number" step="0.1" value="${obj.weight||1}"></div>
+          <div class="opr"><span class="opl">Priority</span><input id="op-priority" type="number" value="${obj.priority||0}"></div>
+          <div class="opr"><span class="opl">Description</span><textarea id="op-desc">${obj.description||''}</textarea></div>
+          <div class="opr"><span class="opl">Hidden</span><input id="op-hidden" type="checkbox" ${obj.hidden?'checked':''}></div>`;
+  } else if(type==='wall'){ t=`Wall #${idx}`;
+    html=`<div class="opr"><span class="opl">Label</span><input id="op-label" value="${obj.label||'W'+(idx+1)}"></div>
+          <div class="opr"><span class="opl">X</span><input id="op-x" type="number" value="${Math.round(obj.x)}"></div>
+          <div class="opr"><span class="opl">Y</span><input id="op-y" type="number" value="${Math.round(obj.y)}"></div>
+          <div class="opr"><span class="opl">Width</span><input id="op-w" type="number" value="${Math.round(obj.w)}"></div>
+          <div class="opr"><span class="opl">Height</span><input id="op-h" type="number" value="${Math.round(obj.h)}"></div>
+          <div class="opr"><span class="opl">Description</span><textarea id="op-desc">${obj.description||''}</textarea></div>
+          <div class="opr"><span class="opl">Hidden</span><input id="op-hidden" type="checkbox" ${obj.hidden?'checked':''}></div>`;
+  }
+  title.textContent=t;
+  fields.innerHTML=html;
+}
+
+function applyObjProp(){
+  if(!objPropTarget) return;
+  const {type,idx,obj}=objPropTarget;
+  const g=id=>document.getElementById(id);
+  if(type==='robot'){
+    if(g('op-name'))obj.name=g('op-name').value.trim()||obj.name;
+    if(g('op-battery'))obj.bb.battery=parseFloat(g('op-battery').value)||obj.bb.battery;
+    if(g('op-twp'))obj.bb.target_wp=g('op-twp').value.trim()||obj.bb.target_wp;
+    if(g('op-speed'))obj.speedMult=parseFloat(g('op-speed').value)||1;
+    syncRobotUI();
+  } else if(type==='wp'){
+    const newId=g('op-id')?.value.trim(); if(newId&&newId!==obj.id){
+      Object.values(nodes).forEach(n=>{if(n.p1===obj.id)n.p1=newId;});
+      robots.forEach(r=>{if(r.bb.target_wp===obj.id)r.bb.target_wp=newId;});
+      obj.id=newId;
+    }
+    if(g('op-utility'))obj.utility=g('op-utility').value!==''?parseFloat(g('op-utility').value):undefined;
+    if(g('op-value'))obj.value=g('op-value').value!==''?parseFloat(g('op-value').value):undefined;
+    if(g('op-timeout'))obj.timeout=g('op-timeout').value!==''?parseInt(g('op-timeout').value):undefined;
+    if(g('op-desc'))obj.description=g('op-desc').value.trim();
+    if(g('op-hidden'))obj.hidden=g('op-hidden').checked;
+  } else if(type==='pkg'){
+    if(g('op-label'))obj.label=g('op-label').value.trim()!==''?g('op-label').value.trim():undefined;
+    if(g('op-value'))obj.value=g('op-value').value!==''?parseFloat(g('op-value').value):undefined;
+    if(g('op-weight'))obj.weight=parseFloat(g('op-weight').value)||1;
+    if(g('op-priority'))obj.priority=parseInt(g('op-priority').value)||0;
+    if(g('op-desc'))obj.description=g('op-desc').value.trim();
+    if(g('op-hidden'))obj.hidden=g('op-hidden').checked;
+  } else if(type==='wall'){
+    if(g('op-label'))obj.label=g('op-label').value.trim();
+    if(g('op-x'))obj.x=parseFloat(g('op-x').value)||obj.x;
+    if(g('op-y'))obj.y=parseFloat(g('op-y').value)||obj.y;
+    if(g('op-w'))obj.w=parseFloat(g('op-w').value)||obj.w;
+    if(g('op-h'))obj.h=parseFloat(g('op-h').value)||obj.h;
+    if(g('op-desc'))obj.description=g('op-desc').value.trim();
+    if(g('op-hidden'))obj.hidden=g('op-hidden').checked;
+  }
+  drawSim(); closeObjProp();
+  logMsg(`<span class="li">// ${type} #${idx} updated.</span>`);
+}
+
+function deleteObj(){
+  if(!objPropTarget) return;
+  const {type,idx}=objPropTarget;
+  if(type==='wall'){ ENV.walls.splice(idx,1); }
+  else if(type==='wp'&&ENV.waypoints[idx]?.id!=='Base'){ ENV.waypoints.splice(idx,1); }
+  else if(type==='pkg'){ ENV.packages.splice(idx,1); }
+  else if(type==='robot'&&robots.length>1){ robots.splice(idx,1); robots.forEach((r,i)=>r.idx=i); syncRobotUI(); }
+  selectedObj=null; closeObjProp(); drawSim();
+}
+
+// ── Dynamic schedules ──
+function renderObjSchedule(){
+  if(!objPropTarget)return;
+  const obj=objPropTarget.obj;
+  if(!obj.schedule)obj.schedule=[];
+  const el=document.getElementById('obj-schedule-list'); if(!el)return;
+  el.innerHTML=obj.schedule.map((s,i)=>`
+    <div class="schedule-row">
+      <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+        <select style="font-size:8px;background:var(--s2);border:1px solid var(--border2);color:var(--text);border-radius:3px" onchange="updateScheduleField(${i},'event',this.value)">
+          <option ${s.event==='appear'?'selected':''}>appear</option>
+          <option ${s.event==='disappear'?'selected':''}>disappear</option>
+          <option ${s.event==='toggle'?'selected':''}>toggle</option>
+        </select>
+        <span onclick="removeScheduleEntry(${i})" style="color:var(--danger);cursor:pointer;font-size:10px">✕</span>
+      </div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap">
+        <span style="color:var(--text3)">at tick:</span>
+        <input type="number" value="${s.atTick||0}" style="width:40px" onchange="updateScheduleField(${i},'atTick',+this.value)">
+        <span style="color:var(--text3)">every:</span>
+        <input type="number" value="${s.repeatEvery||0}" style="width:40px" title="0=no repeat" onchange="updateScheduleField(${i},'repeatEvery',+this.value)">
+        <span style="color:var(--text3)">for:</span>
+        <input type="number" value="${s.duration||0}" style="width:40px" title="0=permanent" onchange="updateScheduleField(${i},'duration',+this.value)">
+      </div>
+      <div style="margin-top:3px">
+        <input style="width:100%" value="${s.label||''}" placeholder="label (optional)" onchange="updateScheduleField(${i},'label',this.value)">
+      </div>
+    </div>`).join('');
+}
+
+function addScheduleEntry(){
+  if(!objPropTarget)return;
+  const obj=objPropTarget.obj;
+  if(!obj.schedule)obj.schedule=[];
+  obj.schedule.push({event:'appear',atTick:tick+5,repeatEvery:0,duration:0,label:''});
+  renderObjSchedule();
+}
+function removeScheduleEntry(i){
+  if(!objPropTarget)return;
+  objPropTarget.obj.schedule.splice(i,1); renderObjSchedule();
+}
+function updateScheduleField(i,key,val){
+  if(!objPropTarget)return;
+  objPropTarget.obj.schedule[i][key]=val;
+}
+
+// ── Evaluate schedules each tick ──
+function evaluateSchedules(){
+  const allObjs=[
+    ...ENV.walls.map((o,i)=>({o,type:'wall',i})),
+    ...ENV.waypoints.map((o,i)=>({o,type:'wp',i})),
+    ...ENV.packages.map((o,i)=>({o,type:'pkg',i})),
+  ];
+  allObjs.forEach(({o})=>{
+    if(!o.schedule||!o.schedule.length)return;
+    o.schedule.forEach(s=>{
+      let atTick=s.atTick||0;
+      const rep=s.repeatEvery||0;
+      // compute effective trigger ticks
+      let triggers=[atTick];
+      if(rep>0){ for(let t2=atTick+rep;t2<=tick+1;t2+=rep) triggers.push(t2); }
+      triggers.forEach(tr=>{
+        if(tick!==tr)return; // only fire exactly on the tick
+        const dur=s.duration||0;
+        if(s.event==='appear')   o.hidden=false;
+        else if(s.event==='disappear') o.hidden=true;
+        else if(s.event==='toggle') o.hidden=!o.hidden;
+        if(dur>0){
+          // schedule reverse event after duration
+          setTimeout(()=>{
+            if(s.event==='appear') o.hidden=true;
+            else if(s.event==='disappear') o.hidden=false;
+            else o.hidden=!o.hidden;
+            drawSim();
+          }, dur*(1000/Math.max(1,TICK_HZ)));
+        }
+        if(s.label) logMsg(`<span class="lc">// 🕐 Schedule: ${s.label} (${s.event} at t${tick})</span>`);
+      });
+    });
   });
 }
 
@@ -2419,8 +3462,9 @@ function wdist(a,b){return Math.hypot((a.wx||0)-(b.wx||0),(a.wy||0)-(b.wy||0));}
 document.addEventListener('DOMContentLoaded',()=>{
   canvasEl=document.getElementById('canvas');
   esvg=document.getElementById('esvg');
+  edgesG=document.getElementById('edges-g');
   simcv=document.getElementById('simcv');
-  simctx=simcv.getContext('2d');
+  simctx=simcv?.getContext('2d');
   logEl=document.getElementById('logwrap');
   fovCv=document.getElementById('fovcanvas');
   fovCtx=fovCv?.getContext('2d');
@@ -2430,59 +3474,15 @@ document.addEventListener('DOMContentLoaded',()=>{
   robots.push(makeRobot(0));
   robBTAssign[0]='main';
   syncRobotUI(); renderBB(); renderComms(); renderRobAssign(); renderBatRobRows();
+  initCanvasPanZoom(); applyCanvasTransform();
   // init battery drain display
-  document.getElementById('bat-drain-all-val').textContent=globalBatDrain.toFixed(1)+'%';
+  const batAllLbl=document.getElementById('bat-drain-all-val');
+  if(batAllLbl)batAllLbl.textContent=globalBatDrain.toFixed(2)+'%/tick';
+  const batAllSl=document.getElementById('bat-drain-all');
+  if(batAllSl)batAllSl.value=globalBatDrain;
 
   window.addEventListener('resize',resizeSim);
-  resizeSim(); initResizeHandles(); initRobotDrag();
-
-  // sim canvas events
-  simcv.addEventListener('click',e=>{
-    const{x,y}=simCoords(e);
-    if(envMode==='wp'){
-      const id=WP_IDS[wpIdx%WP_IDS.length]+(wpIdx>=WP_IDS.length?Math.floor(wpIdx/WP_IDS.length):'');
-      wpIdx++; ENV.waypoints.push({id,x,y}); drawSim(); logMsg(`<span class="li">// Waypoint ${id} added.</span>`); return;
-    }
-    if(envMode==='pkg'){ENV.packages.push({x,y,collected:false});drawSim();return;}
-    if(envMode==='erase'){
-      const tol=16;
-      ENV.walls=ENV.walls.filter(w=>!(x>=w.x-tol&&x<=w.x+w.w+tol&&y>=w.y-tol&&y<=w.y+w.h+tol));
-      ENV.waypoints=ENV.waypoints.filter(w=>w.id==='Base'||Math.hypot(w.x-x,w.y-y)>tol);
-      ENV.packages=ENV.packages.filter(p=>Math.hypot(p.x-x,p.y-y)>tol);
-      drawSim(); return;
-    }
-  });
-
-  // right-click on waypoint to edit (runtime waypoint editing)
-  simcv.addEventListener('contextmenu',e=>{
-    e.preventDefault();
-    const{x,y}=simCoords(e);
-    const wp=ENV.waypoints.find(w=>Math.hypot(w.x-x,w.y-y)<14);
-    if(wp){
-      const r=simcv.getBoundingClientRect();
-      openWpEdit(wp,e.clientX-r.left,e.clientY-r.top);
-    } else cancelWpEdit();
-  });
-
-  simcv.addEventListener('mousedown',e=>{
-    if(envMode!=='wall')return;
-    // don't start wall draw if clicking on a robot
-    const{x,y}=simCoords(e);
-    if(robots.some(r=>Math.hypot(r.wx-x,r.wy-y)<12))return;
-    wallDrag={x0:x,y0:y};
-  });
-  simcv.addEventListener('mousemove',e=>{
-    if(!wallDrag||envMode!=='wall')return;
-    const{x,y}=simCoords(e); wallDrag.x1=x; wallDrag.y1=y; drawSim();
-  });
-  simcv.addEventListener('mouseup',e=>{
-    if(!wallDrag||envMode!=='wall')return;
-    const{x,y}=simCoords(e);
-    const wx=Math.min(wallDrag.x0,x),wy=Math.min(wallDrag.y0,y);
-    const ww=Math.abs(x-wallDrag.x0),wh=Math.abs(y-wallDrag.y0);
-    if(ww>5||wh>5){ENV.walls.push({x:wx,y:wy,w:ww,h:wh});logMsg('<span class="li">// Wall added.</span>');}
-    wallDrag=null; drawSim();
-  });
+  resizeSim(); initResizeHandles(); initSimInteraction();
 
   loadChallenge('patrol');
   document.getElementById('sdot').className='sdot ok';
