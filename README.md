@@ -6,7 +6,7 @@ An interactive, web-based **Behavior Tree playground** for programming and simul
 
 ## Live Demo
 
-> `https://herolab-uga.github.io/robotics-bt-playground/`
+> [https://herolab-uga.github.io/robotics-bt-playground/](https://herolab-uga.github.io/robotics-bt-playground/)
 
 ---
 
