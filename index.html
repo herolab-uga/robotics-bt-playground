@@ -271,6 +271,173 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
 .bat-row input[type=number]{width:40px;background:var(--s2);border:1px solid var(--border2);color:var(--warn);padding:1px 4px;border-radius:3px;font:9px 'JetBrains Mono',monospace}
 
 ::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* ══════════════════════════════════════
+   RESPONSIVE / MOBILE SYSTEM
+══════════════════════════════════════ */
+
+/* ── Collapsible panels ── */
+#pal{transition:width .2s,min-width .2s}
+#pal.collapsed{width:0!important;min-width:0!important;overflow:hidden}
+#rpanel{transition:width .2s,min-width .2s}
+#rpanel.collapsed{width:0!important;min-width:0!important;overflow:hidden}
+.hrz-handle.hidden{display:none}
+
+/* palette toggle button (always visible) */
+#pal-toggle{position:absolute;left:0;top:50%;transform:translateY(-50%);z-index:100;width:14px;height:40px;background:var(--sf);border:1px solid var(--border2);border-left:none;border-radius:0 5px 5px 0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--text3);user-select:none}
+#pal-toggle:hover{background:var(--s2);color:var(--acc)}
+#rpanel-toggle{position:absolute;right:0;top:50%;transform:translateY(-50%);z-index:100;width:14px;height:40px;background:var(--sf);border:1px solid var(--border2);border-right:none;border-radius:5px 0 0 5px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--text3);user-select:none}
+#rpanel-toggle:hover{background:var(--s2);color:var(--acc)}
+
+/* ── Mobile bottom nav ── */
+#mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:600;background:var(--sf);border-top:1px solid var(--border2);padding:0;safe-area-inset-bottom:env(safe-area-inset-bottom,0px)}
+.mnav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px 6px;font-size:8px;color:var(--text3);cursor:pointer;border:none;background:transparent;gap:3px;min-height:52px;transition:color .1s}
+.mnav-btn .mni{font-size:18px;line-height:1}
+.mnav-btn.active{color:var(--acc)}
+.mnav-btn.active .mni{filter:drop-shadow(0 0 6px var(--acc))}
+
+/* ── Mobile palette sheet (slides up) ── */
+#pal-sheet{display:none;position:fixed;bottom:52px;left:0;right:0;z-index:550;background:var(--sf);border-top:1px solid var(--border2);border-radius:12px 12px 0 0;max-height:65vh;overflow-y:auto;box-shadow:0 -8px 32px rgba(0,0,0,.6);transform:translateY(100%);transition:transform .25s cubic-bezier(.4,0,.2,1)}
+#pal-sheet.open{transform:translateY(0)}
+#pal-sheet-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:8px auto 4px;cursor:pointer}
+#pal-sheet .pgh{padding:6px 12px 3px;font-size:9px}
+#pal-sheet .pn{margin:1px 8px;padding:6px 8px}
+#pal-sheet .pnm{font-size:12px}
+#pal-sheet .pds{font-size:10px}
+#pal-sheet .pi{width:24px;height:24px;font-size:13px}
+
+/* mobile overlay (behind sheet, clicking closes it) */
+#pal-overlay{display:none;position:fixed;inset:0;z-index:540;background:rgba(0,0,0,.4)}
+
+/* ── Mobile props panel ── */
+#props-sheet{display:none;position:fixed;bottom:52px;left:0;right:0;z-index:550;background:var(--sf);border-top:1px solid var(--border2);border-radius:12px 12px 0 0;max-height:70vh;overflow-y:auto;box-shadow:0 -8px 32px rgba(0,0,0,.6);transform:translateY(100%);transition:transform .25s cubic-bezier(.4,0,.2,1)}
+#props-sheet.open{transform:translateY(0)}
+#props-sheet-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:8px auto 4px;cursor:pointer}
+
+/* ── Topbar compact on small screens ── */
+#topbar-overflow{display:none}  /* hidden sliders on mobile, accessible via ⚙ */
+#topbar-gear{display:none;padding:3px 8px;cursor:pointer;color:var(--text3);font-size:14px}
+#topbar-gear:hover{color:var(--acc)}
+#topbar-drawer{display:none;position:fixed;top:36px;right:0;z-index:500;background:var(--sf);border:1px solid var(--border2);border-radius:0 0 0 7px;padding:10px 12px;min-width:220px;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+#topbar-drawer.open{display:flex;flex-direction:column;gap:8px}
+#topbar-drawer .tdr{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text2)}
+#topbar-drawer .tdr label{color:var(--text3);font-size:9px;min-width:80px}
+#topbar-drawer select,#topbar-drawer input[type=range]{flex:1}
+
+/* ── Touch canvas fixes ── */
+#cwrap{touch-action:none}
+#scwrap{touch-action:none}
+
+/* ══════════════════════════════════════
+   TABLET  640–1023px
+══════════════════════════════════════ */
+@media (max-width:1023px) and (min-width:640px){
+  #top-row{flex-direction:column!important}
+  #sim-pane{width:auto!important;flex:1}
+  #btsim-handle{display:none}
+  /* shrink panels */
+  #pal{width:150px}
+  #rpanel{width:175px}
+  /* compress topbar */
+  #topbar .vsep:not(:first-of-type){display:none}
+  .tbl{font-size:8px}
+}
+
+/* ══════════════════════════════════════
+   MOBILE  < 640px
+══════════════════════════════════════ */
+@media (max-width:639px){
+  html,body{font-size:13px}
+
+  /* hide desktop chrome */
+  #pal{display:none!important}
+  #rpanel{display:none!important}
+  #pal-handle,#rpanel-handle,#btsim-handle,#resize-handle{display:none!important}
+  #pal-toggle,#rpanel-toggle{display:none}
+  .detach-btn{display:none}
+  .hrz-handle{display:none}
+  #robassign{display:none}
+
+  /* topbar: keep logo + run + gear only */
+  #topbar{padding:4px 10px;min-height:40px;flex-wrap:nowrap;gap:6px}
+  #topbar .vsep{display:none}
+  #topbar .tbl{display:none}
+  #topbar .slrow{display:none}
+  #topbar select.ts[id="chalsel"]{display:none} /* moved to drawer */
+  #topbar select.ts[id="robsel"]{display:none}
+  #topbar .btn[onclick*="addRobot"]{display:none}
+  #topbar .btn[onclick*="removeRobot"]{display:none}
+  #topbar .btn[onclick*="openImport"],#topbar .btn[onclick*="exportBT"],
+  #topbar .btn[onclick*="clearAll"],#topbar .btn[onclick*="copySelected"],
+  #topbar .btn[onclick*="pasteNodes"]{display:none}
+  #topbar-gear{display:flex!important;align-items:center}
+  .logo em,.logo span{display:none}
+  #runbtn{font-size:12px;padding:5px 14px}
+
+  /* full-height pane switching */
+  #main{position:relative}
+  #center{position:absolute;inset:0;bottom:52px}
+  #bt-pane,#sim-pane{position:absolute;inset:0;width:100%!important;flex:none!important}
+  #bt-pane{display:none}
+  #sim-pane{display:flex;flex-direction:column}
+  #bt-pane.mob-active{display:flex!important}
+  #sim-pane.mob-active{display:flex!important}
+  #top-row{position:absolute;inset:0;bottom:0;display:block!important}
+  #resize-handle{display:none}
+  #bottom-pane{position:fixed;bottom:52px;left:0;right:0;height:48vh;z-index:50;border-top:2px solid var(--border2);display:none!important}
+  #bottom-pane.mob-active{display:flex!important}
+
+  /* sim toolbar compact */
+  #sim-pane>div:first-child{flex-wrap:wrap;gap:3px;padding:3px 6px}
+  #sim-pane>div:first-child .vsep{display:none}
+  #sim-pane>div:first-child .tbl{display:none}
+  #sim-pane>div:first-child input[type=range]{width:36px}
+  #sim-pane>div:first-child .slval{display:none}
+
+  /* sim bottom bar compact */
+  #sim-pane>div:last-child{flex-wrap:wrap;gap:3px;padding:3px 6px;font-size:9px}
+  #sim-pane>div:last-child .tbl{display:none}
+  #sim-pane>div:last-child .vsep{display:none}
+  #sim-pane>div:last-child input[type=range]{width:40px}
+
+  /* BT editor header compact */
+  #bt-pane>div:first-child{padding:3px 6px;gap:3px}
+
+  /* bt-tabs scrollable */
+  #bt-tabs-bar{font-size:9px;overflow-x:auto}
+  .bt-tab{padding:3px 8px;font-size:9px}
+
+  /* node sizes on mobile */
+  .btn-node{min-width:88px;font-size:11px}
+  .nl{font-size:10px;padding:2px 6px 4px}
+  .nh{padding:3px 6px}
+  .pi{width:16px;height:16px;font-size:9px}
+  .nsfr{font-size:7px;padding:0 3px}
+
+  /* bottom-pane tabs scrollable */
+  .tabbar{overflow-x:auto}
+  .tab{font-size:9px;padding:4px 8px;white-space:nowrap;min-width:48px}
+
+  /* mobile nav show */
+  #mobile-nav{display:flex}
+  #pal-sheet{display:block}
+  #props-sheet{display:block}
+
+  /* obj prop overlay full-width on mobile */
+  #obj-prop-overlay{left:4px!important;right:4px!important;width:auto!important;top:auto!important;bottom:60px!important}
+
+  /* bottom pane full-width */
+  #bottom-pane{position:fixed;left:0;right:0}
+
+  /* bt-tabs-bar inline in BT pane header area */
+  #robassign{display:none}
+}
+
+/* ══════════════════════════════════════
+   SAFE AREA (iPhone notch / home bar)
+══════════════════════════════════════ */
+#mobile-nav{padding-bottom:env(safe-area-inset-bottom,0)}
+#app{padding-top:env(safe-area-inset-top,0)}
 </style>
 </head>
 <body>
@@ -313,7 +480,31 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
     <button class="btn bg bsm" onclick="clearAll()" title="Clear canvas">✕ Clear</button>
     <button class="btn bg bsm" onclick="copySelected()" title="Copy selected subtree (C)">⎘ Copy</button>
     <button class="btn bg bsm" onclick="pasteNodes()" title="Paste subtree (V)">⎙ Paste</button>
+    <div id="topbar-gear" onclick="toggleTopDrawer()" title="Settings">⚙</div>
     <button class="btn bp" id="runbtn" onclick="toggleRun()">▶ Run</button>
+  </div>
+</div>
+
+<!-- TOPBAR SETTINGS DRAWER (mobile) -->
+<div id="topbar-drawer">
+  <div class="tdr"><label>Scene</label><select class="ts" onchange="document.getElementById('chalsel').value=this.value;loadChallenge(this.value)">
+    <option value="patrol">Patrol & Recharge</option>
+    <option value="delivery">Package Delivery</option>
+    <option value="swarm">Swarm</option>
+    <option value="rescue">Search & Rescue</option>
+    <option value="foraging">🍃 Foraging</option>
+    <option value="blank">— Blank —</option>
+  </select></div>
+  <div class="tdr"><label>BT Speed</label><input type="range" min="0" max="10" value="2" step="1" oninput="document.getElementById('tickhz').value=this.value;updateTickHz()"><span id="tickhzval-m" style="color:var(--acc);font-size:9px;min-width:36px">2 Hz</span></div>
+  <div class="tdr"><label>Robot speed</label><input type="range" min="1" max="10" value="3" step="1" oninput="document.getElementById('robspeed').value=this.value;updateRobSpeed()"></div>
+  <div class="tdr"><label>Robots</label>
+    <button class="btn bg bsm" onclick="addRobot()">+ Robot</button>
+    <button class="btn bg bsm" onclick="removeRobot()">− Robot</button>
+  </div>
+  <div class="tdr">
+    <button class="btn bg bsm" onclick="openImport();toggleTopDrawer()">⬆ Import</button>
+    <button class="btn bg bsm" onclick="exportBT();toggleTopDrawer()">⬇ Export</button>
+    <button class="btn bg bsm" onclick="clearAll();toggleTopDrawer()">✕ Clear</button>
   </div>
 </div>
 
@@ -670,6 +861,55 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
   <span>|</span><span id="envlbl">mode: view</span>
   <span style="margin-left:auto;color:var(--text3)">click node · drag port · right-click wp to edit</span>
 </div>
+</div>
+
+<!-- MOBILE BOTTOM NAV -->
+<nav id="mobile-nav" role="navigation" aria-label="Main navigation">
+  <button class="mnav-btn active" id="mnav-sim" onclick="mobNav('sim')">
+    <span class="mni">🤖</span>Simulator
+  </button>
+  <button class="mnav-btn" id="mnav-bt" onclick="mobNav('bt')">
+    <span class="mni">🌳</span>BT Editor
+  </button>
+  <button class="mnav-btn" id="mnav-pal" onclick="mobNav('pal')">
+    <span class="mni">📦</span>Nodes
+  </button>
+  <button class="mnav-btn" id="mnav-log" onclick="mobNav('log')">
+    <span class="mni">📊</span>Panels
+  </button>
+  <button class="mnav-btn" id="mnav-prop" onclick="mobNav('prop')">
+    <span class="mni">⚙</span>Props
+  </button>
+</nav>
+
+<!-- PALETTE SHEET (mobile) -->
+<div id="pal-overlay" onclick="closePalSheet()"></div>
+<div id="pal-sheet">
+  <div id="pal-sheet-handle" onclick="closePalSheet()"></div>
+  <div id="pal-sheet-content"><!-- filled by JS from #pal --></div>
+</div>
+
+<!-- PROPS SHEET (mobile) -->
+<div id="props-sheet">
+  <div id="props-sheet-handle" onclick="closePropsSheet()"></div>
+  <div id="props-sheet-content" style="padding:4px 8px 60px">
+    <div class="tabbar">
+      <div class="tab on" onclick="mobPropTab(this,'node')">Node</div>
+      <div class="tab" onclick="mobPropTab(this,'btlib')">BT Lib</div>
+      <div class="tab" onclick="mobPropTab(this,'explain')">Explain</div>
+    </div>
+    <div id="mob-node-props" style="padding:4px">
+      <div id="mob-noprop" style="padding:12px;font-size:11px;color:var(--text3);text-align:center">Select a node to edit its properties</div>
+      <div id="mob-nprops" style="display:none"></div>
+    </div>
+    <div id="mob-btlib" style="display:none;padding:4px">
+      <div id="mob-btlib-list"></div>
+      <button class="btn bg bsm" onclick="addBT()" style="margin:6px 0">+ New BT</button>
+    </div>
+    <div id="mob-explain" style="display:none;padding:4px">
+      <div id="mob-expwrap"></div>
+    </div>
+  </div>
 </div>
 
 <div id="moverlay">
@@ -2231,8 +2471,22 @@ function resetSim(){
   tick=0;updateTick();
   robots.forEach(resetRobotState);
   Object.values(nodes).forEach(n=>{setNodeSt(n.id,'idle');n.status='idle';});
-  // restore packages
-  ENV.packages.forEach(p=>{p.collected=false;});
+  // restore packages + reset timing state on all objects
+  const allEnvObjs=[...ENV.packages,...ENV.waypoints,...ENV.walls];
+  allEnvObjs.forEach(o=>{
+    if(o.collected!==undefined) o.collected=false;
+    o._visibleSince=undefined;
+    o._pendingReverse=undefined;
+    // Re-arm spawnAtTick from waitTicks
+    if(o.waitTicks>0){
+      o.hidden=true;
+      o.spawnAtTick=o.waitTicks; // will fire at absolute tick = waitTicks
+    } else {
+      o.spawnAtTick=undefined;
+      // If it was hidden due to timeout, restore visibility (unless user set hidden=true initially)
+      if(o.timeoutTicks>0) o.hidden=false;
+    }
+  });
   // clear topic bus
   Object.keys(topicBus).forEach(k=>delete topicBus[k]);
   if(logEl) logEl.innerHTML='<span class="li">// ⏮ Reset. Workspace restored.</span>';
@@ -2367,6 +2621,9 @@ function updateExplainability(){
     </div>`;
   }
   el.innerHTML=html||'<div style="padding:8px;font-size:9px;color:var(--text3)">Tree is empty.</div>';
+  // sync mobile explain
+  const mobExp=document.getElementById('mob-expwrap');
+  if(mobExp) mobExp.innerHTML=el.innerHTML;
 }
 
 function naturalAction(label,type,rob){
@@ -3279,6 +3536,47 @@ function objPropTab(el,name){
   document.getElementById('op-schedule').style.display=name==='schedule'?'':'none';
 }
 
+// ── Timing helpers ──
+function objTimingStatus(obj){
+  // Returns a human-readable string about current timing state
+  const hidden = obj.hidden;
+  const wait   = obj.waitTicks || 0;
+  const timeout= obj.timeoutTicks || 0;
+  const spawnAt= obj.spawnAtTick;      // absolute tick to first appear
+  let lines=[];
+  if(spawnAt!==undefined && tick < spawnAt)
+    lines.push(`⏳ Appears at tick ${spawnAt} (in ${spawnAt-tick} ticks)`);
+  if(wait>0 && spawnAt===undefined)
+    lines.push(`⏳ Wait ${wait} tick(s) before appearing`);
+  if(timeout>0)
+    lines.push(`⏱ Disappears after ${timeout} tick(s) of being visible`);
+  if(hidden) lines.push(`👻 Currently hidden`);
+  else       lines.push(`✅ Currently visible`);
+  return lines.join(' · ');
+}
+
+function timingBlock(obj, statusText){
+  return `
+    <div style="border-top:1px solid var(--border);margin-top:4px;padding-top:4px">
+      <div style="font-size:8px;font-weight:600;color:var(--acc2);margin-bottom:4px">⏱ Timing</div>
+      <div class="opr">
+        <span class="opl" title="Ticks to wait from sim start before this object first appears (0 = visible immediately)">Wait before appear</span>
+        <input id="op-wait" type="number" min="0" value="${obj.waitTicks||0}" placeholder="0">
+        <span style="font-size:8px;color:var(--text3);margin-left:3px">ticks</span>
+      </div>
+      <div class="opr">
+        <span class="opl" title="How many ticks the object stays visible after appearing before auto-hiding (0 = stays forever)">Timeout / visible for</span>
+        <input id="op-timeout" type="number" min="0" value="${obj.timeoutTicks||0}" placeholder="0 = forever">
+        <span style="font-size:8px;color:var(--text3);margin-left:3px">ticks</span>
+      </div>
+      <div class="opr">
+        <span class="opl" title="Start hidden and reveal only after the wait period">Start hidden</span>
+        <input id="op-hidden" type="checkbox" ${obj.hidden?'checked':''}>
+      </div>
+      <div style="font-size:8px;color:var(--text3);margin-top:3px;line-height:1.5;padding:3px 0">${statusText}</div>
+    </div>`;
+}
+
 function renderObjPropFields(){
   if(!objPropTarget) return;
   const {type,idx,obj}=objPropTarget;
@@ -3291,27 +3589,29 @@ function renderObjPropFields(){
           <div class="opr"><span class="opl">Target WP</span><input id="op-twp" value="${obj.bb.target_wp||''}"></div>
           <div class="opr"><span class="opl">Speed mult.</span><input id="op-speed" type="number" min="0.1" max="5" step="0.1" value="${obj.speedMult||1}"></div>`;
   } else if(type==='wp'){ t=`Waypoint ${obj.id}`;
+    const timingStatus = objTimingStatus(obj);
     html=`<div class="opr"><span class="opl">ID</span><input id="op-id" value="${obj.id}"></div>
-          <div class="opr"><span class="opl">Utility</span><input id="op-utility" type="number" value="${obj.utility||''}"></div>
-          <div class="opr"><span class="opl">Value</span><input id="op-value" type="number" value="${obj.value||''}"></div>
-          <div class="opr"><span class="opl">Timeout (ticks)</span><input id="op-timeout" type="number" value="${obj.timeout||''}"></div>
+          <div class="opr"><span class="opl">Utility</span><input id="op-utility" type="number" value="${obj.utility!==undefined?obj.utility:''}"></div>
+          <div class="opr"><span class="opl">Value</span><input id="op-value" type="number" value="${obj.value!==undefined?obj.value:''}"></div>
           <div class="opr"><span class="opl">Description</span><textarea id="op-desc">${obj.description||''}</textarea></div>
-          <div class="opr"><span class="opl">Hidden</span><input id="op-hidden" type="checkbox" ${obj.hidden?'checked':''}></div>`;
+          ${timingBlock(obj,timingStatus)}`;
   } else if(type==='pkg'){ t=`Package #${idx}`;
+    const timingStatus = objTimingStatus(obj);
     html=`<div class="opr"><span class="opl">Label</span><input id="op-label" value="${obj.label!==undefined?obj.label:idx}"></div>
-          <div class="opr"><span class="opl">Value</span><input id="op-value" type="number" value="${obj.value||''}"></div>
+          <div class="opr"><span class="opl">Value</span><input id="op-value" type="number" value="${obj.value!==undefined?obj.value:''}"></div>
           <div class="opr"><span class="opl">Weight</span><input id="op-weight" type="number" step="0.1" value="${obj.weight||1}"></div>
           <div class="opr"><span class="opl">Priority</span><input id="op-priority" type="number" value="${obj.priority||0}"></div>
           <div class="opr"><span class="opl">Description</span><textarea id="op-desc">${obj.description||''}</textarea></div>
-          <div class="opr"><span class="opl">Hidden</span><input id="op-hidden" type="checkbox" ${obj.hidden?'checked':''}></div>`;
+          ${timingBlock(obj,timingStatus)}`;
   } else if(type==='wall'){ t=`Wall #${idx}`;
+    const timingStatus = objTimingStatus(obj);
     html=`<div class="opr"><span class="opl">Label</span><input id="op-label" value="${obj.label||'W'+(idx+1)}"></div>
           <div class="opr"><span class="opl">X</span><input id="op-x" type="number" value="${Math.round(obj.x)}"></div>
           <div class="opr"><span class="opl">Y</span><input id="op-y" type="number" value="${Math.round(obj.y)}"></div>
           <div class="opr"><span class="opl">Width</span><input id="op-w" type="number" value="${Math.round(obj.w)}"></div>
           <div class="opr"><span class="opl">Height</span><input id="op-h" type="number" value="${Math.round(obj.h)}"></div>
           <div class="opr"><span class="opl">Description</span><textarea id="op-desc">${obj.description||''}</textarea></div>
-          <div class="opr"><span class="opl">Hidden</span><input id="op-hidden" type="checkbox" ${obj.hidden?'checked':''}></div>`;
+          ${timingBlock(obj,timingStatus)}`;
   }
   title.textContent=t;
   fields.innerHTML=html;
@@ -3333,26 +3633,25 @@ function applyObjProp(){
       robots.forEach(r=>{if(r.bb.target_wp===obj.id)r.bb.target_wp=newId;});
       obj.id=newId;
     }
-    if(g('op-utility'))obj.utility=g('op-utility').value!==''?parseFloat(g('op-utility').value):undefined;
-    if(g('op-value'))obj.value=g('op-value').value!==''?parseFloat(g('op-value').value):undefined;
-    if(g('op-timeout'))obj.timeout=g('op-timeout').value!==''?parseInt(g('op-timeout').value):undefined;
-    if(g('op-desc'))obj.description=g('op-desc').value.trim();
-    if(g('op-hidden'))obj.hidden=g('op-hidden').checked;
+    if(g('op-utility')) obj.utility=g('op-utility').value!==''?parseFloat(g('op-utility').value):undefined;
+    if(g('op-value'))   obj.value=g('op-value').value!==''?parseFloat(g('op-value').value):undefined;
+    if(g('op-desc'))    obj.description=g('op-desc').value.trim();
+    applyTimingFields(obj);
   } else if(type==='pkg'){
-    if(g('op-label'))obj.label=g('op-label').value.trim()!==''?g('op-label').value.trim():undefined;
-    if(g('op-value'))obj.value=g('op-value').value!==''?parseFloat(g('op-value').value):undefined;
-    if(g('op-weight'))obj.weight=parseFloat(g('op-weight').value)||1;
-    if(g('op-priority'))obj.priority=parseInt(g('op-priority').value)||0;
-    if(g('op-desc'))obj.description=g('op-desc').value.trim();
-    if(g('op-hidden'))obj.hidden=g('op-hidden').checked;
+    if(g('op-label'))    obj.label=g('op-label').value.trim()!==''?g('op-label').value.trim():undefined;
+    if(g('op-value'))    obj.value=g('op-value').value!==''?parseFloat(g('op-value').value):undefined;
+    if(g('op-weight'))   obj.weight=parseFloat(g('op-weight').value)||1;
+    if(g('op-priority')) obj.priority=parseInt(g('op-priority').value)||0;
+    if(g('op-desc'))     obj.description=g('op-desc').value.trim();
+    applyTimingFields(obj);
   } else if(type==='wall'){
-    if(g('op-label'))obj.label=g('op-label').value.trim();
-    if(g('op-x'))obj.x=parseFloat(g('op-x').value)||obj.x;
-    if(g('op-y'))obj.y=parseFloat(g('op-y').value)||obj.y;
-    if(g('op-w'))obj.w=parseFloat(g('op-w').value)||obj.w;
-    if(g('op-h'))obj.h=parseFloat(g('op-h').value)||obj.h;
-    if(g('op-desc'))obj.description=g('op-desc').value.trim();
-    if(g('op-hidden'))obj.hidden=g('op-hidden').checked;
+    if(g('op-label')) obj.label=g('op-label').value.trim();
+    if(g('op-x'))     obj.x=parseFloat(g('op-x').value)||obj.x;
+    if(g('op-y'))     obj.y=parseFloat(g('op-y').value)||obj.y;
+    if(g('op-w'))     obj.w=parseFloat(g('op-w').value)||obj.w;
+    if(g('op-h'))     obj.h=parseFloat(g('op-h').value)||obj.h;
+    if(g('op-desc'))  obj.description=g('op-desc').value.trim();
+    applyTimingFields(obj);
   }
   drawSim(); closeObjProp();
   logMsg(`<span class="li">// ${type} #${idx} updated.</span>`);
@@ -3368,13 +3667,69 @@ function deleteObj(){
   selectedObj=null; closeObjProp(); drawSim();
 }
 
+// ── Apply timing fields from property panel ──
+function applyTimingFields(obj){
+  const gv = id=>{ const el=document.getElementById(id); return el?el.value:null; };
+  const wait    = parseInt(gv('op-wait'))||0;
+  const timeout = parseInt(gv('op-timeout'))||0;
+  const hidden  = document.getElementById('op-hidden')?.checked||false;
+
+  obj.waitTicks    = wait;
+  obj.timeoutTicks = timeout;
+  obj.hidden       = hidden;
+
+  // If wait > 0, start hidden and record the absolute tick to appear
+  if(wait > 0){
+    obj.hidden = true;
+    obj.spawnAtTick = tick + wait; // relative to NOW
+  } else {
+    obj.spawnAtTick = undefined;
+  }
+
+  // Reset any active timeout counter so it starts fresh
+  obj._visibleSince = undefined;
+
+  logMsg(`<span class="li">// ⏱ Timing set: wait=${wait} ticks, visible for ${timeout||'∞'} ticks.</span>`);
+}
+
 // ── Dynamic schedules ──
 function renderObjSchedule(){
   if(!objPropTarget)return;
   const obj=objPropTarget.obj;
   if(!obj.schedule)obj.schedule=[];
   const el=document.getElementById('obj-schedule-list'); if(!el)return;
-  el.innerHTML=obj.schedule.map((s,i)=>`
+
+  // ── Status banner at top ──
+  const wait    = obj.waitTicks||0;
+  const timeout = obj.timeoutTicks||0;
+  const spawnAt = obj.spawnAtTick;
+  let statusHtml='';
+  if(running){
+    if(spawnAt!==undefined)
+      statusHtml=`<div style="background:var(--s3);border:1px solid var(--warn);border-radius:4px;padding:4px 7px;margin-bottom:5px;font-size:8px;color:var(--warn)">
+        ⏳ Waiting to appear — tick ${spawnAt} (${Math.max(0,spawnAt-tick)} ticks remaining)
+      </div>`;
+    else if(!obj.hidden && timeout>0 && obj._visibleSince!==undefined){
+      const rem = timeout-(tick-obj._visibleSince);
+      statusHtml=`<div style="background:var(--s3);border:1px solid var(--acc);border-radius:4px;padding:4px 7px;margin-bottom:5px;font-size:8px;color:var(--acc)">
+        ✅ Visible — auto-hides in ${Math.max(0,rem)} ticks
+      </div>`;
+    } else if(obj.hidden){
+      statusHtml=`<div style="background:var(--s3);border:1px solid var(--danger);border-radius:4px;padding:4px 7px;margin-bottom:5px;font-size:8px;color:var(--danger)">
+        👻 Hidden
+      </div>`;
+    }
+  } else {
+    // show config summary when paused
+    const parts=[];
+    if(wait>0)    parts.push(`wait ${wait} ticks before appearing`);
+    if(timeout>0) parts.push(`auto-hide after ${timeout} ticks visible`);
+    if(obj.hidden)parts.push(`currently hidden`);
+    if(parts.length)
+      statusHtml=`<div style="background:var(--s2);border-radius:4px;padding:4px 7px;margin-bottom:5px;font-size:8px;color:var(--text3)">${parts.join(' · ')}</div>`;
+  }
+
+  el.innerHTML=statusHtml + obj.schedule.map((s,i)=>`
     <div class="schedule-row">
       <div style="display:flex;justify-content:space-between;margin-bottom:3px">
         <select style="font-size:8px;background:var(--s2);border:1px solid var(--border2);color:var(--text);border-radius:3px" onchange="updateScheduleField(${i},'event',this.value)">
@@ -3421,32 +3776,75 @@ function evaluateSchedules(){
     ...ENV.waypoints.map((o,i)=>({o,type:'wp',i})),
     ...ENV.packages.map((o,i)=>({o,type:'pkg',i})),
   ];
-  allObjs.forEach(({o})=>{
-    if(!o.schedule||!o.schedule.length)return;
+
+  allObjs.forEach(({o, type, i})=>{
+
+    // ── 1. waitTicks / spawnAtTick: appear after a delay ──
+    if(o.spawnAtTick !== undefined && tick === o.spawnAtTick){
+      o.hidden = false;
+      o._visibleSince = tick;
+      o.spawnAtTick = undefined; // consumed — don't re-trigger
+      const name = type==='wp' ? o.id : type==='pkg' ? `Pkg#${i}` : `Wall#${i}`;
+      logMsg(`<span class="lc">// 🌅 ${name} appeared at tick ${tick}</span>`);
+    }
+
+    // ── 2. timeoutTicks: auto-hide after being visible for N ticks ──
+    if(!o.hidden && o.timeoutTicks > 0){
+      if(o._visibleSince === undefined) o._visibleSince = tick; // start counting
+      const elapsed = tick - o._visibleSince;
+      if(elapsed >= o.timeoutTicks){
+        o.hidden = true;
+        o._visibleSince = undefined;
+        const name = type==='wp' ? o.id : type==='pkg' ? `Pkg#${i}` : `Wall#${i}`;
+        logMsg(`<span class="lr">// ⌛ ${name} timed out after ${o.timeoutTicks} ticks (hidden)</span>`);
+      }
+    }
+    // Reset visibility counter when object is hidden
+    if(o.hidden) o._visibleSince = undefined;
+
+    // ── 3. Manual schedule entries ──
+    if(!o.schedule||!o.schedule.length) return;
     o.schedule.forEach(s=>{
       let atTick=s.atTick||0;
       const rep=s.repeatEvery||0;
-      // compute effective trigger ticks
       let triggers=[atTick];
-      if(rep>0){ for(let t2=atTick+rep;t2<=tick+1;t2+=rep) triggers.push(t2); }
+      if(rep>0){ for(let t2=atTick+rep; t2<=tick; t2+=rep) triggers.push(t2); }
       triggers.forEach(tr=>{
-        if(tick!==tr)return; // only fire exactly on the tick
+        if(tick!==tr) return;
         const dur=s.duration||0;
-        if(s.event==='appear')   o.hidden=false;
-        else if(s.event==='disappear') o.hidden=true;
-        else if(s.event==='toggle') o.hidden=!o.hidden;
-        if(dur>0){
-          // schedule reverse event after duration
-          setTimeout(()=>{
-            if(s.event==='appear') o.hidden=true;
-            else if(s.event==='disappear') o.hidden=false;
-            else o.hidden=!o.hidden;
-            drawSim();
-          }, dur*(1000/Math.max(1,TICK_HZ)));
+        const prevHidden=o.hidden;
+        if(s.event==='appear')      { o.hidden=false; o._visibleSince=tick; }
+        else if(s.event==='disappear'){ o.hidden=true; o._visibleSince=undefined; }
+        else if(s.event==='toggle')   {
+          o.hidden=!o.hidden;
+          if(!o.hidden) o._visibleSince=tick; else o._visibleSince=undefined;
         }
-        if(s.label) logMsg(`<span class="lc">// 🕐 Schedule: ${s.label} (${s.event} at t${tick})</span>`);
+        // Duration: reverse after N ticks using a pending entry
+        if(dur>0 && o.hidden!==prevHidden){
+          const revEvent = s.event==='appear'?'disappear': s.event==='disappear'?'appear':'toggle';
+          // Insert a one-shot reverse schedule entry that fires dur ticks later
+          if(!o._pendingReverse) o._pendingReverse=[];
+          o._pendingReverse.push({at: tick+dur, event: revEvent});
+        }
+        const name = type==='wp' ? o.id : type==='pkg' ? `Pkg#${i}` : `Wall#${i}`;
+        if(s.label) logMsg(`<span class="lc">// 🕐 ${s.label}: ${name} → ${s.event} at t${tick}</span>`);
+        else        logMsg(`<span class="lc">// 🕐 Schedule: ${name} ${s.event} at t${tick}</span>`);
       });
     });
+
+    // ── 4. Process pending reverse events ──
+    if(o._pendingReverse){
+      o._pendingReverse = o._pendingReverse.filter(r=>{
+        if(tick < r.at) return true; // keep
+        if(r.event==='appear')      { o.hidden=false; o._visibleSince=tick; }
+        else if(r.event==='disappear'){ o.hidden=true; o._visibleSince=undefined; }
+        else if(r.event==='toggle')   {
+          o.hidden=!o.hidden;
+          if(!o.hidden) o._visibleSince=tick; else o._visibleSince=undefined;
+        }
+        return false; // remove once fired
+      });
+    }
   });
 }
 
@@ -3455,6 +3853,341 @@ function evaluateSchedules(){
 // ═══════════════════════════════════════════
 function rnd(a,b){return a+Math.random()*(b-a);}
 function wdist(a,b){return Math.hypot((a.wx||0)-(b.wx||0),(a.wy||0)-(b.wy||0));}
+function isMobile(){return window.innerWidth<640;}
+function isTablet(){return window.innerWidth>=640&&window.innerWidth<1024;}
+
+// ═══════════════════════════════════════════
+// RESPONSIVE LAYOUT MANAGEMENT
+// ═══════════════════════════════════════════
+let mobActivePane='sim'; // sim | bt | log
+
+function mobNav(pane){
+  if(!isMobile()) return;
+  mobActivePane=pane;
+
+  // update nav active state
+  ['sim','bt','pal','log','prop'].forEach(p=>{
+    document.getElementById('mnav-'+p)?.classList.toggle('active',p===pane);
+  });
+
+  // hide/show sheets
+  if(pane==='pal')  { openPalSheet(); return; }
+  if(pane==='prop') { openPropsSheet(); return; }
+  closePalSheet(); closePropsSheet();
+
+  // pane visibility
+  const bt=document.getElementById('bt-pane');
+  const sim=document.getElementById('sim-pane');
+  const bp=document.getElementById('bottom-pane');
+  if(bt)  bt.classList.toggle('mob-active', pane==='bt');
+  if(sim) sim.classList.toggle('mob-active', pane==='sim'||pane==='log'||pane==='prop');
+  if(bp)  bp.classList.toggle('mob-active', pane==='log');
+
+  // scroll log into view on log pane
+  if(pane==='log' && logEl) logEl.scrollTop=logEl.scrollHeight;
+}
+
+// Palette sheet
+function openPalSheet(){
+  const sheet=document.getElementById('pal-sheet');
+  const ov=document.getElementById('pal-overlay');
+  const content=document.getElementById('pal-sheet-content');
+  // Clone palette content
+  const srcPal=document.getElementById('pal');
+  if(srcPal&&content){
+    content.innerHTML=srcPal.innerHTML;
+    // rewire onclick handlers (they're inline, work fine in clone)
+  }
+  if(sheet) sheet.classList.add('open');
+  if(ov)    ov.style.display='block';
+}
+function closePalSheet(){
+  document.getElementById('pal-sheet')?.classList.remove('open');
+  document.getElementById('pal-overlay').style.display='none';
+  document.getElementById('mnav-pal')?.classList.remove('active');
+  if(mobActivePane==='pal') mobActivePane='sim';
+  document.getElementById('mnav-'+mobActivePane)?.classList.add('active');
+}
+
+// Props sheet (mobile node/BT properties)
+function openPropsSheet(){
+  const sheet=document.getElementById('props-sheet');
+  if(!sheet) return;
+  sheet.classList.add('open');
+  syncMobProps();
+}
+function closePropsSheet(){
+  document.getElementById('props-sheet')?.classList.remove('open');
+  document.getElementById('mnav-prop')?.classList.remove('active');
+  if(mobActivePane==='prop') mobActivePane='sim';
+  document.getElementById('mnav-'+mobActivePane)?.classList.add('active');
+}
+
+function syncMobProps(){
+  if(!isMobile()) return;
+  // sync node props
+  const src=document.getElementById('nprops');
+  const mobEl=document.getElementById('mob-nprops');
+  const mobNo=document.getElementById('mob-noprop');
+  if(src&&mobEl){
+    if(selId&&nodes[selId]){
+      mobEl.innerHTML=src.innerHTML;
+      mobEl.style.display='';
+      if(mobNo) mobNo.style.display='none';
+    } else {
+      mobEl.style.display='none';
+      if(mobNo) mobNo.style.display='';
+    }
+  }
+  // sync explain
+  const expSrc=document.getElementById('expwrap');
+  const expMob=document.getElementById('mob-expwrap');
+  if(expSrc&&expMob) expMob.innerHTML=expSrc.innerHTML;
+  // sync btlib
+  const libSrc=document.getElementById('btlib-list');
+  const libMob=document.getElementById('mob-btlib-list');
+  if(libSrc&&libMob) libMob.innerHTML=libSrc.innerHTML;
+}
+
+function mobPropTab(el,name){
+  el.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  ['mob-node-props','mob-btlib','mob-explain'].forEach(id=>{
+    document.getElementById(id).style.display='none';
+  });
+  if(name==='node')   document.getElementById('mob-node-props').style.display='';
+  if(name==='btlib')  document.getElementById('mob-btlib').style.display='';
+  if(name==='explain')document.getElementById('mob-explain').style.display='';
+}
+
+// Desktop panel toggles
+function initPanelToggles(){
+  // Add toggle buttons next to palette and right panel
+  const main=document.getElementById('main'); if(!main)return;
+  main.style.position='relative';
+
+  const palToggle=document.createElement('div');
+  palToggle.id='pal-toggle';
+  palToggle.title='Toggle palette (P)';
+  palToggle.innerHTML='◀';
+  palToggle.onclick=togglePalette;
+  main.appendChild(palToggle);
+
+  const rToggle=document.createElement('div');
+  rToggle.id='rpanel-toggle';
+  rToggle.title='Toggle properties (R)';
+  rToggle.innerHTML='▶';
+  rToggle.onclick=toggleRPanel;
+  main.appendChild(rToggle);
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown',ev=>{
+    if(ev.target.matches('input,textarea,select')) return;
+    if(ev.key==='p'||ev.key==='P') togglePalette();
+    if(ev.key==='r'||ev.key==='R') toggleRPanel();
+  });
+}
+
+function togglePalette(){
+  const pal=document.getElementById('pal');
+  const handle=document.getElementById('pal-handle');
+  const toggle=document.getElementById('pal-toggle');
+  if(!pal) return;
+  const collapsed=pal.classList.toggle('collapsed');
+  if(handle) handle.classList.toggle('hidden',collapsed);
+  if(toggle) toggle.innerHTML=collapsed?'▶':'◀';
+  setTimeout(resizeSim,220);
+}
+
+function toggleRPanel(){
+  const rp=document.getElementById('rpanel');
+  const handle=document.getElementById('rpanel-handle');
+  const toggle=document.getElementById('rpanel-toggle');
+  if(!rp) return;
+  const collapsed=rp.classList.toggle('collapsed');
+  if(handle) handle.classList.toggle('hidden',collapsed);
+  if(toggle) toggle.innerHTML=collapsed?'◀':'▶';
+  setTimeout(resizeSim,220);
+}
+
+// Settings drawer (mobile gear)
+function toggleTopDrawer(){
+  const d=document.getElementById('topbar-drawer');
+  if(!d) return;
+  d.classList.toggle('open');
+  // close when clicking outside
+  if(d.classList.contains('open')){
+    setTimeout(()=>{
+      document.addEventListener('click',function outside(e){
+        if(!d.contains(e.target)&&e.target.id!=='topbar-gear'){
+          d.classList.remove('open');
+          document.removeEventListener('click',outside);
+        }
+      });
+    },10);
+  }
+}
+
+// ═══════════════════════════════════════════
+// TOUCH SUPPORT
+// ═══════════════════════════════════════════
+function initTouchSupport(){
+  // ── BT canvas pinch-zoom + 1-finger pan ──
+  const cw=document.getElementById('cwrap'); if(!cw) return;
+  let touches={}, lastDist=0, lastMidX=0, lastMidY=0;
+  let touchPanMode=false;
+
+  cw.addEventListener('touchstart',e=>{
+    e.preventDefault();
+    Array.from(e.touches).forEach(t=>touches[t.identifier]={x:t.clientX,y:t.clientY});
+    if(e.touches.length===2){
+      const [a,b]=[e.touches[0],e.touches[1]];
+      lastDist=Math.hypot(b.clientX-a.clientX,b.clientY-a.clientY);
+      lastMidX=(a.clientX+b.clientX)/2; lastMidY=(a.clientY+b.clientY)/2;
+      touchPanMode=false;
+    } else if(e.touches.length===1){
+      touchPanMode=true;
+      panStartX=e.touches[0].clientX-canvasOffX;
+      panStartY=e.touches[0].clientY-canvasOffY;
+    }
+  },{passive:false});
+
+  cw.addEventListener('touchmove',e=>{
+    e.preventDefault();
+    if(e.touches.length===2){
+      const [a,b]=[e.touches[0],e.touches[1]];
+      const newDist=Math.hypot(b.clientX-a.clientX,b.clientY-a.clientY);
+      const midX=(a.clientX+b.clientX)/2, midY=(a.clientY+b.clientY)/2;
+      if(lastDist>0){
+        const r=cw.getBoundingClientRect();
+        zoomCanvas(newDist/lastDist, midX-r.left, midY-r.top);
+      }
+      lastDist=newDist; lastMidX=midX; lastMidY=midY;
+      drawEdges();
+    } else if(e.touches.length===1&&touchPanMode){
+      canvasOffX=e.touches[0].clientX-panStartX;
+      canvasOffY=e.touches[0].clientY-panStartY;
+      applyCanvasTransform(); drawEdges();
+    }
+  },{passive:false});
+
+  cw.addEventListener('touchend',e=>{
+    Array.from(e.changedTouches).forEach(t=>delete touches[t.identifier]);
+    if(e.touches.length<2) lastDist=0;
+    if(e.touches.length===0) touchPanMode=false;
+  });
+
+  // ── Sim canvas pinch-zoom + 1-finger pan + tap to select ──
+  if(!simcv) return;
+  let simTouches={}, simLastDist=0;
+
+  simcv.addEventListener('touchstart',e=>{
+    e.preventDefault();
+    Array.from(e.touches).forEach(t=>simTouches[t.identifier]={x:t.clientX,y:t.clientY});
+    if(e.touches.length===2){
+      const [a,b]=[e.touches[0],e.touches[1]];
+      simLastDist=Math.hypot(b.clientX-a.clientX,b.clientY-a.clientY);
+    } else if(e.touches.length===1){
+      // start pan or object drag (resolved on touchend)
+      const r=simcv.getBoundingClientRect();
+      const {x,y}=simCoords({clientX:e.touches[0].clientX,clientY:e.touches[0].clientY});
+      const hit=hitTestSim(x,y);
+      if(hit){
+        selectedObj=hit; drawSim();
+        const startWx=hit.type==='robot'?hit.obj.wx:hit.obj.x;
+        const startWy=hit.type==='robot'?hit.obj.wy:hit.obj.y;
+        const osx=x,osy=y;
+        simcv._touchDragHit=hit;
+        simcv._touchDragStart={startWx,startWy,osx,osy};
+      } else {
+        simcv._touchDragHit=null;
+        const sc=simScale();
+        simcv._touchPanStart={ox:e.touches[0].clientX-simOffX*sc, oy:e.touches[0].clientY-simOffY*sc};
+      }
+    }
+  },{passive:false});
+
+  simcv.addEventListener('touchmove',e=>{
+    e.preventDefault();
+    if(e.touches.length===2){
+      const [a,b]=[e.touches[0],e.touches[1]];
+      const newDist=Math.hypot(b.clientX-a.clientX,b.clientY-a.clientY);
+      const midX=(a.clientX+b.clientX)/2, midY=(a.clientY+b.clientY)/2;
+      if(simLastDist>0) zoomSim(newDist/simLastDist, midX, midY);
+      simLastDist=newDist;
+    } else if(e.touches.length===1){
+      const r=simcv.getBoundingClientRect();
+      const {x,y}=simCoords({clientX:e.touches[0].clientX,clientY:e.touches[0].clientY});
+      if(simcv._touchDragHit){
+        const h=simcv._touchDragHit, s=simcv._touchDragStart;
+        const nx=s.startWx+(x-s.osx), ny=s.startWy+(y-s.osy);
+        if(h.type==='robot'){h.obj.wx=nx;h.obj.wy=ny;}
+        else if(h.type==='wp'||h.type==='pkg'){h.obj.x=nx;h.obj.y=ny;}
+        else if(h.type==='wall'){h.obj.x=nx;h.obj.y=ny;}
+        drawSim();
+      } else if(simcv._touchPanStart){
+        const sc=simScale();
+        simOffX=(e.touches[0].clientX-simcv._touchPanStart.ox)/sc;
+        simOffY=(e.touches[0].clientY-simcv._touchPanStart.oy)/sc;
+        drawSim();
+      }
+    }
+  },{passive:false});
+
+  simcv.addEventListener('touchend',e=>{
+    Array.from(e.changedTouches).forEach(t=>delete simTouches[t.identifier]);
+    if(e.touches.length<2) simLastDist=0;
+    if(e.touches.length===0){
+      // tap on object → open props sheet on mobile
+      if(simcv._touchDragHit&&isMobile()){
+        openObjProp(simcv._touchDragHit,{clientX:e.changedTouches[0].clientX,clientY:e.changedTouches[0].clientY});
+      }
+      simcv._touchDragHit=null; simcv._touchPanStart=null;
+    }
+  });
+
+  // ── Swipe-down to close sheets ──
+  let sheetStartY=0;
+  ['pal-sheet','props-sheet'].forEach(id=>{
+    const el=document.getElementById(id); if(!el) return;
+    el.addEventListener('touchstart',ev=>{sheetStartY=ev.touches[0].clientY;},{passive:true});
+    el.addEventListener('touchmove',ev=>{
+      const dy=ev.touches[0].clientY-sheetStartY;
+      if(dy>60){
+        if(id==='pal-sheet') closePalSheet();
+        else closePropsSheet();
+      }
+    },{passive:true});
+  });
+}
+
+// ── On resize: switch between mobile/desktop layout ──
+function handleResize(){
+  resizeSim();
+  if(isMobile()){
+    // ensure correct pane is showing
+    mobNav(mobActivePane);
+  } else {
+    // restore desktop layout
+    const bt=document.getElementById('bt-pane');
+    const sim=document.getElementById('sim-pane');
+    const bp=document.getElementById('bottom-pane');
+    if(bt)  { bt.style.display=''; bt.classList.remove('mob-active'); }
+    if(sim) { sim.style.display=''; sim.classList.remove('mob-active'); }
+    if(bp)  { bp.style.display=''; bp.classList.remove('mob-active'); }
+    closePalSheet(); closePropsSheet();
+  }
+}
+
+// ── Auto-open props sheet on mobile when node selected ──
+const _origShowProps=showProps;
+// wrap showProps to also open mobile props sheet
+function showProps(id){
+  _origShowProps(id);
+  if(isMobile()&&id) {
+    setTimeout(syncMobProps,50); // small delay so DOM is updated first
+  }
+}
 
 // ═══════════════════════════════════════════
 // INIT
@@ -3481,8 +4214,12 @@ document.addEventListener('DOMContentLoaded',()=>{
   const batAllSl=document.getElementById('bat-drain-all');
   if(batAllSl)batAllSl.value=globalBatDrain;
 
-  window.addEventListener('resize',resizeSim);
+  window.addEventListener('resize', handleResize);
   resizeSim(); initResizeHandles(); initSimInteraction();
+  initPanelToggles(); initTouchSupport();
+
+  // Mobile: start on sim pane
+  if(isMobile()) mobNav('sim');
 
   loadChallenge('patrol');
   document.getElementById('sdot').className='sdot ok';
