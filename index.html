@@ -425,6 +425,7 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
       <option value="selector_basics">? Selector Basics</option>
       <option value="inverter_pattern">¬ Inverter Pattern</option>
       <option value="obstacle_react">⚠ Obstacle Reaction</option>
+      <option value="parallel_patrol">∥ Parallel Node</option>
     </optgroup>
     <optgroup label="⭐⭐ Intermediate">
       <option value="patrol">🔄 Patrol &amp; Recharge</option>
@@ -433,7 +434,6 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
       <option value="light_follow">💡 Light Following</option>
       <option value="wander_vacuum">🌀 Wander &amp; Vacuum</option>
       <option value="sys_explore">🔭 Systematic Exploration</option>
-      <option value="parallel_patrol">∥ Parallel Patrol</option>
     </optgroup>
     <optgroup label="⭐⭐⭐ Advanced">
       <option value="dynamic_maze">🌀 Dynamic Maze</option>
@@ -631,6 +631,11 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
 
   <div class="pgh-sub">Utility</div>
   <div class="pn" draggable="true" ondragstart="pdrag(event,'a_util_change')" onclick="addCenter('a_util_change')"><div class="pi" style="background:#fde8cc;color:#8a3a00">⚡</div><div><div class="pnm">Utility Change</div><div class="pds">Modify a node's utility score</div></div></div>
+  <div class="pgh-sub">Math &amp; Spatial</div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_calc_dist')"  onclick="addCenter('a_calc_dist')"><div class="pi"  style="background:#e8eeff;color:#1a3a9a">📐</div><div><div class="pnm">Calc Distance</div><div class="pds">dist(A,B) → BB key</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_calc_expr')"  onclick="addCenter('a_calc_expr')"><div class="pi"  style="background:#e8eeff;color:#1a3a9a">🧮</div><div><div class="pnm">Calc Expression</div><div class="pds">JS math → BB key</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_bb_clamp')"   onclick="addCenter('a_bb_clamp')"><div class="pi"   style="background:#e8eeff;color:#1a3a9a">⬛</div><div><div class="pnm">Clamp BB</div><div class="pds">Constrain BB number [min,max]</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'a_bb_map')"     onclick="addCenter('a_bb_map')"><div class="pi"     style="background:#e8eeff;color:#1a3a9a">↔</div><div><div class="pnm">Map BB Value</div><div class="pds">Linear remap range → range</div></div></div>
 
   <div class="pgh-sub">Custom Computation</div>
   <div class="pn" draggable="true" ondragstart="pdrag(event,'a_custom')"   onclick="addCenter('a_custom')"><div class="pi"   style="background:#d4f0e2;color:#0a5a2a">🐍</div><div><div class="pnm">Custom Process</div><div class="pds">JS expression → any BB key</div></div></div>
@@ -719,7 +724,7 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
         <input type="range" id="sensorsl" min="20" max="200" value="80" step="5" oninput="updateSensor()" style="width:40px">
         <span class="slval" id="sensorval" style="min-width:24px">80</span>
         <span class="tbl">Comm:</span>
-        <input type="range" id="commsl" min="30" max="300" value="120" step="10" oninput="updateComm()" style="width:40px">
+        <input type="range" id="commsl" min="30" max="1500" value="120" step="10" oninput="updateComm()" style="width:40px">
         <span class="slval" id="commval" style="min-width:24px">120</span>
         <div class="vsep"></div>
         <button class="zoom-btn" onclick="zoomSim(1.25)" title="Zoom in (+)">+</button>
@@ -861,7 +866,7 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
             <input type="range" id="rob-sensor-sl" min="20" max="200" value="80" step="5" oninput="setRobotSensor(this.value)" style="width:46px;accent-color:var(--acc2)">
             <span id="rob-sensor-val" style="color:var(--acc2);font-family:'JetBrains Mono',monospace">80</span>
             <span>Comm:</span>
-            <input type="range" id="rob-comm-sl" min="30" max="300" value="120" step="10" oninput="setRobotComm(this.value)" style="width:46px;accent-color:var(--acc3)">
+            <input type="range" id="rob-comm-sl" min="30" max="1500" value="120" step="10" oninput="setRobotComm(this.value)" style="width:46px;accent-color:var(--acc3)">
             <span id="rob-comm-val" style="color:var(--acc3);font-family:'JetBrains Mono',monospace">120</span>
             <span>Noise:</span>
             <input type="range" id="rob-light-noise" min="0" max="0.5" value="0.05" step="0.01" oninput="setRobotLightNoise(this.value)" style="width:40px;accent-color:#a06500">
@@ -968,6 +973,7 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
     <button class="tplb" onclick="loadChallenge('selector_basics')">? Selector Basics</button>
     <button class="tplb" onclick="loadChallenge('inverter_pattern')">¬ Inverter Pattern</button>
     <button class="tplb" onclick="loadChallenge('obstacle_react')">⚠ Obstacle Reaction</button>
+    <button class="tplb" onclick="loadChallenge('parallel_patrol')">∥ Parallel Node</button>
 
     <div style="font-size:7.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;padding:4px 2px 2px">⭐⭐ Intermediate</div>
     <button class="tplb" onclick="loadChallenge('patrol')">🔄 Patrol & Recharge</button>
@@ -976,7 +982,6 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
     <button class="tplb" onclick="loadChallenge('light_follow')">💡 Light Following</button>
     <button class="tplb" onclick="loadChallenge('wander_vacuum')">🌀 Wander & Vacuum</button>
     <button class="tplb" onclick="loadChallenge('sys_explore')">🔭 Systematic Exploration</button>
-    <button class="tplb" onclick="loadChallenge('parallel_patrol')">∥ Parallel Patrol</button>
 
     <div style="font-size:7.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;padding:4px 2px 2px">⭐⭐⭐ Advanced</div>
     <button class="tplb" onclick="loadChallenge('dynamic_maze')">🌀 Dynamic Maze</button>
@@ -1133,7 +1138,7 @@ const ND = {
   force_ok:   {l:'Force Succ.',   cat:'decorator',bg:'#011a0a',bd:'#4ade80',ic:'✓!',sh:'DEC',desc:'Always returns SUCCESS.'},
   c_battery:  {l:'Battery OK?',   cat:'condition',bg:'#2a1000',bd:'#f59e0b',ic:'⚡',sh:'IF',desc:'SUCCESS if battery > threshold.',p1:'Threshold%',p1d:'25'},
   c_obstacle: {l:'Obstacle?',     cat:'condition',ic:'⚠',sh:'OBS',desc:'SUCCESS if obstacle in range. P1=range px (0=robot sensor range). P2=FoV in degrees (0=360°, 90=front cone).',p1:'Range',p1d:'0',p2:'FoV°',p2d:'0'},
-  c_atgoal:   {l:'At Goal?',      cat:'condition',bg:'#2a1000',bd:'#f59e0b',ic:'◎',sh:'IF',desc:'SUCCESS if robot is at target waypoint.'},
+  c_atgoal:   {l:'At Goal?',      cat:'condition',ic:'◎',sh:'AT?',desc:'SUCCESS if robot is within arrivalDist of target. P1=waypoint/location ID (empty=uses bb.target_wp). Accepts any Navigate To target format: waypoint ID, pkg:nearest, x:N,y:N, or a BB key.',p1:'Target (empty=bb.target_wp)',p1d:''},
   c_package:  {l:'Package Near?', cat:'condition',ic:'📦',sh:'PKG',desc:'SUCCESS if uncollected package in range. P1=range px (0=sensor range). P2=FoV° (0=360°). Writes nearest coords to bb.pkg_x/pkg_y.',p1:'Range',p1d:'0',p2:'FoV°',p2d:'0'},
   c_ally:     {l:'Ally Near?',    cat:'condition',bg:'#2a1000',bd:'#f59e0b',ic:'🤝',sh:'IF',desc:'SUCCESS if ally within comm range.'},
   c_msg:      {l:'Msg Received?', cat:'condition',bg:'#2a1000',bd:'#f59e0b',ic:'📨',sh:'IF',desc:'SUCCESS if inbox has key.',p1:'Key',p1d:'alert'},
@@ -1187,6 +1192,10 @@ const ND = {
   a_bb_num:   {l:'Set Number',    cat:'action',   ic:'🔢',sh:'SET',desc:'Sets a BB key to a numeric value. P1 = key, P2 = number. Prefix / for global.',p1:'Key',p1d:'score',p2:'Value',p2d:'0'},
   a_bb_str:   {l:'Set String',    cat:'action',   ic:'🔤',sh:'SET',desc:'Sets a BB key to a string value. P1 = key, P2 = string. Prefix / for global.',p1:'Key',p1d:'mode',p2:'Value',p2d:'patrol'},
   a_bb_inc:   {l:'Increment BB',  cat:'action',   ic:'➕',sh:'INC',desc:'Increments a numeric BB key by P2 (default 1). P1 = key, P2 = amount. Prefix / for global.',p1:'Key',p1d:'score',p2:'Amount',p2d:'1'},
+  a_calc_dist: {l:'Calc Distance',  cat:'action',  ic:'📐',sh:'DIST',desc:'Calculate distance between two locations and write to BB. P1=label/WP/coords of A (or "robot" for current robot pos). P2=label/WP/coords of B. P3=BB key to write result into. Returns SUCCESS always.',p1:'From (label or "robot")',p1d:'robot',p2:'To (label or WP ID)',p2d:'A',p3:'BB output key',p3d:'dist_to_A'},
+  a_calc_expr: {l:'Calc Expression',cat:'action',  ic:'🧮',sh:'CALC',desc:'Evaluate a math expression and write result to BB. P1=JS expression (use bb.key, GLOBAL_PARAMS, Math, rob.wx, rob.wy, tick). P2=BB key to write result. P3=scope (local/global). Example: P1="Math.hypot(rob.wx-80, rob.wy-70)" P2=dist_to_A.',p1:'JS expression',p1d:'Math.hypot(rob.wx-80,rob.wy-70)',p2:'BB output key',p2d:'result',p3:'Scope',p3d:'local'},
+  a_bb_clamp:  {l:'Clamp BB Value', cat:'action',  ic:'⬛',sh:'CLP',desc:'Clamp a numeric BB key between min and max. P1=BB key, P2=min, P3=max. Writes clamped value back to same key. Use to prevent scores/counters going out of range.',p1:'BB key',p1d:'score',p2:'Min',p2d:'0',p3:'Max',p3d:'100'},
+  a_bb_map:    {l:'Map BB Value',   cat:'action',  ic:'↔',sh:'MAP',desc:'Linearly map a BB value from one range to another. P1=BB source key, P2=input range "min,max", P3=output range "min,max" and optional output key "min,max→outKey". Example P3="0,200→0,100→dist_norm".',p1:'Source BB key',p1d:'dist',p2:'Input range',p2d:'0,200',p3:'Output range→output key',p3d:'0,100→normalized'},
   a_util_change:{l:'Utility Change',cat:'action',  ic:'⚡',sh:'UTIL',desc:'Change the utility score of a named node. P1=node label to target, P2=operation (set|add|sub|mul|div), P3=value or BB key. e.g. P1="Scout 1" P2=add P3=10 or P3=bb:score.',p1:'Node label',p1d:'',p2:'Op (set|add|sub|mul|div)',p2d:'add',p3:'Value or bb:key',p3d:'10'},
   // Always-true / always-false leaf nodes
   c_true:     {l:'TRUE (always)',  cat:'condition',ic:'✅',sh:'TRUE',desc:'Always returns SUCCESS every tick, unconditionally. Use to force a branch to always succeed.'},
@@ -1325,6 +1334,7 @@ let edgesG; // SVG group for edges
 function makeRobot(i){
   return{idx:i,color:RCOLS[i%RCOLS.length],name:'R'+(i+1),
     wx:35+i*22,wy:140,angle:0,
+    health:100, // 0-100, decremented by proximity to adversary in pursuit scene
     bb:{battery:80-i*5,obstacle:false,at_goal:false,package_found:false,carrying:false,target_wp:['A','B','C'][i]||'A',victims_found:0,collisions:0},
     inbox:[],
     memState:{},repeatC:{},retryC:{},timeoutC:{},cooldownC:{},waitC:{},
@@ -1339,6 +1349,7 @@ function resetRobotState(r){
   const base=ENV.waypoints.find(w=>w.id==='Base')||{x:35,y:140};
   r.wx=base.x+r.idx*22; r.wy=base.y; r.angle=0;
   r.bb={battery:80-r.idx*5,obstacle:false,at_goal:false,package_found:false,carrying:false,target_wp:['A','B','C'][r.idx]||'A',victims_found:0,packages_delivered:0,packages_carried:0};
+  r.health=100;
   r.inbox=[];
   r.memState={}; r.repeatC={}; r.retryC={}; r.timeoutC={}; r.cooldownC={}; r.waitC={};
   r.visitedWps=new Set(); r.trail=[];
@@ -2866,6 +2877,17 @@ function tickBT(){
       return;
     }
     rob._deadLogged=false;
+    // Health drain — pursuer proximity (applies when /pursuer_active global is set)
+    if(GLOBAL_PARAMS['/pursuer_active']){
+      robots.forEach(other=>{
+        if(other.idx===rob.idx) return;
+        if(GLOBAL_PARAMS['/pursuer_idx']===other.idx){
+          const pd=Math.hypot(rob.wx-other.wx,rob.wy-other.wy);
+          if(pd<60){ rob.health=Math.max(0,rob.health-(60-pd)/60*2); }
+        }
+      });
+      rob.bb.health=Math.round(rob.health);
+    }
     rob.bb.obstacle=checkObstacle(rob);
     rob.bb.package_found=checkPackage(rob);
 
@@ -3023,10 +3045,21 @@ function getRobComm(rob){ return robCommRange[rob.idx]||COMM_RANGE; }
 //   PACKAGE_INDEX_STR   → pure number treated as package index (fallback)
 //
 // If nothing matches, returns null (action node returns FAILURE).
-function _resolveNavTarget(paramStr, rob){
+function _resolveNavTarget(paramStr, rob, _depth){
   if(!paramStr&&paramStr!==0) return null;
   const s=String(paramStr).trim();
   if(!s) return null;
+
+  // ── BB indirection: if s is a BB key (local or global), resolve its value ──
+  // This allows Navigate To P1="my_target" where bb.my_target = "P2" or "x:100,y:80"
+  if(_depth===undefined){
+    const bbVal = rob?.bb?.[s] ?? GLOBAL_PARAMS?.['/' + s] ?? GLOBAL_PARAMS?.[s];
+    if(bbVal !== undefined && bbVal !== null && bbVal !== s){
+      const resolved = _resolveNavTarget(bbVal, rob, 1); // one level of indirection
+      if(resolved) return resolved;
+      // If the bb value itself didn't resolve, fall through to try s as a literal
+    }
+  }
 
   // ── Explicit coordinates: "x:120,y:80" or "120,80" ──
   const coordMatch=s.match(/^x\s*:\s*([\d.-]+)[,\s]+y\s*:\s*([\d.-]+)$/i)
@@ -4250,8 +4283,14 @@ function tickCond(id,rob){
       return hasObs?'success':'failure';
     }
     case 'c_atgoal':{
-      const tw=ENV.waypoints.find(w=>w.id===bb.target_wp);
-      return(tw&&wdist(rob,{wx:tw.x,wy:tw.y})<10)?'success':'failure';
+      const targetId=p1||bb.target_wp||'';
+      const dest=targetId?_resolveNavTarget(targetId,rob):null;
+      if(!dest){
+        // No specific target — SUCCESS if near any waypoint
+        const anyWP=ENV.waypoints.find(w=>wdist(rob,{wx:w.x,wy:w.y})<12);
+        return anyWP?'success':'failure';
+      }
+      return wdist(rob,{wx:dest.x,wy:dest.y})<12?'success':'failure';
     }
     case 'c_package':{
       const range=parseFloat(p1)||getRobSensor(rob);
@@ -4553,10 +4592,21 @@ function tickAct(id,rob){
       return 'running';
     }
     case 'a_setutil':{
-      const sc=parseInt(n.p1)||50; utilityScores[id]=sc;
+      // P1 can be: number literal, "bb.key", or bare BB key name
+      const raw=(p1||'50').trim();
+      let sc=0;
+      if(raw.startsWith('bb.')){
+        sc=parseFloat(bb[raw.slice(3)]??0)||0;
+      } else if(isNaN(parseFloat(raw))){
+        sc=parseFloat(bb[raw]??GLOBAL_PARAMS['/'+raw]??0)||0;
+      } else {
+        sc=parseFloat(raw)||0;
+      }
+      utilityScores[id]=sc;
+      n.utility=sc;
       const uel=document.getElementById(id+'u');
-      if(uel){uel.style.display='block';uel.textContent=`score: ${sc}`;}
-      nodes[id].el.classList.add('has-utility');
+      if(uel){uel.style.display='block';uel.textContent=`score: ${sc.toFixed(1)}`;}
+      if(_tickingActiveBT&&n.el) n.el.classList.add('has-utility');
       return 'success';
     }
     case 'a_setbb':
@@ -4603,6 +4653,61 @@ function tickAct(id,rob){
     case 'a_bb_num':  { const k=p1||'n';    const v=parseFloat(p2)||0; if(k.startsWith('/'))GLOBAL_PARAMS[k]=v;  else bb[k]=v;  return 'success'; }
     case 'a_bb_str':  { const k=p1||'s';    const v=String(p2||'');    if(k.startsWith('/'))GLOBAL_PARAMS[k]=v;  else bb[k]=v;  return 'success'; }
     case 'a_bb_inc':  { const k=p1||'n'; const amt=parseFloat(p2)||1; const cur=k.startsWith('/')?GLOBAL_PARAMS[k]:bb[k]; const nv=(typeof cur==='number'?cur:0)+amt; if(k.startsWith('/'))GLOBAL_PARAMS[k]=nv; else bb[k]=nv; return 'success'; }
+    case 'a_calc_dist':{
+      // Resolve position A
+      const fromStr=(p1||'robot').trim().toLowerCase();
+      const posA=fromStr==='robot'
+        ?{x:rob.wx,y:rob.wy}
+        :(_resolveNavTarget(p1,rob));
+      // Resolve position B
+      const posB=_resolveNavTarget(p2,rob);
+      if(!posA||!posB) return 'failure';
+      const dist=Math.round(Math.hypot(posA.x-posB.x,posA.y-posB.y)*10)/10;
+      const outKey=p3||'dist_result';
+      if(outKey.startsWith('/')||p3==='global') GLOBAL_PARAMS[outKey.startsWith('/')?outKey:'/'+outKey]=dist;
+      else bb[outKey]=dist;
+      return 'success';
+    }
+
+    case 'a_calc_expr':{
+      try{
+        const exprFn=new Function('bb','GLOBAL_PARAMS','rob','ENV','Math','tick',
+          `"use strict"; return (${p1||'0'});`);
+        const result=exprFn(bb,GLOBAL_PARAMS,
+          {idx:rob.idx,wx:rob.wx,wy:rob.wy,angle:rob.angle,name:rob.name,battery:bb.battery},
+          ENV,Math,tick);
+        const outKey=p2||'result';
+        const isGlobal=outKey.startsWith('/')||p3==='global';
+        if(isGlobal) GLOBAL_PARAMS[outKey.startsWith('/')?outKey:'/'+outKey]=result;
+        else bb[outKey]=result;
+        return 'success';
+      } catch(e){ logMsg(`<span class="lr">// CalcExpr error: ${e.message}</span>`); return 'failure'; }
+    }
+
+    case 'a_bb_clamp':{
+      const ck=p1||'score';
+      const cmin=parseFloat(p2)||0, cmax=parseFloat(p3)||100;
+      const cur=parseFloat(bb[ck])||0;
+      bb[ck]=Math.max(cmin,Math.min(cmax,cur));
+      return 'success';
+    }
+
+    case 'a_bb_map':{
+      const srcKey=p1||'dist';
+      const srcVal=parseFloat(bb[srcKey])||0;
+      // Parse P2 as "min,max"
+      const [inMin,inMax]=(p2||'0,200').split(',').map(Number);
+      // Parse P3 as "min,max" or "min,max→outKey"
+      const p3parts=(p3||'0,100').split('→');
+      const [outMin,outMax]=(p3parts[0]||'0,100').split(',').map(Number);
+      const outKey=p3parts[1]?.trim()||srcKey;
+      const inRange=Math.max(0.001,(inMax||200)-(inMin||0));
+      const mapped=((srcVal-(inMin||0))/inRange)*((outMax||100)-(outMin||0))+(outMin||0);
+      const clamped=Math.max(outMin||0,Math.min(outMax||100,mapped));
+      bb[outKey]=Math.round(clamped*1000)/1000;
+      return 'success';
+    }
+
     case 'a_util_change':{
       const targetLabel=(p1||'').trim();
       const op=(p2||'add').trim().toLowerCase();
@@ -5056,6 +5161,8 @@ function restartBT(){
   if(GLOBAL_PARAMS['/ordered_delivery']===true){
     GLOBAL_PARAMS['/next_to_deliver']=1; GLOBAL_PARAMS['/order_violations']=0;
   }
+  // Reset health for all robots
+  robots.forEach(r=>{ r.health=100; r.bb.health=100; });
   robots.forEach(r=>{ r.inbox=[]; });
   // Clear metrics
   Object.keys(METRICS_HIST).forEach(k=>METRICS_HIST[k]=[]);
@@ -5551,6 +5658,17 @@ function renderMetrics(){
     cards.push(metricCard('🔭 Frontier',   (100-coveragePct)+'% left',       100-coveragePct,'#5a1a9a'));
   }
 
+  // ── Pursuit / Health section ──
+  if(GLOBAL_PARAMS['/pursuer_active']){
+    cards.push(sepCard('Health'));
+    robots.forEach(rob=>{
+      if(rob.idx===GLOBAL_PARAMS['/pursuer_idx']) return; // skip pursuer
+      const h=Math.round(rob.health||0);
+      const hcol=h>60?'#0a7c4e':h>30?'#d48000':'#c0392b';
+      cards.push(metricCard(`❤ ${rob.name}`, h+'%', h, hcol));
+    });
+  }
+
   if(ratesEl) ratesEl.innerHTML=cards.join('');
 
   // ══════════════════════════════════════════
@@ -5578,6 +5696,7 @@ function renderMetrics(){
       ${victims>0?`<span class="mv" style="color:#0a7c4e" title="Victims rescued">🧍${victims}</span>`:''}
       <span class="mv" style="color:#6b3fa0" title="Distance traveled">↔${Math.round(rob.distTraveled||0)}</span>
       <span class="mv" style="color:#c0392b" title="Collisions">💥${last.collisions||0}</span>
+      ${GLOBAL_PARAMS['/pursuer_active']&&rob.idx!==GLOBAL_PARAMS['/pursuer_idx']?`<span class="mv" style="color:${(rob.health||100)>60?'#0a7c4e':(rob.health||100)>30?'#d48000':'#c0392b'}" title="Health">❤${Math.round(rob.health||0)}%</span>`:''}
     </div>`;
   }).join('');
 }
@@ -6734,63 +6853,72 @@ const CHALL={
   },
 
   rescue:{
-    text:'Search & Rescue: R1 (Scout) systematically explores zones and broadcasts victim locations. R2 (Medic) listens for broadcasts and responds to rescue victims. Each robot has its own BT tab.',
+    text:'Search & Rescue: R1 (Scout) systematically explores zones and broadcasts victim locations. R2 (Medic) listens for broadcasts, rescues victims, and returns to Base. Each robot has its own BT tab.',
     robots:2,
     env:{
       walls:[{x:150,y:50,w:10,h:90,label:'W1'},{x:240,y:70,w:80,h:10,label:'W2'}],
       waypoints:[{id:'EX1',x:80,y:70},{id:'EX2',x:230,y:50},{id:'EX3',x:310,y:130},{id:'Base',x:35,y:140}],
-      packages:[{x:240,y:110,collected:false,label:'V1'},{x:290,y:80,collected:false,label:'V2'}],
+      packages:[],
+      victims:[
+        {id:'V1',x:240,y:110,rescued:false,label:'V1',color:'#cc4444'},
+        {id:'V2',x:290,y:80, rescued:false,label:'V2',color:'#cc8800'},
+      ],
       chargingStations:[{id:'Base',x:35,y:140,rate:20,label:'Base'}],
     },
     bts:[
-      // ── R1 Scout BT: explore → scan → broadcast → deliver → return ──
+      // ── R1 Scout: explores zones, detects victims, broadcasts locations ──
       { name:'Scout (R1)', tpl:[
         {id:'root',  type:'root',     x:300, y:10},
         {id:'top',   type:'selector', x:300, y:80},
-          // Battery guard (priority 1)
           {id:'bat',   type:'sequence', x:60,  y:160},
             {id:'bi',    type:'inverter', x:20,  y:240},
               {id:'bk',    type:'c_battery',x:20, y:320, p1:'20'},
             {id:'bg',    type:'a_charge', x:120, y:240, p1:'Base'},
-          // Main scout mission: mem-seq keeps progress across ticks
-          {id:'mseq',  type:'mem_seq',  x:540, y:160},
-            {id:'n1',    type:'a_nav_to', x:300, y:240, p1:'EX1'},
-            {id:'sc1',   type:'a_scan',   x:400, y:240},
-            {id:'n2',    type:'a_nav_to', x:500, y:240, p1:'EX2'},
-            {id:'sc2',   type:'a_scan',   x:600, y:240},
-            {id:'n3',    type:'a_nav_to', x:700, y:240, p1:'EX3'},
-            {id:'sc3',   type:'a_scan',   x:800, y:240},
-            {id:'pk',    type:'a_pickup', x:900, y:240},
-            {id:'bc',    type:'a_msg',    x:1000,y:240, p1:'broadcast', p2:'help=needed'},
-            {id:'nb',    type:'a_nav_to', x:1100,y:240, p1:'Base'},
-            {id:'dr',    type:'a_dropoff',x:1200,y:240},
+          // Reactive: if victim visible, broadcast and navigate to it
+          {id:'vsel',  type:'selector', x:600, y:160},
+            {id:'vseq',  type:'sequence', x:380, y:260},
+              {id:'vdet',  type:'c_victim', x:280, y:360, p1:'200', p2:'0'},
+              {id:'vpub',  type:'a_pub_topic',x:400,y:360, p1:'/victim_found', p2:'true'},
+              {id:'vnav',  type:'a_nav_to', x:540, y:360, p1:'victim_x'},
+            // Otherwise explore
+            {id:'mseq',  type:'mem_seq',  x:780, y:260},
+              {id:'n1',    type:'a_nav_to', x:620, y:360, p1:'EX1'},
+              {id:'sc1',   type:'a_scan',   x:730, y:360},
+              {id:'n2',    type:'a_nav_to', x:840, y:360, p1:'EX2'},
+              {id:'sc2',   type:'a_scan',   x:950, y:360},
+              {id:'n3',    type:'a_nav_to', x:1060,y:360, p1:'EX3'},
+              {id:'sc3',   type:'a_scan',   x:1170,y:360},
       ], edges:[
-        ['root','top'],['top','bat'],['top','mseq'],
+        ['root','top'],['top','bat'],['top','vsel'],
         ['bat','bi'],['bat','bg'],['bi','bk'],
-        ['mseq','n1'],['mseq','sc1'],['mseq','n2'],['mseq','sc2'],
-        ['mseq','n3'],['mseq','sc3'],['mseq','pk'],['mseq','bc'],['mseq','nb'],['mseq','dr'],
+        ['vsel','vseq'],['vsel','mseq'],
+        ['vseq','vdet'],['vseq','vpub'],['vseq','vnav'],
+        ['mseq','n1'],['mseq','sc1'],['mseq','n2'],['mseq','sc2'],['mseq','n3'],['mseq','sc3'],
       ]},
 
-      // ── R2 Medic BT: wait for help signal → respond → rescue ──
+      // ── R2 Medic: listens for victim topic → rescues → returns to Base ──
       { name:'Medic (R2)', tpl:[
-        {id:'root',  type:'root',     x:220, y:10},
-        {id:'top',   type:'selector', x:220, y:80},
-          // Battery guard (priority 1)
+        {id:'root',  type:'root',     x:300, y:10},
+        {id:'top',   type:'selector', x:300, y:80},
           {id:'bat',   type:'sequence', x:60,  y:160},
             {id:'bi',    type:'inverter', x:20,  y:240},
               {id:'bk',    type:'c_battery',x:20, y:320, p1:'20'},
             {id:'bg',    type:'a_charge', x:120, y:240, p1:'Base'},
-          // Idle patrol until help signal
-          {id:'resp',  type:'sequence', x:380, y:160},
-            {id:'msg',   type:'c_msg',    x:280, y:240, p1:'help'},
-            {id:'expl',  type:'a_explore',x:380, y:240},
-            {id:'pk',    type:'a_pickup', x:480, y:240},
-            {id:'nb',    type:'a_nav_to', x:580, y:240, p1:'Base'},
-            {id:'dr',    type:'a_dropoff',x:680, y:240},
+          // Main rescue loop
+          {id:'rep',   type:'repeat',   x:580, y:160, p1:'999'},
+            {id:'mseq',  type:'mem_seq',  x:580, y:260},
+              // Wait until Scout finds a victim
+              {id:'chk',   type:'c_topic', x:380, y:360, p1:'/victim_found'},
+              // Navigate to victim location, rescue it
+              {id:'vc',    type:'c_victim', x:500, y:360, p1:'200', p2:'0'},
+              {id:'res',   type:'a_rescue', x:640, y:360, p1:'25'},
+              // Return to Base
+              {id:'nb',    type:'a_nav_to', x:780, y:360, p1:'Base'},
       ], edges:[
-        ['root','top'],['top','bat'],['top','resp'],
+        ['root','top'],['top','bat'],['top','rep'],
         ['bat','bi'],['bat','bg'],['bi','bk'],
-        ['resp','msg'],['resp','expl'],['resp','pk'],['resp','nb'],['resp','dr'],
+        ['rep','mseq'],
+        ['mseq','chk'],['mseq','vc'],['mseq','res'],['mseq','nb'],
       ]},
     ],
     tpl:[], edges:[],
@@ -6809,13 +6937,15 @@ const CHALL={
     },
     tpl:[
       {id:'root', type:'root',       x:260, y:10},
+      // Top-level Sequence: first update scores, then run the utility selector
+      {id:'top',  type:'sequence',   x:260, y:80},
       // Custom Process updates utility scores dynamically before the selector runs
-      {id:'cproc',type:'a_custom',   x:260, y:90,
+      {id:'cproc',type:'a_custom',   x:120, y:170,
         p1:`// Update utility scores based on current state
 bb.u_charge  = bb.battery < 30 ? 90 : bb.battery < 60 ? 40 : 10;
 bb.u_deliver = bb.package_found ? 70 : 20;
 bb.u_explore = (!bb.package_found && bb.battery > 50) ? 55 : 15;`},
-      {id:'usel', type:'utility_sel',x:260, y:180},
+      {id:'usel', type:'utility_sel',x:400, y:170},
       // Branch 1: Charge
       {id:'b1',   type:'sequence',   x:60,  y:280},
         {id:'b1ut', type:'a_setutil', x:20,  y:380, p1:'10'},
@@ -6834,7 +6964,7 @@ bb.u_explore = (!bb.package_found && bb.battery > 50) ? 55 : 15;`},
         {id:'b3ex', type:'a_explore', x:520, y:380},
     ],
     edges:[
-      ['root','cproc'],['root','usel'],
+      ['root','top'],['top','cproc'],['top','usel'],
       ['usel','b1'],['usel','b2'],['usel','b3'],
       ['b1','b1ut'],['b1','b1a'],
       ['b2','b2ut'],['b2','b2sc'],['b2','b2nv'],['b2','b2pk'],['b2','b2nc'],['b2','b2dr'],
@@ -6923,10 +7053,10 @@ bb.u_explore = (!bb.package_found && bb.battery > 50) ? 55 : 15;`},
 
   // ── 5. OBSTACLE REACTION ────────────────────────────────────────
   obstacle_react:{
-    text:'⭐⭐ Tutorial 5: Reactive obstacle avoidance. Selector tries [Obstacle? → Collision Avoid] first; falls through to Navigate if path is clear. Dynamic obstacle bounces across the corridor — watch the robot react and resume.',
+    text:'⭐ Tutorial 5: Reactive obstacle avoidance. Selector tries [Obstacle? → Collision Avoid] first; falls through to Navigate if path is clear. Dynamic obstacle bounces across the wider corridor — watch the robot react and resume.',
     env:{
-      walls:[{x:140,y:30,w:8,h:60,label:'W1'},{x:140,y:110,w:8,h:60,label:'W2'}],
-      dynObstacles:[{x:155,y:60,w:20,h:20,vx:1.2,vy:0.8,label:'D1'}],
+      walls:[{x:140,y:20,w:8,h:55,label:'W1'},{x:140,y:115,w:8,h:55,label:'W2'}],
+      dynObstacles:[{x:155,y:65,w:16,h:16,vx:1.0,vy:0.6,label:'D1'}],
       waypoints:[{id:'Goal',x:280,y:100},{id:'Base',x:35,y:140}],
       packages:[], chargingStations:[{id:'Base',x:35,y:140,rate:20,label:'Base'}],
     },
@@ -7052,7 +7182,7 @@ bb.u_explore = (!bb.package_found && bb.battery > 50) ? 55 : 15;`},
           {id:'sel2', type:'selector', x:460, y:260},
             // Vacuum if dirt nearby
             {id:'vseq', type:'sequence', x:300, y:360},
-              {id:'dirt', type:'c_dirt_near',x:220, y:450, p1:'20'},
+              {id:'dirt', type:'c_dirt_near',x:220, y:450, p1:'10'},
               {id:'vac',  type:'a_vacuum',   x:380, y:450, p1:'15'},
             // Otherwise wander
             {id:'wnd',  type:'a_wander',   x:620, y:360, p1:'0.8', p2:'10'},
@@ -7071,8 +7201,9 @@ bb.u_explore = (!bb.package_found && bb.battery > 50) ? 55 : 15;`},
 
   // ── 9. LEADER-FOLLOWER ──────────────────────────────────────────
   leader_follower:{
-    text:'⭐⭐⭐ R1 is the Leader: explores waypoints and broadcasts its position. R2 is the Follower: reads the topic and navigates to R1\'s last known position. Demonstrates topic-based spatial coordination.',
+    text:'⭐⭐⭐ R1 is the Leader: explores waypoints and publishes its current position to /leader_pos. R2 is the Follower: reads the topic into bb.follow_target, then navigates there. Navigate To resolves BB keys automatically — if bb.follow_target="P2", the robot navigates to waypoint P2.',
     robots:2,
+    _initCommRange:500, // wide comm range so follower always hears leader
     env:{
       walls:[{x:150,y:50,w:8,h:70,label:'W1'},{x:260,y:60,w:8,h:70,label:'W2'}],
       waypoints:[{id:'P1',x:80,y:70},{id:'P2',x:200,y:50},{id:'P3',x:310,y:80},{id:'Base',x:35,y:140}],
@@ -7181,7 +7312,7 @@ bb.u_explore = (!bb.package_found && bb.battery > 50) ? 55 : 15;`},
 
   // ── 11. PARALLEL PATROL ─────────────────────────────────────────
   parallel_patrol:{
-    text:'⭐⭐⭐ Parallel node demo. R1 runs Navigate AND Scan simultaneously. The robot moves toward Goal while the Scan branch fires every tick — monitoring its environment while en route. P1 (threshold) set to 1: succeeds when at least 1 child succeeds.',
+    text:'⭐ Parallel node demo. R1 navigates to Goal while simultaneously checking if it has arrived (At Goal?). Parallel with P1=2 means BOTH children must succeed — navigation succeeds on arrival, At Goal? succeeds at the same moment. Try changing P1 to 1 to see the difference.',
     env:{
       walls:[{x:150,y:50,w:8,h:90,label:'W1'}],
       waypoints:[{id:'Goal',x:290,y:100},{id:'Base',x:35,y:140}],
@@ -7189,11 +7320,11 @@ bb.u_explore = (!bb.package_found && bb.battery > 50) ? 55 : 15;`},
     },
     tpl:[
       {id:'root', type:'root',     x:220, y:10},
-      {id:'par',  type:'parallel', x:220, y:80, p1:'1'},
+      {id:'par',  type:'parallel', x:220, y:80, p1:'2'},
         {id:'nav',  type:'a_nav_to', x:80,  y:180, p1:'Goal'},
-        {id:'sc',   type:'a_scan',   x:360, y:180},
+        {id:'atg',  type:'c_atgoal', x:360, y:180, p1:'Goal'},
     ],
-    edges:[['root','par'],['par','nav'],['par','sc']],
+    edges:[['root','par'],['par','nav'],['par','atg']],
     robots:1},
 
   // ══════════════════════════════════════════════════════════════════
@@ -7234,8 +7365,8 @@ bb.u_explore = (!bb.package_found && bb.battery > 50) ? 55 : 15;`},
     text:'⭐⭐⭐ A wall (W4) blocks the central corridor from tick 20 to tick 60. R1 must reach EX2 on the far side. Use Timeout or Check BB with /tick to decide when to attempt the crossing. The wall auto-disappears at tick 60.',
     env:{
       walls:[
-        {x:160,y:30,w:8,h:60,label:'W1'},{x:160,y:110,w:8,h:60,label:'W2'},
-        {x:160,y:85,w:8,h:30,label:'W4', hidden:true, waitTicks:20, timeoutTicks:40},
+        {x:160,y:20,w:8,h:55,label:'W1'},{x:160,y:115,w:8,h:55,label:'W2'},
+        {x:160,y:70,w:8,h:50,label:'W4', hidden:true, waitTicks:20, timeoutTicks:40},
       ],
       waypoints:[{id:'EX1',x:80,y:90},{id:'EX2',x:280,y:90},{id:'Base',x:35,y:150}],
       packages:[], chargingStations:[{id:'Base',x:35,y:150,rate:20,label:'Base'}],
@@ -7256,8 +7387,9 @@ bb.u_explore = (!bb.package_found && bb.battery > 50) ? 55 : 15;`},
 
   // ── 14. ADVERSARIAL PURSUIT ─────────────────────────────────────
   pursuit:{
-    text:'⭐⭐⭐⭐ R1 (Evader) must reach the Safe Zone while R2 (Pursuer) broadcasts its position and chases R1. R1 uses ally-detection to steer toward the zone when pursuer is nearby. Demonstrates reactive escape.',
+    text:'⭐⭐⭐⭐ R1 (Evader) must reach the Safe Zone while R2 (Pursuer) chases it. R1 uses Ally Near? to detect the pursuer and rush to safety. Health metric decreases as R2 gets close. Watch the Health bar in the metrics pane.',
     robots:2,
+    _initGlobals:{ '/pursuer_active':true, '/pursuer_idx':1 },
     env:{
       walls:[{x:160,y:50,w:8,h:60,label:'W1'},{x:260,y:70,w:8,h:60,label:'W2'}],
       waypoints:[{id:'SZ',x:310,y:140},{id:'Start',x:40,y:80},{id:'Base',x:35,y:150}],
@@ -7335,7 +7467,10 @@ bb.u_explore = (!bb.package_found && bb.battery > 50) ? 55 : 15;`},
     text:'⭐⭐⭐ 3 robots explore the environment in parallel, each responsible for a different sector. They broadcast when their sector is done. Uses per-robot zone assignment via global BB.',
     robots:3,
     env:{
-      walls:[{x:150,y:30,w:8,h:140,label:'Div1'},{x:260,y:30,w:8,h:140,label:'Div2'}],
+      walls:[
+        {x:150,y:30,w:5,h:50,label:'Div1a'},{x:150,y:110,w:5,h:60,label:'Div1b'},
+        {x:260,y:50,w:5,h:60,label:'Div2a'},{x:260,y:130,w:5,h:40,label:'Div2b'},
+      ],
       waypoints:[
         {id:'S1a',x:65,y:60},{id:'S1b',x:65,y:110},
         {id:'S2a',x:195,y:60},{id:'S2b',x:195,y:110},
@@ -7436,15 +7571,15 @@ bb.u_explore = (!bb.package_found && bb.battery > 50) ? 55 : 15;`},
           // Critical victim (highest score)
           {id:'s1',   type:'sequence', x:300, y:260},
             {id:'vc1',  type:'c_victim', x:240, y:360, p1:'150'},
-            {id:'r1',   type:'a_rescue', x:380, y:360},
+            {id:'r1',   type:'a_rescue', x:380, y:360, p1:'25'},
           // Moderate victim
           {id:'s2',   type:'sequence', x:600, y:260},
             {id:'vc2',  type:'c_victim', x:540, y:360, p1:'150'},
-            {id:'r2',   type:'a_rescue', x:680, y:360},
+            {id:'r2',   type:'a_rescue', x:680, y:360, p1:'25'},
           // Low priority victim
           {id:'s3',   type:'sequence', x:900, y:260},
             {id:'vc3',  type:'c_victim', x:840, y:360, p1:'150'},
-            {id:'r3',   type:'a_rescue', x:980, y:360},
+            {id:'r3',   type:'a_rescue', x:980, y:360, p1:'25'},
     ],
     edges:[
       ['root','top'],['top','bat'],['top','usel'],
@@ -7488,85 +7623,81 @@ const CHALL_ORDERED = {
   // We initialise the global counter via a global param
   _initGlobals:{ '/next_to_deliver':1, '/order_violations':0, '/ordered_delivery':true },
   bts:[
-    { name:'R1 Deliver',
-      tpl:[
-        {id:'root', type:'root',      x:300, y:10},
-        {id:'top',  type:'selector',  x:300, y:80},
-          // Battery guard
-          {id:'bat',  type:'sequence', x:60,  y:160},
-            {id:'bi',   type:'inverter', x:20,  y:240},
-              {id:'bk',   type:'c_battery',x:20,y:320,p1:'20'},
-            {id:'bg',   type:'a_charge', x:120,y:240,p1:'Base'},
-          // Ordered delivery loop
-          {id:'loop', type:'mem_seq', x:540, y:160},
-            // Check if P1 is next
-            {id:'chk1', type:'c_bb_cmp', x:280,y:240,p1:'/next_to_deliver == 1'},
-            {id:'nav1', type:'a_nav_to', x:400,y:240,p1:'Z1'},
-            {id:'pk1',  type:'a_pickup', x:510,y:240},
-            {id:'navd1',type:'a_nav_to', x:620,y:240,p1:'DropZone'},
-            {id:'dr1',  type:'a_dropoff',x:730,y:240},
-            {id:'inc1', type:'a_bb_inc', x:840,y:240,p1:'/next_to_deliver',p2:'1'},
-            {id:'navb1',type:'a_nav_to', x:950,y:240,p1:'Base'},
-      ],
-      edges:[
-        ['root','top'],['top','bat'],['top','loop'],
-        ['bat','bi'],['bat','bg'],['bi','bk'],
-        ['loop','chk1'],['loop','nav1'],['loop','pk1'],
-        ['loop','navd1'],['loop','dr1'],['loop','inc1'],['loop','navb1'],
-      ]
-    },
-    { name:'R2 Deliver',
-      tpl:[
-        {id:'root', type:'root',      x:300, y:10},
-        {id:'top',  type:'selector',  x:300, y:80},
-          {id:'bat',  type:'sequence', x:60,  y:160},
-            {id:'bi',   type:'inverter', x:20,  y:240},
-              {id:'bk',   type:'c_battery',x:20,y:320,p1:'20'},
-            {id:'bg',   type:'a_charge', x:120,y:240,p1:'Base'},
-          {id:'loop', type:'mem_seq', x:540, y:160},
-            {id:'chk2', type:'c_bb_cmp', x:280,y:240,p1:'/next_to_deliver == 2'},
-            {id:'nav2', type:'a_nav_to', x:400,y:240,p1:'Z2'},
-            {id:'pk2',  type:'a_pickup', x:510,y:240},
-            {id:'navd2',type:'a_nav_to', x:620,y:240,p1:'DropZone'},
-            {id:'dr2',  type:'a_dropoff',x:730,y:240},
-            {id:'inc2', type:'a_bb_inc', x:840,y:240,p1:'/next_to_deliver',p2:'1'},
-            {id:'navb2',type:'a_nav_to', x:950,y:240,p1:'Base'},
-      ],
-      edges:[
-        ['root','top'],['top','bat'],['top','loop'],
-        ['bat','bi'],['bat','bg'],['bi','bk'],
-        ['loop','chk2'],['loop','nav2'],['loop','pk2'],
-        ['loop','navd2'],['loop','dr2'],['loop','inc2'],['loop','navb2'],
-      ]
-    },
-    { name:'R3 Deliver',
-      tpl:[
-        {id:'root', type:'root',      x:300, y:10},
-        {id:'top',  type:'selector',  x:300, y:80},
-          {id:'bat',  type:'sequence', x:60,  y:160},
-            {id:'bi',   type:'inverter', x:20,  y:240},
-              {id:'bk',   type:'c_battery',x:20,y:320,p1:'20'},
-            {id:'bg',   type:'a_charge', x:120,y:240,p1:'Base'},
-          {id:'loop', type:'mem_seq', x:540, y:160},
-            // R3 handles both P3 and P4
-            {id:'sel3', type:'selector', x:280,y:240},
-              {id:'chk3', type:'c_bb_cmp',x:220,y:320,p1:'/next_to_deliver == 3'},
-              {id:'chk4', type:'c_bb_cmp',x:380,y:320,p1:'/next_to_deliver == 4'},
-            {id:'nav3', type:'a_nav_to', x:510,y:240,p1:'pkg:nearest'},
-            {id:'pk3',  type:'a_pickup', x:620,y:240},
-            {id:'navd3',type:'a_nav_to', x:730,y:240,p1:'DropZone'},
-            {id:'dr3',  type:'a_dropoff',x:840,y:240},
-            {id:'inc3', type:'a_bb_inc', x:950,y:240,p1:'/next_to_deliver',p2:'1'},
-            {id:'navb3',type:'a_nav_to',x:1060,y:240,p1:'Base'},
-      ],
-      edges:[
-        ['root','top'],['top','bat'],['top','loop'],
-        ['bat','bi'],['bat','bg'],['bi','bk'],
-        ['loop','sel3'],['loop','nav3'],['loop','pk3'],
-        ['loop','navd3'],['loop','dr3'],['loop','inc3'],['loop','navb3'],
-        ['sel3','chk3'],['sel3','chk4'],
-      ]
-    },
+    // R1 delivers P1 (waits in Selector until /next_to_deliver==1)
+    { name:'R1 → P1', tpl:[
+      {id:'root', type:'root',     x:300, y:10},
+      {id:'top',  type:'selector', x:300, y:80},
+        {id:'bat',  type:'sequence',x:60,  y:160},
+          {id:'bi',   type:'inverter',x:20,  y:240},
+            {id:'bk',   type:'c_battery',x:20,y:320,p1:'20'},
+          {id:'bg',   type:'a_charge', x:120,y:240,p1:'Base'},
+        // Check if done (P1 already delivered)
+        {id:'done', type:'c_bb_cmp', x:450, y:160, p1:'/next_to_deliver > 1'},
+        // Wait at Base until it's R1's turn
+        {id:'myseq',type:'sequence', x:750, y:160},
+          {id:'chk1', type:'c_bb_cmp', x:600,y:260,p1:'/next_to_deliver == 1'},
+          {id:'nav1', type:'a_nav_to', x:720,y:260,p1:'Z1'},
+          {id:'pk1',  type:'a_pickup', x:840,y:260},
+          {id:'navd1',type:'a_nav_to', x:960,y:260,p1:'DropZone'},
+          {id:'dr1',  type:'a_dropoff',x:1080,y:260},
+          {id:'inc1', type:'a_bb_inc', x:1200,y:260,p1:'/next_to_deliver',p2:'1'},
+    ], edges:[
+      ['root','top'],['top','bat'],['top','done'],['top','myseq'],
+      ['bat','bi'],['bat','bg'],['bi','bk'],
+      ['myseq','chk1'],['myseq','nav1'],['myseq','pk1'],['myseq','navd1'],['myseq','dr1'],['myseq','inc1'],
+    ]},
+    // R2 delivers P2 (waits until /next_to_deliver==2)
+    { name:'R2 → P2', tpl:[
+      {id:'root', type:'root',     x:300, y:10},
+      {id:'top',  type:'selector', x:300, y:80},
+        {id:'bat',  type:'sequence',x:60,  y:160},
+          {id:'bi',   type:'inverter',x:20,  y:240},
+            {id:'bk',   type:'c_battery',x:20,y:320,p1:'20'},
+          {id:'bg',   type:'a_charge', x:120,y:240,p1:'Base'},
+        {id:'done', type:'c_bb_cmp', x:450, y:160, p1:'/next_to_deliver > 2'},
+        {id:'myseq',type:'sequence', x:750, y:160},
+          {id:'chk2', type:'c_bb_cmp', x:600,y:260,p1:'/next_to_deliver == 2'},
+          {id:'nav2', type:'a_nav_to', x:720,y:260,p1:'Z2'},
+          {id:'pk2',  type:'a_pickup', x:840,y:260},
+          {id:'navd2',type:'a_nav_to', x:960,y:260,p1:'DropZone'},
+          {id:'dr2',  type:'a_dropoff',x:1080,y:260},
+          {id:'inc2', type:'a_bb_inc', x:1200,y:260,p1:'/next_to_deliver',p2:'1'},
+    ], edges:[
+      ['root','top'],['top','bat'],['top','done'],['top','myseq'],
+      ['bat','bi'],['bat','bg'],['bi','bk'],
+      ['myseq','chk2'],['myseq','nav2'],['myseq','pk2'],['myseq','navd2'],['myseq','dr2'],['myseq','inc2'],
+    ]},
+    // R3 delivers P3 then P4 in order
+    { name:'R3 → P3+P4', tpl:[
+      {id:'root', type:'root',     x:300, y:10},
+      {id:'top',  type:'selector', x:300, y:80},
+        {id:'bat',  type:'sequence',x:60,  y:160},
+          {id:'bi',   type:'inverter',x:20,  y:240},
+            {id:'bk',   type:'c_battery',x:20,y:320,p1:'20'},
+          {id:'bg',   type:'a_charge', x:120,y:240,p1:'Base'},
+        {id:'done', type:'c_bb_cmp', x:450, y:160, p1:'/next_to_deliver > 4'},
+        // Handle P3
+        {id:'s3',   type:'sequence', x:750, y:160},
+          {id:'c3',   type:'c_bb_cmp', x:600,y:260,p1:'/next_to_deliver == 3'},
+          {id:'n3',   type:'a_nav_to', x:720,y:260,p1:'Z3'},
+          {id:'p3',   type:'a_pickup', x:840,y:260},
+          {id:'d3',   type:'a_nav_to', x:960,y:260,p1:'DropZone'},
+          {id:'dr3',  type:'a_dropoff',x:1080,y:260},
+          {id:'i3',   type:'a_bb_inc', x:1200,y:260,p1:'/next_to_deliver',p2:'1'},
+        // Handle P4
+        {id:'s4',   type:'sequence', x:750, y:360},
+          {id:'c4',   type:'c_bb_cmp', x:600,y:460,p1:'/next_to_deliver == 4'},
+          {id:'n4',   type:'a_nav_to', x:720,y:460,p1:'Z4'},
+          {id:'p4',   type:'a_pickup', x:840,y:460},
+          {id:'d4',   type:'a_nav_to', x:960,y:460,p1:'DropZone'},
+          {id:'dr4',  type:'a_dropoff',x:1080,y:460},
+          {id:'i4',   type:'a_bb_inc', x:1200,y:460,p1:'/next_to_deliver',p2:'1'},
+    ], edges:[
+      ['root','top'],['top','bat'],['top','done'],['top','s3'],['top','s4'],
+      ['bat','bi'],['bat','bg'],['bi','bk'],
+      ['s3','c3'],['s3','n3'],['s3','p3'],['s3','d3'],['s3','dr3'],['s3','i3'],
+      ['s4','c4'],['s4','n4'],['s4','p4'],['s4','d4'],['s4','dr4'],['s4','i4'],
+    ]},
   ],
   tpl:[],edges:[],
 };
@@ -7628,7 +7759,7 @@ const CHALL_FORAGING = {
 
     // 1. Obstacle avoidance (highest priority)
     {id:'obs',  type:'sequence',x:40,  y:190},
-      {id:'cobs', type:'c_obstacle',x:0,  y:290},
+      {id:'cobs', type:'c_obstacle',x:0,  y:290, p1:'5'},
       {id:'avd',  type:'a_col_avoid',x:100,y:290},
 
     // 2. Battery guard
@@ -7724,6 +7855,7 @@ function loadChallenge(key){
     while(robots.length>numR) robots.pop();
     syncRobotUI(); robots.forEach(resetRobotState);
     if(ch._initGlobals) Object.entries(ch._initGlobals).forEach(([k,v])=>{ GLOBAL_PARAMS[k]=v; });
+    if(ch._initCommRange){ robots.forEach((_,i)=>{ robCommRange[i]=ch._initCommRange; }); }
     const bar=document.getElementById('bt-tabs-bar');
     document.querySelectorAll(`.bt-tab[data-challenge="${key}"]`).forEach(t=>t.remove());
     ch.bts.forEach((btDef,ri)=>{
