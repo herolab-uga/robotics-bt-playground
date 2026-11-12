@@ -452,6 +452,7 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
       <option value="pursuit">🏃 Adversarial Pursuit</option>
     </optgroup>
     <optgroup label="⭐⭐⭐⭐⭐ Graduate Lab">
+      <option value="operationPickup">📦 Operation Quick Pickup</option>
       <option value="operationRescue">🚨 Operation Quick Rescue</option>
     </optgroup>
     <optgroup label="─────">
@@ -999,6 +1000,7 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
     <button class="tplb" onclick="loadChallenge('pursuit')">🏃 Adversarial Pursuit</button>
 
     <div style="font-size:7.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;padding:4px 2px 2px">⭐⭐⭐⭐⭐ Graduate Lab</div>
+    <button class="tplb" onclick="loadChallenge('operationPickup')" style="border-left:3px solid #c06000;font-weight:700">📦 Operation Quick Pickup</button>
     <button class="tplb" onclick="loadChallenge('operationRescue')" style="border-left:3px solid #c00;font-weight:700">🚨 Operation Quick Rescue</button>
   </div>
   <div id="rtc-help" class="tc" style="overflow-y:auto">
@@ -1139,9 +1141,9 @@ const ND = {
   c_battery:  {l:'Battery OK?',   cat:'condition',bg:'#2a1000',bd:'#f59e0b',ic:'⚡',sh:'IF',desc:'SUCCESS if battery > threshold.',p1:'Threshold%',p1d:'25'},
   c_obstacle: {l:'Obstacle?',     cat:'condition',ic:'⚠',sh:'OBS',desc:'SUCCESS if obstacle in range. P1=range px (0=robot sensor range). P2=FoV in degrees (0=360°, 90=front cone).',p1:'Range',p1d:'0',p2:'FoV°',p2d:'0'},
   c_atgoal:   {l:'At Goal?',      cat:'condition',ic:'◎',sh:'AT?',desc:'SUCCESS if robot is within arrivalDist of target. P1=waypoint/location ID (empty=uses bb.target_wp). Accepts any Navigate To target format: waypoint ID, pkg:nearest, x:N,y:N, or a BB key.',p1:'Target (empty=bb.target_wp)',p1d:''},
-  c_package:  {l:'Package Near?', cat:'condition',ic:'📦',sh:'PKG',desc:'SUCCESS if uncollected package in range. P1=range px (0=sensor range). P2=FoV° (0=360°). Writes nearest coords to bb.pkg_x/pkg_y.',p1:'Range',p1d:'0',p2:'FoV°',p2d:'0'},
+  c_package:  {l:'Package Near?', cat:'condition',ic:'📦',sh:'PKG',desc:'SUCCESS if uncollected package in range. P1=range px (0=sensor range). P2=FoV° (0=360°). Writes to BB: pkg_x, pkg_y (position) and pkg_label (package label/ID).',p1:'Range',p1d:'0',p2:'FoV°',p2d:'0'},
   c_ally:     {l:'Ally Near?',    cat:'condition',bg:'#2a1000',bd:'#f59e0b',ic:'🤝',sh:'IF',desc:'SUCCESS if ally within comm range.'},
-  c_msg:      {l:'Msg Received?', cat:'condition',ic:'📨',sh:'MSG?',desc:'SUCCESS if inbox contains message with key P1. P2=optional BB key to write the received value into. Both P1 and P2 support bb: prefix to resolve from BB. e.g. P1=help P2=help_data → writes received value to bb.help_data.',p1:'Message key',p1d:'alert',p2:'Write value to BB key (optional)',p2d:''},
+  c_msg:      {l:'Msg Received?', cat:'condition',ic:'📨',sh:'MSG?',desc:'SUCCESS if inbox has a message matching key P1. P2=unpack mapping: bare "bbKey" (write value), "topicVar=bbKey; ..." (selective unpack from multi-var message). e.g. P1=status P2="zone=my_zone; battery=peer_bat" unpacks received multi-var message.',p1:'Message key',p1d:'alert',p2:'bbKey or topicVar=bbKey; ...',p2d:''},
   c_in_range: {l:'In FOV?',       cat:'condition',bg:'#2a1000',bd:'#f59e0b',ic:'👁',sh:'IF',desc:'SUCCESS if target waypoint is in robot FOV.',p1:'Target',p1d:'B'},
   a_move:     {l:'Move To',       cat:'action',   ic:'➤',sh:'DO',desc:'Navigate to any object or position. P1: any label or X coord. P2: Y coord (when P1 is a number). "x:120,y:80" also works. Config Params: kH (heading gain, def 1.0), look (look-ahead px, def 36), avoid (obstacle weight, def 1.2), N (VFH dirs, def 36), arrivalDist (px, def 10).',p1:'Target / X',p1d:'A',p2:'Y (if coords)',p2d:''},
   a_charge:   {l:'Charge',        cat:'action',   ic:'🔌',sh:'DO',desc:'Navigate to charging station or waypoint and recharge. P1 = station/waypoint ID.',p1:'Station ID',p1d:'Base'},
@@ -1177,7 +1179,7 @@ const ND = {
   a_turn_right:{l:'Turn Right 90°',cat:'action',  ic:'↻',sh:'DO',desc:'Rotate 90° clockwise.'},
   a_turn_back:{l:'Turn Back 180°',cat:'action',   ic:'↩',sh:'DO',desc:'Rotate 180°.'},
   // ── UNIFIED MESSAGE PASSING ──
-  a_msg:      {l:'Send Msg',      cat:'action',   ic:'✉',sh:'MSG',desc:'Send key=value message. P1=mode (broadcast/range/peer:N). P2=key=value. Use bb: prefix to resolve from blackboard: "status=bb:my_status" sends bb.my_status as the value; "bb:my_key=hello" uses bb.my_key as the key name.',p1:'Mode',p1d:'broadcast',p2:'key=value (bb: prefix for BB vars)',p2d:'alert=true'},
+  a_msg:      {l:'Send Msg',      cat:'action',   ic:'✉',sh:'MSG',desc:'Send message(s). P1=mode (broadcast/range/peer:N). P2=payload. Single: "key=val". Multi: "key1=val1; key2=bb:var; key3=42". Use bb: prefix for BB values. Receiver uses c_msg P2 mapping to unpack.',p1:'Mode',p1d:'broadcast',p2:'key=value; key2=val2 ...',p2d:'alert=true'},
   // ── TOF SENSORS ──
   c_tof:      {l:'TOF Sensor?',   cat:'condition',ic:'📏',sh:'TOF',desc:'SUCCESS if TOF sensor detects object on given side within range.',p1:'Side',p1d:'front',p2:'Range',p2d:'30'},
   c_light:    {l:'Light Level?',  cat:'condition',ic:'🔆',sh:'LUX',desc:'Check robot light sensor. P1=min threshold (0=ignore), P2=max threshold (0=ignore). SUCCESS if reading is within [min,max].',p1:'Min',p1d:'0.5',p2:'Max',p2d:'0'},
@@ -1203,7 +1205,7 @@ const ND = {
   // Numeric literal condition — returns SUCCESS when it evaluates nonzero, used to hardcode scores
   c_num:      {l:'Number Literal', cat:'condition',ic:'🔢',sh:'NUM',desc:'Returns SUCCESS (nonzero) or FAILURE (zero). P1 = numeric value. Writes value to bb[P2] if P2 is set. Use for hardcoded constants or testing.',p1:'Value',p1d:'1',p2:'Write to BB key (optional)',p2d:''},
   // Victim detection
-  c_victim:   {l:'Victim Near?',  cat:'condition',ic:'🧍',sh:'VIC',desc:'SUCCESS if victim in range. P1=range (0=sensor range). P2=FoV° (0=360°). P3=victim ID filter (empty=any). Writes victim_id and victim_x/y to BB.',p1:'Range',p1d:'0',p2:'FoV°',p2d:'0',p3:'ID filter',p3d:''},
+  c_victim:   {l:'Victim Near?',  cat:'condition',ic:'🧍',sh:'VIC',desc:'SUCCESS if victim in range. P1=range (0=sensor range). P2=FoV° (0=360°). P3=victim ID filter (empty=any). Writes to BB: victim_id, victim_x, victim_y, victim_label.',p1:'Range',p1d:'0',p2:'FoV°',p2d:'0',p3:'ID filter',p3d:''},
   a_rescue:   {l:'Rescue Victim', cat:'action',   ic:'🚑',sh:'RES',desc:'Mark nearest victim within P1 range as rescued. SUCCESS when rescued. Increments bb.victims_found.',p1:'Range',p1d:'18'},
   // Compound condition (AND/OR)
   c_bb_expr:  {l:'BB Expression', cat:'condition',ic:'🧮',sh:'EXPR',desc:'Evaluate compound boolean expression. Use AND / OR between conditions. e.g. "victims_found >= 1 AND battery > 20 OR carrying == true". SUCCESS if expression is true.',p1:'Expression',p1d:'victims_found >= 1 AND battery > 20'},
@@ -1214,8 +1216,8 @@ const ND = {
   c_wp_near:  {l:'Waypoint Near?',cat:'condition',ic:'📍',sh:'WP',desc:'SUCCESS if waypoint P1 is within range. P2=range px (0=sensor range). P3=FoV° (0=360°).',p1:'WP ID',p1d:'A',p2:'Range',p2d:'0',p3:'FoV°',p3d:'0'},
   c_pkg_id:   {l:'Package Near?', cat:'condition',bg:'#2a1000',bd:'#f59e0b',ic:'🏷',sh:'IF',desc:'SUCCESS if package with given index (0-based) is in sensor range.',p1:'Pkg idx',p1d:'0'},
   // ROS topics
-  a_pub_topic:{l:'Publish Topic', cat:'action',   ic:'📤',sh:'PUB',desc:'Publish to a ROS-like topic within comm range. P1=topic name (supports bb: prefix). P2=value (supports bb: prefix to publish a BB variable). e.g. P2=bb:my_zone publishes the value of bb.my_zone.',p1:'Topic name',p1d:'/alert',p2:'Value (bb:key allowed)',p2d:'true'},
-  a_sub_topic:{l:'Read Topic',   cat:'action',   ic:'📥',sh:'SUB',desc:'Read latest topic value into BB. P1=topic name (supports bb: prefix). P2=output BB key (supports bb: prefix). SUCCESS if message found, FAILURE if no recent message.',p1:'Topic name',p1d:'/alert',p2:'Write to BB key (bb:key allowed)',p2d:'got_alert'},
+  a_pub_topic:{l:'Publish Topic', cat:'action',   ic:'📤',sh:'PUB',desc:'Publish to a global topic. P1=topic name. P2=payload: single value, "bb:key", or multi-var "key1=val1; key2=bb:var; key3=42". Published value is accessible globally to all Read Topic nodes.',p1:'Topic name',p1d:'/status',p2:'value or key1=val1; key2=val2 ...',p2d:'true'},
+  a_sub_topic:{l:'Read Topic',   cat:'action',   ic:'📥',sh:'SUB',desc:'Read latest topic into BB. P1=topic name. P2=unpack mapping: bare "bbkey" (write scalar or all object keys), "topicVar=bbKey; ..." (selective rename), or empty (write all keys). SUCCESS if topic has data.',p1:'Topic name',p1d:'/status',p2:'bbKey or topicVar=bbKey; ...',p2d:'got_value'},
   c_topic:    {l:'Topic Has?',    cat:'condition',bg:'#2a1000',bd:'#f59e0b',ic:'📡',sh:'IF',desc:'SUCCESS if topic has a recent message (within N ticks).',p1:'Topic',p1d:'/alert',p2:'Max age',p2d:'5'},
 };
 
@@ -4308,25 +4310,29 @@ function tickCond(id,rob){
         return(!best||d<best.d)?{pkg,d}:best;
       },null);
       if(nearest){
-        bb.package_found=true; bb.pkg_x=nearest.pkg.x; bb.pkg_y=nearest.pkg.y;
+        bb.package_found=true;
+        bb.pkg_x=nearest.pkg.x; bb.pkg_y=nearest.pkg.y;
+        bb.pkg_label=nearest.pkg.label!==undefined?String(nearest.pkg.label):'';
         return 'success';
       }
-      bb.package_found=false; return 'failure';
+      bb.package_found=false; bb.pkg_label=''; return 'failure';
     }
     case 'c_ally':{
       return robots.some(r=>r.idx!==rob.idx&&wdist(r,rob)<COMM_RANGE)?'success':'failure';
     }
     case 'c_msg':{
-      const k=resolveMsgKey(p1||'alert',bb); // key to check in inbox
-      // Check inbox first
-      const msg=rob.inbox?.find(m=>m.key===k);
+      const k=resolveMsgKey(p1||'alert',bb);
+      // Find matching message — matches if msg.key contains k, or payload is object with key k
+      const msg=rob.inbox?.find(m=>{
+        if(m.key===k||m.key.includes(k)) return true;
+        if(m._multi && typeof m.val==='object' && k in m.val) return true;
+        return false;
+      });
       if(msg!==undefined){
-        // Write value to P2 BB key if specified
-        const outKey=p2?resolveMsgKey(p2,bb):null;
-        if(outKey) bb[outKey]=msg.val;
+        // P2 = mapping string: unpack payload vars into BB
+        if(p2) writePayloadToBB(msg._multi?msg.val:msg.val, p2, bb);
         return 'success';
       }
-      // Fall back to bb[k] (set by previous tick)
       return(bb[k]!==undefined&&bb[k]!==false&&bb[k]!==null)?'success':'failure';
     }
     case 'c_in_range':{
@@ -4373,16 +4379,17 @@ function tickCond(id,rob){
       const fov=parseFloat(p2)||360;
       const filter=(n.p3||p3||'').trim();
       const found=(ENV.victims||[]).find(v=>{
-        if(v.rescued) return false;
+        if(v.rescued||v.hidden) return false;
         if(filter&&v.id!==filter) return false;
         return inFOVfull(rob,v.x,v.y,range,fov);
       });
       if(found){
         bb.victim_id=found.id;
         bb.victim_x=found.x; bb.victim_y=found.y;
+        bb.victim_label=found.label!==undefined?String(found.label):String(found.id);
         return 'success';
       }
-      return 'failure';
+      bb.victim_label=''; return 'failure';
     }
 
     case 'c_bb_expr':{
@@ -4795,48 +4802,53 @@ function tickAct(id,rob){
     // ── UNIFIED MESSAGING ──
     case 'a_msg':{
       const mode=p1||'broadcast';
-      const rawMsg=p2||'alert=true';
-      const eqIdx=rawMsg.indexOf('=');
-      let mkey, mval;
-      if(eqIdx===-1){
-        mkey=resolveMsgKey(rawMsg,bb); mval=true;
-      } else {
-        mkey=resolveMsgKey(rawMsg.slice(0,eqIdx),bb);
-        mval=resolveMsgVal(rawMsg.slice(eqIdx+1),bb);
-      }
+      // P2: single "key=val" OR multi "key1=val1; key2=bb:var; key3=42"
+      const payload=parseMsgPayload(p2||'alert=true', bb);
+      // For display / legacy compat: derive a summary key+val
+      const displayKey=typeof payload==='object'?Object.keys(payload).join(','):'msg';
+      const displayVal=typeof payload==='object'?JSON.stringify(payload):String(payload);
       const crange=getRobComm(rob);
+      const pushMsg=(r)=>r.inbox.push({key:displayKey, val:payload, _multi:typeof payload==='object'});
       if(mode==='broadcast'){
-        robots.forEach(r=>{ if(r.idx!==rob.idx) r.inbox.push({key:mkey,val:mval}); });
-        addComm(rob.name,'ALL',mkey,String(mval),'bc');
+        robots.forEach(r=>{ if(r.idx!==rob.idx) pushMsg(r); });
+        addComm(rob.name,'ALL',displayKey,displayVal.slice(0,40),'bc');
       } else if(mode==='range'){
-        robots.forEach(r=>{ if(r.idx!==rob.idx&&wdist(r,rob)<crange){ r.inbox.push({key:mkey,val:mval}); } });
-        addComm(rob.name,'(range)',mkey,String(mval),'range');
+        robots.forEach(r=>{ if(r.idx!==rob.idx&&wdist(r,rob)<crange) pushMsg(r); });
+        addComm(rob.name,'(range)',displayKey,displayVal.slice(0,40),'range');
       } else {
-        // peer: p1 = "peer:N" or just robot index in p2
-        const targetIdx=parseInt(mode.replace('peer:',''))||parseInt(p1)||0;
+        const targetIdx=parseInt(mode.replace('peer:',''))||0;
         const tr=robots[targetIdx];
-        if(tr&&tr.idx!==rob.idx&&wdist(tr,rob)<crange){ tr.inbox.push({key:mkey,val:mval}); addComm(rob.name,tr.name,mkey,String(mval),'p2p'); }
+        if(tr&&tr.idx!==rob.idx&&wdist(tr,rob)<crange){ pushMsg(tr); addComm(rob.name,tr.name,displayKey,displayVal.slice(0,40),'p2p'); }
       }
       return 'success';
     }
     case 'a_pub_topic':{
       const tname=resolveMsgKey(p1||'/alert',bb);
-      const val=resolveMsgVal(p2||'true',bb);
+      // P2: single value OR multi "key1=val1; key2=bb:var"
+      const val=parseMsgPayload(p2||'true',bb);
       if(!topicBus[tname])topicBus[tname]=[];
       topicBus[tname].push({value:val,publisherIdx:rob.idx,tick});
       if(topicBus[tname].length>50)topicBus[tname].shift();
-      addComm(rob.name,'topic:'+tname,String(tname),String(val),'ros');
+      const displayVal=typeof val==='object'?JSON.stringify(val):String(val);
+      addComm(rob.name,'topic:'+tname,String(tname),displayVal.slice(0,40),'ros');
       return 'success';
     }
     case 'a_sub_topic':{
-      // Topics are globally visible (like a shared BB channel) — no distance filter.
-      // Use a_msg/c_msg for range-limited peer messages.
+      // Topics are globally visible — no distance filter.
       const tname=resolveMsgKey(p1||'/alert',bb);
-      const bbkey=resolveMsgKey(p2||'got_alert',bb);
       const msgs=topicBus[tname]||[];
       if(!msgs.length) return 'failure';
-      // Read the latest published value (any publisher including self is fine for topics)
-      bb[bbkey]=msgs[msgs.length-1].value;
+      const latest=msgs[msgs.length-1].value;
+      // P2: mapping string — unpack payload into BB
+      // If P2 is empty: for scalar write nothing (just returns success); for object write all keys
+      if(p2){
+        writePayloadToBB(latest, p2, bb);
+      } else if(typeof latest==='object'&&latest!==null){
+        // No mapping — write all payload keys directly into BB
+        Object.entries(latest).forEach(([k,v])=>{ bb[k]=v; });
+      }
+      // Also always write the full payload to bb._last_topic for inspection
+      bb._last_topic=latest;
       return 'success';
     }
 
@@ -5015,6 +5027,72 @@ function tickAct(id,rob){
     }
 
     default: return 'success'; // unknown action type — succeed silently
+  }
+}
+
+// Parse semicolon-separated key=value pairs into an object.
+// Each pair: "key=value" or "key=bb:bbkey" or just "key" (value=true).
+// Returns {key1:val1, key2:val2, ...}
+// If only a single non-pair value (no semicolons, legacy format), returns the raw value.
+function parseMsgPayload(raw, bb){
+  if(!raw||typeof raw!=='string') return raw;
+  const s=raw.trim();
+  // Multi-var: contains semicolons
+  if(s.includes(';')){
+    const obj={};
+    s.split(';').forEach(part=>{
+      const p=part.trim(); if(!p) return;
+      const eq=p.indexOf('=');
+      if(eq===-1){ obj[resolveMsgKey(p,bb)]=true; }
+      else { obj[resolveMsgKey(p.slice(0,eq),bb)]=resolveMsgVal(p.slice(eq+1),bb); }
+    });
+    return obj;
+  }
+  // Single pair: "key=value" → still returns {key:value} so receiver can unpack
+  const eq=s.indexOf('=');
+  if(eq!==-1){
+    return {[resolveMsgKey(s.slice(0,eq),bb)]:resolveMsgVal(s.slice(eq+1),bb)};
+  }
+  // Legacy bare value or key-only
+  return resolveMsgVal(s,bb);
+}
+
+// Write a received payload into BB.
+// mappingStr: P2 of Read Topic / c_msg. Formats:
+//   "bbkey"               → all payload keys written, or single value → bb.bbkey
+//   "bbkey1; bbkey2"      → payload.bbkey1 → bb.bbkey1, payload.bbkey2 → bb.bbkey2
+//   "topicVar=bbkey; ..." → payload.topicVar → bb.bbkey (rename)
+function writePayloadToBB(payload, mappingStr, bb){
+  if(!mappingStr||mappingStr.trim()==='') return;
+  const mapping=mappingStr.trim();
+  if(typeof payload!=='object'||payload===null){
+    // Scalar value — write to mapping key directly
+    bb[resolveMsgKey(mapping,bb)]=payload; return;
+  }
+  if(mapping.includes(';')||mapping.includes('=')){
+    mapping.split(';').forEach(part=>{
+      const p=part.trim(); if(!p) return;
+      const eq=p.indexOf('=');
+      if(eq===-1){
+        // bare key: write payload[key] → bb[key]
+        const k=resolveMsgKey(p,bb);
+        if(payload[k]!==undefined) bb[k]=payload[k];
+      } else {
+        // topicVar=bbKey: write payload[topicVar] → bb[bbKey]
+        const topicVar=resolveMsgKey(p.slice(0,eq),bb);
+        const bbKey=resolveMsgKey(p.slice(eq+1),bb);
+        if(payload[topicVar]!==undefined) bb[bbKey]=payload[topicVar];
+      }
+    });
+  } else {
+    // Single bare key — write all payload keys to BB directly
+    const bbKey=resolveMsgKey(mapping,bb);
+    if(typeof payload==='object'){
+      // Write each payload key to bb
+      Object.entries(payload).forEach(([k,v])=>{ bb[k]=v; });
+    } else {
+      bb[bbKey]=payload;
+    }
   }
 }
 
@@ -7752,8 +7830,9 @@ const CHALL_ORDERED = {
   tpl:[],edges:[],
 };
 
-const CHALL_OQR = {
-  text:'🚨 Operation Quick Rescue — Expert challenge. Design three BTs (R1 Scout, R2 Medic, R3 Guard) from scratch. W4 blocks the corridor from tick 15–40. V2 is time-critical: appears tick 20, gone at tick 35.',
+// ── OPERATION QUICK PICKUP — same env as OQR but uses packages (simpler task) ──
+const CHALL_OQP = {
+  text:'📦 Operation Quick Pickup — Expert challenge with packages. Same facility as Operation Quick Rescue but victims replaced by packages V0, V1, V2. W4 blocks the corridor from tick 15–40. V2 (package) appears at tick 20 and disappears at tick 35 if not collected. Design three BTs from scratch.',
   robots:3,
   env:{
     walls:[
@@ -7774,8 +7853,46 @@ const CHALL_OQR = {
       {x:220,y:55, collected:false,label:'V1'},
       {x:290,y:90, collected:false,label:'V2', hidden:true, waitTicks:20, timeoutTicks:15},
     ],
+    collectionZones:[{x:55,y:45,w:55,h:45,label:'Safe Zone',collected:0,capacity:10}],
     chargingStations:[{id:'Base',x:35,y:150,rate:20,label:'Base'}],
-    victims:[],
+    victims:[], dirt:[],
+  },
+  bts:[
+    { name:'R1 Scout',  tpl:[{id:'root',type:'root',x:220,y:40}], edges:[] },
+    { name:'R2 Medic',  tpl:[{id:'root',type:'root',x:220,y:40}], edges:[] },
+    { name:'R3 Guard',  tpl:[{id:'root',type:'root',x:220,y:40}], edges:[] },
+  ],
+  tpl:[], edges:[],
+};
+
+// ── OPERATION QUICK RESCUE — same facility but with real human victims ──
+const CHALL_OQR = {
+  text:'🚨 Operation Quick Rescue — Expert challenge. Design three BTs (R1 Scout, R2 Medic, R3 Guard) from scratch. W4 blocks the corridor from tick 15–40. V2 is a time-critical victim: appears tick 20, disappears tick 35 if not rescued.',
+  robots:3,
+  env:{
+    walls:[
+      {x:130,y:40, w:8,h:70, label:'W1'},
+      {x:200,y:80, w:70,h:8, label:'W2'},
+      {x:270,y:80, w:8,h:60, label:'W3'},
+      {x:160,y:105,w:8,h:35, label:'W4', hidden:true, waitTicks:15, timeoutTicks:25},
+    ],
+    waypoints:[
+      {id:'Base',x:35, y:150},
+      {id:'SZ',  x:80, y:65},
+      {id:'RV',  x:190,y:95},
+      {id:'EX1', x:150,y:50},
+      {id:'EX2', x:300,y:80},
+    ],
+    packages:[],
+    victims:[
+      {id:'V0',x:100,y:100,rescued:false,label:'V0',color:'#cc4444'},
+      {id:'V1',x:220,y:55, rescued:false,label:'V1',color:'#cc8800'},
+      // V2 is time-critical: appears at tick 20, gone at tick 35
+      {id:'V2',x:290,y:90, rescued:false,label:'V2',color:'#cc0000',
+       hidden:true, waitTicks:20, timeoutTicks:15},
+    ],
+    collectionZones:[{x:55,y:45,w:55,h:45,label:'Safe Zone',collected:0,capacity:10}],
+    chargingStations:[{id:'Base',x:35,y:150,rate:20,label:'Base'}],
     dirt:[],
   },
   // Three empty BT tabs — students design everything
@@ -7843,6 +7960,40 @@ function loadChallenge(key){
   clearAll();
   document.getElementById('chalsel').value=key;
   if(key==='blank'){document.getElementById('cprompt').textContent='Build your own behavior tree.';return;}
+  if(key==='operationPickup'){
+    const oqp=CHALL_OQP;
+    document.getElementById('cprompt').textContent=oqp.text;
+    const eenv=oqp.env;
+    ENV.walls=(eenv.walls||[]).map(w=>({...w}));
+    ENV.dynObstacles=[]; ENV.collectionZones=(eenv.collectionZones||[]).map(c=>({...c}));
+    ENV.waypoints=(eenv.waypoints||[]).map(w=>({...w}));
+    ENV.packages=(eenv.packages||[]).map(p=>({...p}));
+    ENV.chargingStations=(eenv.chargingStations||[]).map(c=>({...c}));
+    ENV.lightSources=[]; ENV.victims=(eenv.victims||[]).map(v=>({...v}));
+    ENV.dirt=[];
+    while(robots.length<3)addRobot(); while(robots.length>3)robots.pop();
+    syncRobotUI(); robots.forEach(resetRobotState);
+    const bar=document.getElementById('bt-tabs-bar');
+    document.querySelectorAll('.bt-tab[data-challenge="operationPickup"]').forEach(t=>t.remove());
+    oqp.bts.forEach((btDef,ri)=>{
+      const btId=`operationPickup_r${ri+1}`;
+      [...Object.keys(nodes)].forEach(id=>{nodes[id]?.el?.remove();delete nodes[id];}); edges.length=0;
+      btLibrary[btId]={name:btDef.name,nodes:{},edges:[]};
+      activeBTId=btId;
+      const idMap={};
+      (btDef.tpl||[]).forEach(nd=>{
+        const nid=createNode(nd.type,nd.x,nd.y,-1); idMap[nd.id]=nid;
+        nodes[nid].el.querySelector('.nl').textContent=nodes[nid].label; updateBadge(nid);
+      });
+      saveBTSnapshot(btId); robBTAssign[ri]=btId;
+      if(bar){const tab=document.createElement('div');tab.className='bt-tab';tab.dataset.btid=btId;tab.dataset.challenge='operationPickup';tab.textContent=`R${ri+1}: ${btDef.name}`;tab.onclick=()=>switchBT(btId,tab);const addBtn=bar.querySelector('.bt-tab-add');if(addBtn)bar.insertBefore(tab,addBtn);else bar.appendChild(tab);}
+    });
+    const firstId='operationPickup_r1'; switchBT(firstId,document.querySelector(`.bt-tab[data-btid="${firstId}"]`));
+    setTimeout(()=>fitCanvas(),50); drawSim();
+    logMsg('<span class="li">// 📦 Operation Quick Pickup loaded. Same facility as OQR but with packages. Design your 3 BTs!</span>');
+    return;
+  }
+
   if(key==='operationRescue'){
     // Use the standard multi-BT loader path (bts:[])
     key='operationRescue'; // fall through to CHALL lookup below
@@ -7851,11 +8002,19 @@ function loadChallenge(key){
     document.getElementById('cprompt').textContent=oqr.text;
     if(oqr.env){
       ENV.walls=(oqr.env.walls||[]).map(w=>({...w}));
-      ENV.dynObstacles=[]; ENV.collectionZones=[];
+      ENV.dynObstacles=[];
+      ENV.collectionZones=(oqr.env.collectionZones||[]).map(c=>({...c}));
       ENV.chargingStations=(oqr.env.chargingStations||[]).map(c=>({...c}));
-      ENV.lightSources=[]; ENV.victims=[]; ENV.dirt=[];
+      ENV.lightSources=[];
+      ENV.victims=(oqr.env.victims||[]).map(v=>({...v}));
+      ENV.dirt=[];
       ENV.waypoints=(oqr.env.waypoints||[]).map(w=>({...w}));
       ENV.packages=(oqr.env.packages||[]).map(p=>({...p}));
+      // Arm spawnAtTick for scheduled objects
+      const armSchedule=arr=>arr.forEach(o=>{
+        if(o.waitTicks>0){ o.hidden=true; o.spawnAtTick=o.waitTicks; }
+      });
+      armSchedule(ENV.walls); armSchedule(ENV.victims); armSchedule(ENV.packages);
     }
     const numR=oqr.robots||3;
     while(robots.length<numR)addRobot();
@@ -8962,6 +9121,7 @@ function evaluateSchedules(){
     ...ENV.walls.map((o,i)=>({o,type:'wall',i})),
     ...ENV.waypoints.map((o,i)=>({o,type:'wp',i})),
     ...ENV.packages.map((o,i)=>({o,type:'pkg',i})),
+    ...(ENV.victims||[]).map((o,i)=>({o,type:'victim',i})),
   ];
 
   allObjs.forEach(({o, type, i})=>{
@@ -8971,19 +9131,19 @@ function evaluateSchedules(){
       o.hidden = false;
       o._visibleSince = tick;
       o.spawnAtTick = undefined; // consumed — don't re-trigger
-      const name = type==='wp' ? o.id : type==='pkg' ? `Pkg#${i}` : `Wall#${i}`;
+      const name = type==='wp'?o.id : type==='pkg'?`Pkg ${o.label??i}` : type==='victim'?`Victim ${o.id??i}` : `Wall ${o.label??i}`;
       logMsg(`<span class="lc">// 🌅 ${name} appeared at tick ${tick}</span>`);
     }
 
     // ── 2. timeoutTicks: auto-hide after being visible for N ticks ──
     if(!o.hidden && o.timeoutTicks > 0){
-      if(o._visibleSince === undefined) o._visibleSince = tick; // start counting
+      if(o._visibleSince === undefined) o._visibleSince = tick;
       const elapsed = tick - o._visibleSince;
       if(elapsed >= o.timeoutTicks){
         o.hidden = true;
         o._visibleSince = undefined;
-        const name = type==='wp' ? o.id : type==='pkg' ? `Pkg#${i}` : `Wall#${i}`;
-        logMsg(`<span class="lr">// ⌛ ${name} timed out after ${o.timeoutTicks} ticks (hidden)</span>`);
+        const name = type==='wp'?o.id : type==='pkg'?`Pkg ${o.label??i}` : type==='victim'?`Victim ${o.id??i}` : `Wall ${o.label??i}`;
+        logMsg(`<span class="lr">// ⌛ ${name} timed out at tick ${tick} (hidden)</span>`);
       }
     }
     // Reset visibility counter when object is hidden
