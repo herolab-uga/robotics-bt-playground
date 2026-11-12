@@ -1141,14 +1141,14 @@ const ND = {
   c_atgoal:   {l:'At Goal?',      cat:'condition',ic:'◎',sh:'AT?',desc:'SUCCESS if robot is within arrivalDist of target. P1=waypoint/location ID (empty=uses bb.target_wp). Accepts any Navigate To target format: waypoint ID, pkg:nearest, x:N,y:N, or a BB key.',p1:'Target (empty=bb.target_wp)',p1d:''},
   c_package:  {l:'Package Near?', cat:'condition',ic:'📦',sh:'PKG',desc:'SUCCESS if uncollected package in range. P1=range px (0=sensor range). P2=FoV° (0=360°). Writes nearest coords to bb.pkg_x/pkg_y.',p1:'Range',p1d:'0',p2:'FoV°',p2d:'0'},
   c_ally:     {l:'Ally Near?',    cat:'condition',bg:'#2a1000',bd:'#f59e0b',ic:'🤝',sh:'IF',desc:'SUCCESS if ally within comm range.'},
-  c_msg:      {l:'Msg Received?', cat:'condition',bg:'#2a1000',bd:'#f59e0b',ic:'📨',sh:'IF',desc:'SUCCESS if inbox has key.',p1:'Key',p1d:'alert'},
+  c_msg:      {l:'Msg Received?', cat:'condition',ic:'📨',sh:'MSG?',desc:'SUCCESS if inbox contains message with key P1. P2=optional BB key to write the received value into. Both P1 and P2 support bb: prefix to resolve from BB. e.g. P1=help P2=help_data → writes received value to bb.help_data.',p1:'Message key',p1d:'alert',p2:'Write value to BB key (optional)',p2d:''},
   c_in_range: {l:'In FOV?',       cat:'condition',bg:'#2a1000',bd:'#f59e0b',ic:'👁',sh:'IF',desc:'SUCCESS if target waypoint is in robot FOV.',p1:'Target',p1d:'B'},
   a_move:     {l:'Move To',       cat:'action',   ic:'➤',sh:'DO',desc:'Navigate to any object or position. P1: any label or X coord. P2: Y coord (when P1 is a number). "x:120,y:80" also works. Config Params: kH (heading gain, def 1.0), look (look-ahead px, def 36), avoid (obstacle weight, def 1.2), N (VFH dirs, def 36), arrivalDist (px, def 10).',p1:'Target / X',p1d:'A',p2:'Y (if coords)',p2d:''},
   a_charge:   {l:'Charge',        cat:'action',   ic:'🔌',sh:'DO',desc:'Navigate to charging station or waypoint and recharge. P1 = station/waypoint ID.',p1:'Station ID',p1d:'Base'},
   a_avoid:    {l:'Avoid',         cat:'action',   bg:'#011a0a',bd:'#22c55e',ic:'↪',sh:'DO',desc:'Clear obstacle flag; reroute.'},
   a_pickup:   {l:'Pick Up',       cat:'action',   bg:'#011a0a',bd:'#22c55e',ic:'✋',sh:'DO',desc:'Pick up nearest package in sensor range.'},
   a_dropoff:  {l:'Drop Off',      cat:'action',   bg:'#011a0a',bd:'#22c55e',ic:'📥',sh:'DO',desc:'Release carried package.'},
-  a_scan:     {l:'Scan',          cat:'action',   bg:'#011a0a',bd:'#22c55e',ic:'📡',sh:'DO',desc:'Sensor sweep; updates package_found.'},
+  a_scan:     {l:'Scan',          cat:'action',   ic:'📡',sh:'SCN',desc:'Batch sensor sweep — always SUCCESS. Writes to BB: obstacle, package_found, packages_visible (count), obstacle_dist (nearest wall px), allies_nearby (count), at_goal. Use before a Utility Selector or Custom Process that needs all sensor data. Unlike condition nodes, Scan just gathers data without making decisions.'},
   a_broadcast:{l:'Broadcast',     cat:'action',   bg:'#011a0a',bd:'#22c55e',ic:'📢',sh:'DO',desc:'Send key=value to all robots in comm range.',p1:'Key',p1d:'alert',p2:'Value',p2d:'true'},
   a_sendmsg:  {l:'Send Msg',      cat:'action',   bg:'#011a0a',bd:'#22c55e',ic:'✉',sh:'DO',desc:'Send key to robot at index.',p1:'Robot idx',p1d:'1',p2:'Key',p2d:'help'},
   a_wait:     {l:'Wait',          cat:'action',   bg:'#011a0a',bd:'#22c55e',ic:'⏳',sh:'DO',desc:'Idle N ticks then succeed.',p1:'Ticks',p1d:'3'},
@@ -1177,7 +1177,7 @@ const ND = {
   a_turn_right:{l:'Turn Right 90°',cat:'action',  ic:'↻',sh:'DO',desc:'Rotate 90° clockwise.'},
   a_turn_back:{l:'Turn Back 180°',cat:'action',   ic:'↩',sh:'DO',desc:'Rotate 180°.'},
   // ── UNIFIED MESSAGE PASSING ──
-  a_msg:      {l:'Send Msg',      cat:'action',   ic:'✉',sh:'MSG',desc:'Send a message: broadcast, in-range, or peer-to-peer.',p1:'Mode',p1d:'broadcast',p2:'Key=Value',p2d:'alert=true'},
+  a_msg:      {l:'Send Msg',      cat:'action',   ic:'✉',sh:'MSG',desc:'Send key=value message. P1=mode (broadcast/range/peer:N). P2=key=value. Use bb: prefix to resolve from blackboard: "status=bb:my_status" sends bb.my_status as the value; "bb:my_key=hello" uses bb.my_key as the key name.',p1:'Mode',p1d:'broadcast',p2:'key=value (bb: prefix for BB vars)',p2d:'alert=true'},
   // ── TOF SENSORS ──
   c_tof:      {l:'TOF Sensor?',   cat:'condition',ic:'📏',sh:'TOF',desc:'SUCCESS if TOF sensor detects object on given side within range.',p1:'Side',p1d:'front',p2:'Range',p2d:'30'},
   c_light:    {l:'Light Level?',  cat:'condition',ic:'🔆',sh:'LUX',desc:'Check robot light sensor. P1=min threshold (0=ignore), P2=max threshold (0=ignore). SUCCESS if reading is within [min,max].',p1:'Min',p1d:'0.5',p2:'Max',p2d:'0'},
@@ -1214,8 +1214,8 @@ const ND = {
   c_wp_near:  {l:'Waypoint Near?',cat:'condition',ic:'📍',sh:'WP',desc:'SUCCESS if waypoint P1 is within range. P2=range px (0=sensor range). P3=FoV° (0=360°).',p1:'WP ID',p1d:'A',p2:'Range',p2d:'0',p3:'FoV°',p3d:'0'},
   c_pkg_id:   {l:'Package Near?', cat:'condition',bg:'#2a1000',bd:'#f59e0b',ic:'🏷',sh:'IF',desc:'SUCCESS if package with given index (0-based) is in sensor range.',p1:'Pkg idx',p1d:'0'},
   // ROS topics
-  a_pub_topic:{l:'Publish Topic', cat:'action',   bg:'#011a0a',bd:'#22c55e',ic:'📤',sh:'ROS',desc:'Publish value to a named ROS-like topic (broadcast within comm range).',p1:'Topic',p1d:'/alert',p2:'Value',p2d:'true'},
-  a_sub_topic:{l:'Read Topic',    cat:'action',   bg:'#011a0a',bd:'#22c55e',ic:'📥',sh:'ROS',desc:'Read latest value from topic into blackboard key.',p1:'Topic',p1d:'/alert',p2:'BB key',p2d:'got_alert'},
+  a_pub_topic:{l:'Publish Topic', cat:'action',   ic:'📤',sh:'PUB',desc:'Publish to a ROS-like topic within comm range. P1=topic name (supports bb: prefix). P2=value (supports bb: prefix to publish a BB variable). e.g. P2=bb:my_zone publishes the value of bb.my_zone.',p1:'Topic name',p1d:'/alert',p2:'Value (bb:key allowed)',p2d:'true'},
+  a_sub_topic:{l:'Read Topic',   cat:'action',   ic:'📥',sh:'SUB',desc:'Read latest topic value into BB. P1=topic name (supports bb: prefix). P2=output BB key (supports bb: prefix). SUCCESS if message found, FAILURE if no recent message.',p1:'Topic name',p1d:'/alert',p2:'Write to BB key (bb:key allowed)',p2d:'got_alert'},
   c_topic:    {l:'Topic Has?',    cat:'condition',bg:'#2a1000',bd:'#f59e0b',ic:'📡',sh:'IF',desc:'SUCCESS if topic has a recent message (within N ticks).',p1:'Topic',p1d:'/alert',p2:'Max age',p2d:'5'},
 };
 
@@ -2878,14 +2878,20 @@ function tickBT(){
     }
     rob._deadLogged=false;
     // Health drain — pursuer proximity (applies when /pursuer_active global is set)
-    if(GLOBAL_PARAMS['/pursuer_active']){
-      robots.forEach(other=>{
-        if(other.idx===rob.idx) return;
-        if(GLOBAL_PARAMS['/pursuer_idx']===other.idx){
+    if(GLOBAL_PARAMS['/pursuer_active'] && rob.idx!==GLOBAL_PARAMS['/pursuer_idx']){
+      // No drain if robot is inside a collection zone (safe zone)
+      const inSafeZone=(ENV.collectionZones||[]).some(cz=>
+        rob.wx>=cz.x&&rob.wx<=cz.x+cz.w&&rob.wy>=cz.y&&rob.wy<=cz.y+cz.h);
+      if(!inSafeZone){
+        robots.forEach(other=>{
+          if(other.idx!==GLOBAL_PARAMS['/pursuer_idx']) return;
           const pd=Math.hypot(rob.wx-other.wx,rob.wy-other.wy);
           if(pd<60){ rob.health=Math.max(0,rob.health-(60-pd)/60*2); }
-        }
-      });
+        });
+      } else if(rob.health<100){
+        // Slowly regenerate health in safe zone
+        rob.health=Math.min(100,rob.health+0.5);
+      }
       rob.bb.health=Math.round(rob.health);
     }
     rob.bb.obstacle=checkObstacle(rob);
@@ -4310,7 +4316,19 @@ function tickCond(id,rob){
     case 'c_ally':{
       return robots.some(r=>r.idx!==rob.idx&&wdist(r,rob)<COMM_RANGE)?'success':'failure';
     }
-    case 'c_msg':{const k=n.p1||'alert';return(bb[k]!==undefined&&bb[k]!==false)?'success':'failure';}
+    case 'c_msg':{
+      const k=resolveMsgKey(p1||'alert',bb); // key to check in inbox
+      // Check inbox first
+      const msg=rob.inbox?.find(m=>m.key===k);
+      if(msg!==undefined){
+        // Write value to P2 BB key if specified
+        const outKey=p2?resolveMsgKey(p2,bb):null;
+        if(outKey) bb[outKey]=msg.val;
+        return 'success';
+      }
+      // Fall back to bb[k] (set by previous tick)
+      return(bb[k]!==undefined&&bb[k]!==false&&bb[k]!==null)?'success':'failure';
+    }
     case 'c_in_range':{
       const tw=ENV.waypoints.find(w=>w.id===(n.p1||'B'));
       return tw&&inFOV(rob,tw.x,tw.y,SENSOR_RANGE)?'success':'failure';
@@ -4777,7 +4795,15 @@ function tickAct(id,rob){
     // ── UNIFIED MESSAGING ──
     case 'a_msg':{
       const mode=p1||'broadcast';
-      const parts=(p2||'alert=true').split('='); const mkey=parts[0].trim(); const mval=pval((parts[1]||'true').trim());
+      const rawMsg=p2||'alert=true';
+      const eqIdx=rawMsg.indexOf('=');
+      let mkey, mval;
+      if(eqIdx===-1){
+        mkey=resolveMsgKey(rawMsg,bb); mval=true;
+      } else {
+        mkey=resolveMsgKey(rawMsg.slice(0,eqIdx),bb);
+        mval=resolveMsgVal(rawMsg.slice(eqIdx+1),bb);
+      }
       const crange=getRobComm(rob);
       if(mode==='broadcast'){
         robots.forEach(r=>{ if(r.idx!==rob.idx) r.inbox.push({key:mkey,val:mval}); });
@@ -4794,23 +4820,24 @@ function tickAct(id,rob){
       return 'success';
     }
     case 'a_pub_topic':{
-      const tname=p1||'/alert', val=pval(p2||'true');
-      const crange=robCommRange[rob.idx]||COMM_RANGE;
+      const tname=resolveMsgKey(p1||'/alert',bb);
+      const val=resolveMsgVal(p2||'true',bb);
       if(!topicBus[tname])topicBus[tname]=[];
-      // Only push to robots within comm range (ROS-like broadcast)
-      topicBus[tname].push({value:val,publisherIdx:rob.idx,tick,range:crange});
+      topicBus[tname].push({value:val,publisherIdx:rob.idx,tick});
       if(topicBus[tname].length>50)topicBus[tname].shift();
       addComm(rob.name,'topic:'+tname,String(tname),String(val),'ros');
       return 'success';
     }
     case 'a_sub_topic':{
-      const tname=p1||'/alert', bbkey=p2||'got_alert';
-      const crange=robCommRange[rob.idx]||COMM_RANGE;
+      // Topics are globally visible (like a shared BB channel) — no distance filter.
+      // Use a_msg/c_msg for range-limited peer messages.
+      const tname=resolveMsgKey(p1||'/alert',bb);
+      const bbkey=resolveMsgKey(p2||'got_alert',bb);
       const msgs=topicBus[tname]||[];
-      // find latest message within range
-      const nearby=msgs.filter(m=>m.publisherIdx!==rob.idx&&wdist(robots[m.publisherIdx]||{wx:0,wy:0},rob)<Math.min(crange,(m.range||crange)));
-      if(nearby.length){bb[bbkey]=nearby[nearby.length-1].value;return 'success';}
-      return 'failure';
+      if(!msgs.length) return 'failure';
+      // Read the latest published value (any publisher including self is fine for topics)
+      bb[bbkey]=msgs[msgs.length-1].value;
+      return 'success';
     }
 
     // ── NAVIGATION ACTIONS ──
@@ -4989,6 +5016,29 @@ function tickAct(id,rob){
 
     default: return 'success'; // unknown action type — succeed silently
   }
+}
+
+// Resolve a message/topic value: bb:key reads from robot BB or global params
+// Falls back to pval() for literals. Used in a_msg, a_pub_topic, etc.
+function resolveMsgVal(str, bb){
+  if(typeof str!=='string') return str;
+  const s=str.trim();
+  if(s.startsWith('bb:')){
+    const key=s.slice(3).trim();
+    const v=bb[key]??GLOBAL_PARAMS['/'+key]??GLOBAL_PARAMS[key];
+    return v!==undefined?v:s; // return the raw key name as fallback so it's visible
+  }
+  return pval(s);
+}
+// Resolve a topic/key name: bb:key reads bb value as the key string
+function resolveMsgKey(str, bb){
+  if(typeof str!=='string') return str;
+  const s=str.trim();
+  if(s.startsWith('bb:')){
+    const key=s.slice(3).trim();
+    return String(bb[key]??key);
+  }
+  return s;
 }
 
 function pval(v){if(v==='true')return true;if(v==='false')return false;const n=parseFloat(v);return isNaN(n)?v:n;}
