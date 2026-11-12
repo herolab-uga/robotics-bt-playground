@@ -1,4 +1,4 @@
-# 🤖 BT Playground Pro
+# 🤖 BT Playground Pro - The Ultimate Behavior Tree Playground for Robotics and AI
 
 > An interactive, browser-based Behavior Tree editor and multi-robot simulator for robotics education and research.
 
