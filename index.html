@@ -417,13 +417,46 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
   <div class="logo">BT<em>playground</em><span style="color:var(--acc4);font-size:9px;margin-left:3px">PRO</span></div>
   <div class="vsep"></div>
   <span class="tbl">Scene:</span>
-  <select class="ts" id="chalsel" onchange="loadChallenge(this.value)">
-    <option value="patrol">Patrol & Recharge</option>
-    <option value="delivery">Package Delivery</option>
-    <option value="swarm">Swarm Coordination</option>
-    <option value="rescue">Search & Rescue</option>
-    <option value="foraging">🍃 Foraging (3 robots)</option>
-    <option value="blank">— Blank —</option>
+  <select class="ts" id="chalsel" onchange="loadChallenge(this.value)" style="max-width:180px">
+    <option value="blank">— Select Scene —</option>
+    <optgroup label="⭐ Beginner">
+      <option value="hello_world">👋 Hello World</option>
+      <option value="sequence_basics">→ Sequence Basics</option>
+      <option value="selector_basics">? Selector Basics</option>
+      <option value="inverter_pattern">¬ Inverter Pattern</option>
+      <option value="obstacle_react">⚠ Obstacle Reaction</option>
+    </optgroup>
+    <optgroup label="⭐⭐ Intermediate">
+      <option value="patrol">🔄 Patrol &amp; Recharge</option>
+      <option value="delivery">📦 Package Delivery</option>
+      <option value="multi_delivery">📦📦 Multi-Package Delivery</option>
+      <option value="light_follow">💡 Light Following</option>
+      <option value="wander_vacuum">🌀 Wander &amp; Vacuum</option>
+      <option value="sys_explore">🔭 Systematic Exploration</option>
+      <option value="parallel_patrol">∥ Parallel Patrol</option>
+    </optgroup>
+    <optgroup label="⭐⭐⭐ Advanced">
+      <option value="dynamic_maze">🌀 Dynamic Maze</option>
+      <option value="timed_corridor">⏱ Timed Corridor</option>
+      <option value="priority_rescue">🚑 Priority Rescue</option>
+      <option value="utility_demo">⚖ Utility Demo</option>
+      <option value="leader_follower">👥 Leader-Follower</option>
+      <option value="task_alloc">🗂 Task Allocation</option>
+      <option value="coverage">🗺 Multi-Robot Coverage</option>
+    </optgroup>
+    <optgroup label="⭐⭐⭐⭐ Expert">
+      <option value="swarm">🐝 Swarm Coordination</option>
+      <option value="rescue">🚨 Search &amp; Rescue</option>
+      <option value="foraging">🍃 Foraging</option>
+      <option value="ordered_delivery">📋 Ordered Delivery</option>
+      <option value="pursuit">🏃 Adversarial Pursuit</option>
+    </optgroup>
+    <optgroup label="⭐⭐⭐⭐⭐ Graduate Lab">
+      <option value="operationRescue">🚨 Operation Quick Rescue</option>
+    </optgroup>
+    <optgroup label="─────">
+      <option value="blank">— Blank Canvas —</option>
+    </optgroup>
   </select>
   <div class="vsep"></div>
   <span class="tbl">BT Speed:</span>
@@ -859,8 +892,9 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
             </div>
             <div id="custom-metrics-list" style="display:flex;flex-wrap:wrap;gap:3px"></div>
           </div>
-          <!-- Built-in success rate metrics -->
-          <div id="metrics-rates" style="padding:4px 6px;flex-shrink:0;border-bottom:1px solid var(--border);background:#fafbfc;font-size:8px;display:flex;gap:10px;flex-wrap:wrap"></div>
+          <!-- Scene metrics bar -->
+          <div id="metrics-rates" style="padding:3px 6px;flex-shrink:0;border-bottom:1px solid var(--border);background:#fafbfc;font-size:8px;display:flex;gap:0;flex-wrap:wrap;align-items:stretch"></div>
+
           <canvas id="metricscv" style="flex:1;min-height:0;width:100%;display:block;background:#fff"></canvas>
           <canvas id="bat-chart" style="height:35px;width:100%;display:block;background:#fff;border-top:1px solid var(--border)"></canvas>
         </div>
@@ -928,12 +962,39 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
   </div>
 
   <div id="rtc-tpl" class="tc" style="padding:6px;overflow-y:auto">
-    <button class="tplb" onclick="loadChallenge('patrol')">🤖 Patrol & Recharge</button>
+    <div style="font-size:7.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;padding:4px 2px 2px">⭐ Beginner</div>
+    <button class="tplb" onclick="loadChallenge('hello_world')">👋 Hello World</button>
+    <button class="tplb" onclick="loadChallenge('sequence_basics')">→ Sequence Basics</button>
+    <button class="tplb" onclick="loadChallenge('selector_basics')">? Selector Basics</button>
+    <button class="tplb" onclick="loadChallenge('inverter_pattern')">¬ Inverter Pattern</button>
+    <button class="tplb" onclick="loadChallenge('obstacle_react')">⚠ Obstacle Reaction</button>
+
+    <div style="font-size:7.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;padding:4px 2px 2px">⭐⭐ Intermediate</div>
+    <button class="tplb" onclick="loadChallenge('patrol')">🔄 Patrol & Recharge</button>
     <button class="tplb" onclick="loadChallenge('delivery')">📦 Package Delivery</button>
+    <button class="tplb" onclick="loadChallenge('multi_delivery')">📦📦 Multi-Package Delivery</button>
+    <button class="tplb" onclick="loadChallenge('light_follow')">💡 Light Following</button>
+    <button class="tplb" onclick="loadChallenge('wander_vacuum')">🌀 Wander & Vacuum</button>
+    <button class="tplb" onclick="loadChallenge('sys_explore')">🔭 Systematic Exploration</button>
+    <button class="tplb" onclick="loadChallenge('parallel_patrol')">∥ Parallel Patrol</button>
+
+    <div style="font-size:7.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;padding:4px 2px 2px">⭐⭐⭐ Advanced</div>
+    <button class="tplb" onclick="loadChallenge('dynamic_maze')">🌀 Dynamic Maze</button>
+    <button class="tplb" onclick="loadChallenge('timed_corridor')">⏱ Timed Corridor</button>
+    <button class="tplb" onclick="loadChallenge('priority_rescue')">🚑 Priority Rescue</button>
+    <button class="tplb" onclick="loadChallenge('utility_demo')">⚖ Utility Demo</button>
+    <button class="tplb" onclick="loadChallenge('leader_follower')">👥 Leader-Follower</button>
+    <button class="tplb" onclick="loadChallenge('task_alloc')">🗂 Task Allocation</button>
+    <button class="tplb" onclick="loadChallenge('coverage')">🗺 Multi-Robot Coverage</button>
+
+    <div style="font-size:7.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;padding:4px 2px 2px">⭐⭐⭐⭐ Expert</div>
     <button class="tplb" onclick="loadChallenge('swarm')">🐝 Swarm Coordination</button>
     <button class="tplb" onclick="loadChallenge('rescue')">🚨 Search & Rescue</button>
-    <button class="tplb" onclick="loadChallenge('utility_demo')">⚖ Utility Demo</button>
-    <button class="tplb" onclick="loadChallenge('operationRescue')" style="border-left:3px solid #c00;font-weight:700" title="Expert challenge — design your own BTs!">🚨 Operation Quick Rescue ⭐⭐⭐⭐⭐</button>
+    <button class="tplb" onclick="loadChallenge('ordered_delivery')">📋 Ordered Delivery</button>
+    <button class="tplb" onclick="loadChallenge('pursuit')">🏃 Adversarial Pursuit</button>
+
+    <div style="font-size:7.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;padding:4px 2px 2px">⭐⭐⭐⭐⭐ Graduate Lab</div>
+    <button class="tplb" onclick="loadChallenge('operationRescue')" style="border-left:3px solid #c00;font-weight:700">🚨 Operation Quick Rescue</button>
   </div>
   <div id="rtc-help" class="tc" style="overflow-y:auto">
     <div class="hbx">
@@ -2842,6 +2903,7 @@ function tickBT(){
 
     logMsg(`<span class="li">[${rob.name} t${tick}]→<b>${res}</b></span>`);
     rob.status=res;
+    rob._lastRootStatus=res; // store directly — avoids lastTickTrace lookup issues
     recordMetrics(rob);
   });
 
@@ -4421,7 +4483,19 @@ function tickAct(id,rob){
         // ✅ Delivered to collection zone — counts as a delivery
         inZone.collected=(inZone.collected||0)+1;
         bb.packages_delivered=(bb.packages_delivered||0)+1;
-        logMsg(`<span class="lc">[${rob.name}] 📥 ✅ Delivered ${dropped.label||'pkg'} to ${inZone.label||'zone'} (zone total: ${inZone.collected})</span>`);
+        // ── Ordered delivery: check if sequence was respected ──
+        if(GLOBAL_PARAMS['/ordered_delivery']===true && dropped.label){
+          const expectedN=GLOBAL_PARAMS['/next_to_deliver']||1;
+          const deliveredN=parseInt(String(dropped.label).replace(/\D/g,''))||0;
+          if(deliveredN!==expectedN){
+            GLOBAL_PARAMS['/order_violations']=(GLOBAL_PARAMS['/order_violations']||0)+1;
+            logMsg(`<span class="lr">[${rob.name}] ⚠ ORDER VIOLATION! Delivered ${dropped.label} but expected P${expectedN}. Violations: ${GLOBAL_PARAMS['/order_violations']}</span>`);
+          } else {
+            logMsg(`<span class="lc">[${rob.name}] 📥 ✅ Delivered ${dropped.label} in correct order (#${expectedN}) to ${inZone.label||'zone'} (zone total: ${inZone.collected})</span>`);
+          }
+        } else {
+          logMsg(`<span class="lc">[${rob.name}] 📥 ✅ Delivered ${dropped.label||'pkg'} to ${inZone.label||'zone'} (zone total: ${inZone.collected})</span>`);
+        }
       } else {
         // Dropped outside any zone — package reappears uncollected; not counted as delivered
         ENV.packages.push({
@@ -4978,6 +5052,10 @@ function restartBT(){
   (ENV.collectionZones||[]).forEach(cz=>{ cz.collected=0; });
   // Clear comms and topics (topicBus is const — clear keys, don't reassign)
   Object.keys(topicBus).forEach(k=>delete topicBus[k]);
+  // Reset ordered delivery counters if present
+  if(GLOBAL_PARAMS['/ordered_delivery']===true){
+    GLOBAL_PARAMS['/next_to_deliver']=1; GLOBAL_PARAMS['/order_violations']=0;
+  }
   robots.forEach(r=>{ r.inbox=[]; });
   // Clear metrics
   Object.keys(METRICS_HIST).forEach(k=>METRICS_HIST[k]=[]);
@@ -5107,17 +5185,25 @@ function updateExplainability(){
     const cls=overallSt==='running'?'exp-run':overallSt==='success'?'exp-ok':'exp-fail';
 
     let what='Robot is idle.', why='No active behavior.';
-    if(lastAct){
+    if(overallSt==='running'&&lastAct){
       what=naturalAction(lastAct.label,lastAct.type,rob);
       const parentTrace=trace.filter(t=>t.depth<lastAct.depth&&(ND[t.type]?.cat==='composite'||ND[t.type]?.cat==='decorator'));
       const par=parentTrace[parentTrace.length-1];
       why=par?naturalParent(par.label,par.type,rob,trace):`Executing the top-level goal.`;
-    } else if(success_nodes.length){
+    } else if(overallSt==='success'){
       what=`✓ ${robName} completed all current goals.`;
       why=`The behavior tree returned SUCCESS at tick ${tick}.`;
-    } else if(fail_nodes.length){
-      what=`✗ ${robName} could not execute its task.`;
-      why=`A node returned FAILURE — ${fail_nodes[0]?.label} could not proceed.`;
+    } else if(overallSt==='failure'){
+      // Find the deepest failure that caused the root to fail
+      const deepestFail=fail_nodes.sort((a,b)=>b.depth-a.depth)[0];
+      what=`✗ ${robName} could not complete its task.`;
+      why=deepestFail
+        ? `Failed at "${deepestFail.label}" — condition not met or action could not proceed.`
+        : `The behavior tree returned FAILURE at tick ${tick}.`;
+    } else if(lastAct){
+      // Fallback for edge cases
+      what=naturalAction(lastAct.label,lastAct.type,rob);
+      why='Executing.';
     }
 
     // ── PROACTIVE: preconditions achieved vs remaining ──
@@ -5275,9 +5361,8 @@ function recordMetrics(rob){
   if(!METRICS_HIST[rob.name])METRICS_HIST[rob.name]=[];
   const tw=ENV.waypoints.find(w=>w.id===rob.bb.target_wp);
   const dist=tw?Math.round(wdist(rob,{wx:tw.x,wy:tw.y})):0;
-  // root status = status of the unparented root node for this robot
-  const rootTrace=lastTickTrace.find(t=>t.robName===rob.name&&t.depth===0);
-  const rootStatus=rootTrace?.status||'running';
+  // Use the root status stored directly on the robot (set in tickBT loop)
+  const rootStatus=rob._lastRootStatus||'running';
   METRICS_HIST[rob.name].push({tick,dist,battery:rob.bb.battery,
     victims:rob.bb.victims_found||0,
     packages:rob.bb.packages_delivered||0,
@@ -5347,83 +5432,152 @@ function renderMetrics(){
   metrics.forEach(m=>{ctx.fillStyle=mcols[m];ctx.fillText(m,lx,2);lx+=ctx.measureText(m).width+10;});
   customMetrics.forEach(m=>{ctx.fillStyle=m.color;ctx.fillText('['+m.name+']',lx,2);lx+=ctx.measureText('['+m.name+']').width+8;});
 
-  // ── SUCCESS RATE / COVERAGE / COMPLETION METRICS ──
+  // ═══ SCENE-AWARE METRICS ═══
   const ratesEl=document.getElementById('metrics-rates');
-  if(ratesEl){
-    // ── Package delivery metric ──
-    // Delivered = packages that have been placed into a collection zone (cz.collected counters)
-    const deliveredPkgs=(ENV.collectionZones||[]).reduce((s,cz)=>s+(cz.collected||0),0);
-    // Available = original (non-dropped) packages still uncollected in the world
-    const availablePkgs=ENV.packages.filter(p=>!p._dropped&&!p.collected&&!p.hidden).length;
-    // Total = delivered + still available (original scenario packages only)
-    const totalPkgs=Math.max(1, deliveredPkgs + availablePkgs);
-    const pkgRate=Math.min(100,Math.round(deliveredPkgs/totalPkgs*100));
+  const btSuccessEl=document.getElementById('metrics-bt-success');
 
-    // ── Waypoint coverage ──
-    const totalWps=ENV.waypoints.length||1;
-    const visitedWps=new Set(robots.flatMap(r=>[...(r.visitedWps||[])]));
-    const wpRate=Math.round(visitedWps.size/totalWps*100);
+  // ── Detect scene type ──
+  const hasPackages = ENV.packages.filter(p=>!p._dropped).length > 0;
+  const hasCZones   = (ENV.collectionZones||[]).length > 0;
+  const hasVictims  = (ENV.victims||[]).length > 0;
+  const hasOrdered  = GLOBAL_PARAMS['/ordered_delivery']===true;
+  const isMultiRobot= robots.length > 1;
+  const sceneType   = hasOrdered  ? 'ordered'
+                    : hasVictims  ? 'rescue'
+                    : hasCZones && hasPackages ? 'delivery'
+                    : hasPackages ? 'foraging'
+                    : 'exploration';
 
-    // ── World coverage: dynamic bounds from actual robot trail ──
-    const allTrailPts=robots.flatMap(r=>r.trail||[]);
+  // ── Universal computations ──
+  const totalDistAll   = robots.reduce((s,r)=>s+(r.distTraveled||0),0);
+  const avgBattery     = robots.reduce((s,r)=>s+(r.bb.battery||0),0)/Math.max(1,robots.length);
+  const totalCollisions= robots.reduce((s,r)=>s+(r.bb.collisions||0),0);
+  const activeBots     = robots.filter(r=>r.status==='running'||r.status==='idle').length;
+
+  // ── World coverage ──
+  const allTrailPts=robots.flatMap(r=>r.trail||[]);
+  let coveragePct=0;
+  if(allTrailPts.length && ENV.waypoints.length){
+    const refPts=[...ENV.waypoints.map(w=>({x:w.x,y:w.y})),...robots.map(r=>({x:r.wx,y:r.wy}))];
+    const minX=Math.min(...refPts.map(p=>p.x))-40, maxX=Math.max(...refPts.map(p=>p.x))+40;
+    const minY=Math.min(...refPts.map(p=>p.y))-40, maxY=Math.max(...refPts.map(p=>p.y))+40;
+    const cellSize=20;
+    const totalCells=Math.ceil(Math.max(100,maxX-minX)/cellSize)*Math.ceil(Math.max(100,maxY-minY)/cellSize);
     const coveredCells=new Set();
-    if(allTrailPts.length){
-      // Compute bounding box of all waypoints + starting positions for reference area
-      const refPts=[...ENV.waypoints.map(w=>({x:w.x,y:w.y})),...robots.map(r=>({x:r.wx,y:r.wy}))];
-      const minX=Math.min(...refPts.map(p=>p.x))-40, maxX=Math.max(...refPts.map(p=>p.x))+40;
-      const minY=Math.min(...refPts.map(p=>p.y))-40, maxY=Math.max(...refPts.map(p=>p.y))+40;
-      const W=Math.max(100,maxX-minX), H=Math.max(100,maxY-minY);
-      const cellSize=20;
-      const totalCells=Math.ceil(W/cellSize)*Math.ceil(H/cellSize);
-      allTrailPts.forEach(pt=>{
-        const cx=Math.floor((pt.x-minX)/cellSize);
-        const cy=Math.floor((pt.y-minY)/cellSize);
-        coveredCells.add(cx+','+cy);
-      });
-      var coveragePct=Math.min(100,Math.round(coveredCells.size/totalCells*100));
-    } else {
-      var coveragePct=0;
-    }
+    allTrailPts.forEach(pt=>{coveredCells.add(Math.floor((pt.x-minX)/cellSize)+','+Math.floor((pt.y-minY)/cellSize));});
+    coveragePct=Math.min(100,Math.round(coveredCells.size/totalCells*100));
+  }
+  const totalWps=ENV.waypoints.length||1;
+  const visitedWps=new Set(robots.flatMap(r=>[...(r.visitedWps||[])]));
+  const wpRate=Math.round(visitedWps.size/totalWps*100);
 
-    // ── BT success rate: average across ALL robots, last 20 ticks ──
-    let rootSuccessRate='—';
-    const allHists=robots.map(r=>METRICS_HIST[r.name]||[]).filter(h=>h.length>2);
-    if(allHists.length){
-      const window=20;
-      const successes=allHists.flatMap(h=>h.slice(-window)).filter(h=>h.rootStatus==='success').length;
-      const total=allHists.flatMap(h=>h.slice(-window)).length;
-      if(total>0) rootSuccessRate=Math.round(successes/total*100)+'%';
-    }
+  // ── Package metrics ──
+  // delivered = packages physically sitting in collection zones (cz.collected totals)
+  const deliveredPkgs = (ENV.collectionZones||[]).reduce((s,cz)=>s+(cz.collected||0),0);
+  // available = original uncollected packages still in world (not carried, not hidden, not _dropped)
+  const availablePkgs = ENV.packages.filter(p=>!p._dropped&&!p.collected&&!p.hidden).length;
+  // carrying = robots currently holding a package
+  const carryingPkgs  = robots.filter(r=>r.bb.carrying).length;
+  const totalPkgs     = Math.max(1, deliveredPkgs + availablePkgs + carryingPkgs);
+  const pkgRate       = Math.min(100,Math.round(deliveredPkgs/totalPkgs*100));
 
-    // ── Victim rescues (from actual Rescue Victim nodes) ──
-    const totalRescued=robots.reduce((s,r)=>s+(r.bb.victims_found||0),0);
-    const totalVictims=(ENV.victims||[]).length;
+  // ── Rescue metrics ──
+  const totalRescued = robots.reduce((s,r)=>s+(r.bb.victims_found||0),0);
+  const totalVictims = (ENV.victims||[]).length;
 
-    ratesEl.innerHTML=[
-      {l:`📦 Delivered (${availablePkgs} left)`,v:`${deliveredPkgs}/${totalPkgs}`,p:pkgRate,c:'#b06000'},
-      {l:'📍 Waypoints',v:`${visitedWps.size}/${totalWps}`,p:wpRate,c:'#006898'},
-      {l:'🗺 Coverage',v:coveragePct+'%',p:coveragePct,c:'#5a1a9a'},
-      {l:'🌳 BT success',v:rootSuccessRate,p:-1,c:'#0a7c4e'},
-      ...(totalVictims>0?[{l:'🧍 Rescued',v:`${totalRescued}/${totalVictims}`,p:Math.round(totalRescued/totalVictims*100),c:'#0a5a3a'}]:[]),
-    ].map(m=>`<div style="display:flex;flex-direction:column;align-items:center;min-width:60px;padding:2px 6px;border-right:1px solid var(--border)">
-      <span style="font-size:7.5px;color:var(--text3);white-space:nowrap">${m.l}</span>
-      <span style="font-size:11px;font-weight:700;color:${m.c};font-family:'JetBrains Mono',monospace">${m.v}</span>
-      ${m.p>=0?`<div style="width:48px;height:4px;background:var(--border);border-radius:2px;margin-top:2px"><div style="width:${m.p}%;height:100%;background:${m.c};border-radius:2px"></div></div>`:''}
-    </div>`).join('');
+  // ── Ordered delivery ──
+  const nextExpected     = GLOBAL_PARAMS['/next_to_deliver']||1;
+  const orderViolations  = GLOBAL_PARAMS['/order_violations']||0;
+
+  // ── Build scene metric cards ──
+  const metricCard=(l,v,p,c)=>
+    `<div style="display:flex;flex-direction:column;align-items:center;min-width:62px;padding:3px 7px;border-right:1px solid var(--border)">
+      <span style="font-size:7px;color:var(--text3);white-space:nowrap;text-align:center">${l}</span>
+      <span style="font-size:11px;font-weight:700;color:${c};font-family:'JetBrains Mono',monospace;line-height:1.3">${v}</span>
+      ${p>=0?`<div style="width:46px;height:3px;background:var(--border);border-radius:2px;margin-top:2px"><div style="width:${p}%;height:100%;background:${c};border-radius:2px;transition:width .3s"></div></div>`:''}
+    </div>`;
+  const sepCard=(label)=>
+    `<div style="display:flex;align-items:center;justify-content:center;padding:0 5px;border-right:1px solid var(--border);font-size:6.5px;font-weight:700;color:var(--text3);white-space:nowrap;text-transform:uppercase;letter-spacing:.06em;background:var(--sf);min-width:20px;writing-mode:vertical-lr;transform:rotate(180deg)">${label}</div>`;
+
+  const cards=[];
+
+  // ── BT Success Rate (computed here, shown first) ──
+  const WIN=20;
+  const allTerminal=robots.flatMap(rob=>(METRICS_HIST[rob.name]||[])
+    .filter(h=>h.rootStatus==='success'||h.rootStatus==='failure'));
+  let btRateStr='—', btRatePct=-1, btRateCol='#8a9aaa';
+  if(allTerminal.length){
+    const slice=allTerminal.slice(-WIN);
+    const pct=Math.round(slice.filter(h=>h.rootStatus==='success').length/slice.length*100);
+    btRateStr=pct+'%'; btRatePct=pct;
+    btRateCol=pct>=70?'#0a7c4e':pct>=40?'#d48000':'#c0392b';
   }
 
-  // rows — light theme
+  // ── Universal section ──
+  cards.push(sepCard('General'));
+  cards.push(metricCard('🌳 BT Success', btRateStr,                         btRatePct,     btRateCol));
+  cards.push(metricCard('🗺 Coverage',   coveragePct+'%',                   coveragePct,   '#5a1a9a'));
+  cards.push(metricCard('📍 WPs',        `${visitedWps.size}/${totalWps}`,   wpRate,        '#006898'));
+  cards.push(metricCard('⚡ Avg batt',   avgBattery.toFixed(0)+'%',          avgBattery,    '#d48000'));
+  cards.push(metricCard('↔ Dist',        Math.round(totalDistAll)+'px',      -1,            '#8a1a9a'));
+  cards.push(metricCard('💥 Collisions', String(totalCollisions),            -1,            totalCollisions>0?'#c0392b':'#8a9aaa'));
+
+  // ── Package delivery section (all scenes with packages) ──
+  if(hasPackages){
+    cards.push(sepCard('Packages'));
+    cards.push(metricCard('✅ Delivered',  `${deliveredPkgs}`,               pkgRate,       '#0a7c4e'));
+    cards.push(metricCard('📦 Available',  `${availablePkgs}`,               -1,            '#b06000'));
+    cards.push(metricCard('🤲 In transit', `${carryingPkgs}`,                -1,            '#8a6000'));
+    cards.push(metricCard('Total',         `${totalPkgs} pkgs`,              -1,            '#6a7a8a'));
+  }
+
+  // ── Ordered delivery section ──
+  if(hasOrdered){
+    cards.push(sepCard('Order'));
+    cards.push(metricCard('🔢 Next',       `P${nextExpected}`,               -1,            '#1a4a9a'));
+    cards.push(metricCard('⚠ Violations',  String(orderViolations),          -1,            orderViolations>0?'#c0392b':'#0a7c4e'));
+  }
+
+  // ── Rescue section ──
+  if(hasVictims){
+    cards.push(sepCard('Rescue'));
+    cards.push(metricCard('🧍 Rescued',    `${totalRescued}/${Math.max(totalVictims,1)}`,
+                                                                               totalVictims>0?Math.round(totalRescued/totalVictims*100):0,'#0a5a3a'));
+  }
+
+  // ── Exploration section ──
+  if(sceneType==='exploration'){
+    cards.push(sepCard('Explore'));
+    cards.push(metricCard('🔭 Frontier',   (100-coveragePct)+'% left',       100-coveragePct,'#5a1a9a'));
+  }
+
+  if(ratesEl) ratesEl.innerHTML=cards.join('');
+
+  // ══════════════════════════════════════════
+  // BT SUCCESS RATE — per-robot + fleet average
+  // Success = 1.0, Running = 0.5, Failure = 0.0
+  // Averaged over full history with exponential recency weighting
+  // ══════════════════════════════════════════
+
+
+  // per-robot summary rows
   const rows=document.getElementById('metricsrows');
   rows.innerHTML=robots.map(rob=>{
     const hist=METRICS_HIST[rob.name]||[];
     const last=hist[hist.length-1];
     if(!last)return '';
+    const pkgDel=rob.bb.packages_delivered||0;
+    const carrying=rob.bb.carrying?'🤲':' ';
+    const victims=rob.bb.victims_found||0;
+    const statColor=rob.status==='running'?'#d48000':rob.status==='success'?'#0a7c4e':'#c0392b';
     return `<div class="metric-row" style="border-left:3px solid ${rob.color}">
       <span class="mk" style="color:${rob.color};font-weight:600">${rob.name}</span>
-      <span class="mv" style="color:#d48000">⚡${last.battery.toFixed(0)}%</span>
-      <span class="mv" style="color:#6b3fa0">↔${last.dist}</span>
-      <span class="mv" style="color:#0a7c4e">✓${last.victims}</span>
-      <span class="mv" style="color:#c0392b">💥${last.collisions||0}</span>
+      <span class="mv" style="color:${statColor}" title="BT root status">${rob.status||'idle'}</span>
+      <span class="mv" style="color:#d48000" title="Battery">⚡${last.battery.toFixed(0)}%</span>
+      <span class="mv" style="color:#b06000" title="Packages delivered">📦${pkgDel}${carrying}</span>
+      ${victims>0?`<span class="mv" style="color:#0a7c4e" title="Victims rescued">🧍${victims}</span>`:''}
+      <span class="mv" style="color:#6b3fa0" title="Distance traveled">↔${Math.round(rob.distTraveled||0)}</span>
+      <span class="mv" style="color:#c0392b" title="Collisions">💥${last.collisions||0}</span>
     </div>`;
   }).join('');
 }
@@ -6687,9 +6841,736 @@ bb.u_explore = (!bb.package_found && bb.battery > 50) ? 55 : 15;`},
       ['b3','b3ut'],['b3','b3ex'],
     ],
     robots:1},
+
+  // ══════════════════════════════════════════════════════════════════
+  // BEGINNER TUTORIAL SCENES
+  // ══════════════════════════════════════════════════════════════════
+
+  // ── 1. HELLO WORLD ─────────────────────────────────────────────
+  hello_world:{
+    text:'⭐ Tutorial 1: The simplest possible BT. R1 navigates to waypoint A and succeeds. Build intuition for Root → Action structure and the SUCCESS/RUNNING/FAILURE lifecycle.',
+    env:{
+      walls:[],
+      waypoints:[{id:'A',x:280,y:120},{id:'Base',x:35,y:140}],
+      packages:[], chargingStations:[{id:'Base',x:35,y:140,rate:20,label:'Base'}],
+    },
+    tpl:[
+      {id:'root', type:'root',     x:200, y:10},
+      {id:'nav',  type:'a_nav_to', x:200, y:90, p1:'A'},
+    ],
+    edges:[['root','nav']],
+    robots:1},
+
+  // ── 2. SEQUENCE BASICS ─────────────────────────────────────────
+  sequence_basics:{
+    text:'⭐ Tutorial 2: Sequence node. R1 must navigate A → B → C in order. If any step fails, the whole Sequence fails. Observe how RUNNING propagates up the tree.',
+    env:{
+      walls:[],
+      waypoints:[{id:'A',x:100,y:80},{id:'B',x:200,y:50},{id:'C',x:300,y:110},{id:'Base',x:35,y:140}],
+      packages:[], chargingStations:[{id:'Base',x:35,y:140,rate:20,label:'Base'}],
+    },
+    tpl:[
+      {id:'root', type:'root',     x:300, y:10},
+      {id:'seq',  type:'sequence', x:300, y:80},
+        {id:'na',   type:'a_nav_to', x:120, y:170, p1:'A'},
+        {id:'nb',   type:'a_nav_to', x:260, y:170, p1:'B'},
+        {id:'nc',   type:'a_nav_to', x:400, y:170, p1:'C'},
+    ],
+    edges:[['root','seq'],['seq','na'],['seq','nb'],['seq','nc']],
+    robots:1},
+
+  // ── 3. SELECTOR BASICS ─────────────────────────────────────────
+  selector_basics:{
+    text:'⭐ Tutorial 3: Selector node. R1 tries A first; if already there it succeeds. Otherwise tries B. The Selector stops at first SUCCESS — it\'s the OR of behavior trees. Toggle Always False on branch 1 to force fallback to branch 2.',
+    env:{
+      walls:[{x:150,y:30,w:8,h:120,label:'W1'}],
+      waypoints:[{id:'A',x:80,y:80},{id:'B',x:270,y:100},{id:'Base',x:35,y:140}],
+      packages:[], chargingStations:[{id:'Base',x:35,y:140,rate:20,label:'Base'}],
+    },
+    tpl:[
+      {id:'root', type:'root',     x:220, y:10},
+      {id:'sel',  type:'selector', x:220, y:80},
+        {id:'t1',   type:'c_true',   x:80,  y:170},
+        {id:'nb',   type:'a_nav_to', x:360, y:170, p1:'B'},
+    ],
+    edges:[['root','sel'],['sel','t1'],['sel','nb']],
+    robots:1},
+
+  // ── 4. INVERTER PATTERN ─────────────────────────────────────────
+  inverter_pattern:{
+    text:'⭐ Tutorial 4: Inverter decorator. Classic battery-guard pattern: Inverter(Battery OK?) = "battery is LOW". Use this in a Sequence to block action when battery is insufficient.',
+    env:{
+      walls:[],
+      waypoints:[{id:'A',x:200,y:80},{id:'Base',x:35,y:140}],
+      packages:[], chargingStations:[{id:'Base',x:35,y:140,rate:20,label:'Base'}],
+    },
+    tpl:[
+      {id:'root', type:'root',     x:300, y:10},
+      {id:'sel',  type:'selector', x:300, y:80},
+        // Branch 1: recharge guard
+        {id:'rseq', type:'sequence', x:100, y:170},
+          {id:'inv',  type:'inverter', x:60,  y:260},
+            {id:'bat',  type:'c_battery',x:60, y:350, p1:'40'},
+          {id:'chg',  type:'a_charge', x:160, y:260, p1:'Base'},
+        // Branch 2: main task
+        {id:'nav',  type:'a_nav_to', x:500, y:170, p1:'A'},
+    ],
+    edges:[
+      ['root','sel'],['sel','rseq'],['sel','nav'],
+      ['rseq','inv'],['rseq','chg'],['inv','bat'],
+    ],
+    robots:1},
+
+  // ── 5. OBSTACLE REACTION ────────────────────────────────────────
+  obstacle_react:{
+    text:'⭐⭐ Tutorial 5: Reactive obstacle avoidance. Selector tries [Obstacle? → Collision Avoid] first; falls through to Navigate if path is clear. Dynamic obstacle bounces across the corridor — watch the robot react and resume.',
+    env:{
+      walls:[{x:140,y:30,w:8,h:60,label:'W1'},{x:140,y:110,w:8,h:60,label:'W2'}],
+      dynObstacles:[{x:155,y:60,w:20,h:20,vx:1.2,vy:0.8,label:'D1'}],
+      waypoints:[{id:'Goal',x:280,y:100},{id:'Base',x:35,y:140}],
+      packages:[], chargingStations:[{id:'Base',x:35,y:140,rate:20,label:'Base'}],
+    },
+    tpl:[
+      {id:'root', type:'root',     x:300, y:10},
+      {id:'rep',  type:'repeat',   x:300, y:80,  p1:'999'},
+        {id:'seq',  type:'sequence', x:300, y:170},
+          {id:'sel',  type:'selector', x:160, y:260},
+            {id:'obs',  type:'c_obstacle',x:80, y:360, p1:'30',p2:'90'},
+            {id:'ok',   type:'c_true',   x:260, y:360},
+          {id:'nav',  type:'a_nav_to', x:400, y:260, p1:'Goal'},
+    ],
+    edges:[
+      ['root','rep'],['rep','seq'],['seq','sel'],['seq','nav'],
+      ['sel','obs'],['sel','ok'],
+    ],
+    robots:1},
+
+  // ══════════════════════════════════════════════════════════════════
+  // INTERMEDIATE SCENES
+  // ══════════════════════════════════════════════════════════════════
+
+  // ── 6. MULTI-PICKUP DELIVERY ────────────────────────────────────
+  multi_delivery:{
+    text:'⭐⭐ R1 delivers 3 packages (P1, P2, P3) to the Drop Zone. Each pick-up/deliver cycle uses a Repeat(3) → MemSequence. Battery guard included.',
+    env:{
+      walls:[{x:140,y:50,w:8,h:70,label:'W1'},{x:240,y:80,w:60,h:8,label:'W2'}],
+      waypoints:[{id:'DZ',x:310,y:130},{id:'Base',x:35,y:140}],
+      packages:[
+        {x:70,y:60,collected:false,label:'P1'},
+        {x:200,y:45,collected:false,label:'P2'},
+        {x:290,y:60,collected:false,label:'P3'},
+      ],
+      chargingStations:[{id:'Base',x:35,y:140,rate:20,label:'Base'}],
+      collectionZones:[{x:285,y:110,w:60,h:55,label:'Drop Zone',collected:0,capacity:10}],
+    },
+    tpl:[
+      {id:'root', type:'root',     x:300, y:10},
+      {id:'top',  type:'selector', x:300, y:80},
+        {id:'bat',  type:'sequence', x:60,  y:170},
+          {id:'bi',   type:'inverter', x:20,  y:260},
+            {id:'bk',   type:'c_battery',x:20, y:350, p1:'20'},
+          {id:'bg',   type:'a_charge', x:120, y:260, p1:'Base'},
+        {id:'rep',  type:'repeat',   x:540, y:170, p1:'3'},
+          {id:'mseq', type:'mem_seq',  x:540, y:260},
+            {id:'nav_p',type:'a_nav_to', x:340, y:360, p1:'pkg:nearest'},
+            {id:'pick', type:'a_pickup', x:470, y:360},
+            {id:'nav_d',type:'a_nav_to', x:600, y:360, p1:'DZ'},
+            {id:'drop', type:'a_dropoff',x:730, y:360},
+    ],
+    edges:[
+      ['root','top'],['top','bat'],['top','rep'],
+      ['bat','bi'],['bat','bg'],['bi','bk'],
+      ['rep','mseq'],
+      ['mseq','nav_p'],['mseq','pick'],['mseq','nav_d'],['mseq','drop'],
+    ],
+    robots:1},
+
+  // ── 7. LIGHT FOLLOWING ──────────────────────────────────────────
+  light_follow:{
+    text:'⭐⭐ R1 navigates toward the brightest light source. Uses Light Level? sensor (reads lux from all sources via inverse-square falloff) and a Selector to pick the lit zone. Add or move lights while running to change behavior. Check the Sensor pane for live lux readings.',
+    env:{
+      walls:[{x:170,y:40,w:8,h:120,label:'W1'}],
+      waypoints:[{id:'L1',x:90,y:80},{id:'L2',x:280,y:90},{id:'Base',x:35,y:140}],
+      lightSources:[
+        {x:90, y:75, intensity:150, radius:160, color:'#ffcc00', label:'Lamp A'},
+        {x:280,y:85, intensity:120, radius:140, color:'#00aaff', label:'Lamp B'},
+      ],
+      packages:[], chargingStations:[{id:'Base',x:35,y:140,rate:20,label:'Base'}],
+    },
+    tpl:[
+      {id:'root', type:'root',     x:300, y:10},
+      {id:'top',  type:'selector', x:300, y:80},
+        // Battery guard
+        {id:'bat',  type:'sequence', x:60,  y:160},
+          {id:'bi',   type:'inverter', x:20,  y:240},
+            {id:'bk',   type:'c_battery',x:20, y:320, p1:'20'},
+          {id:'bg',   type:'a_charge', x:120, y:240, p1:'Base'},
+        // Selector: try brighter zone first (Lamp A is stronger), then Lamp B, then wander
+        {id:'lsel', type:'selector', x:600, y:160},
+          // Branch A: navigate to Lamp A side if any light detected
+          {id:'sa',   type:'sequence', x:380, y:260},
+            {id:'la',   type:'c_light',  x:300, y:360, p1:'10', p2:'0'},
+            {id:'na',   type:'a_nav_to', x:460, y:360, p1:'L1'},
+          // Branch B: Lamp B (lower threshold — further away)
+          {id:'sb',   type:'sequence', x:680, y:260},
+            {id:'lb',   type:'c_light',  x:600, y:360, p1:'5',  p2:'0'},
+            {id:'nb',   type:'a_nav_to', x:760, y:360, p1:'L2'},
+          // Fallback: wander until light found
+          {id:'wnd',  type:'a_wander',  x:900, y:260, p1:'0.7', p2:'12'},
+    ],
+    edges:[
+      ['root','top'],['top','bat'],['top','lsel'],
+      ['bat','bi'],['bat','bg'],['bi','bk'],
+      ['lsel','sa'],['lsel','sb'],['lsel','wnd'],
+      ['sa','la'],['sa','na'],
+      ['sb','lb'],['sb','nb'],
+    ],
+    robots:1},
+
+  // ── 8. WANDER & VACUUM ──────────────────────────────────────────
+  wander_vacuum:{
+    text:'⭐⭐ R1 wanders the environment and vacuums dirt it encounters. Uses Dirt Nearby? to reactively switch from wander to vacuum, then resumes wandering. Add more dirt by clicking 🟫 Dirt in the sim toolbar.',
+    env:{
+      walls:[{x:60,y:40,w:200,h:8,label:'W1'},{x:60,y:160,w:200,h:8,label:'W2'},{x:60,y:40,w:8,h:128,label:'W3'},{x:252,y:40,w:8,h:128,label:'W4'}],
+      waypoints:[{id:'Base',x:160,y:100}],
+      packages:[], chargingStations:[{id:'Base',x:160,y:100,rate:20,label:'Base'}],
+      dirt:[
+        {x:100,y:80,r:7,opacity:0.35},{x:200,y:70,r:5,opacity:0.3},
+        {x:140,y:130,r:8,opacity:0.4},{x:180,y:110,r:6,opacity:0.3},
+        {x:90,y:120,r:5,opacity:0.35},{x:220,y:140,r:7,opacity:0.3},
+      ],
+    },
+    tpl:[
+      {id:'root', type:'root',     x:220, y:10},
+      {id:'top',  type:'selector', x:220, y:80},
+        {id:'bat',  type:'sequence', x:60,  y:160},
+          {id:'bi',   type:'inverter', x:20,  y:240},
+            {id:'bk',   type:'c_battery',x:20, y:320, p1:'10'},
+          {id:'bg',   type:'a_charge', x:120, y:240, p1:'Base'},
+        // Reactive vacuum loop
+        {id:'rep',  type:'repeat',   x:460, y:160, p1:'999'},
+          {id:'sel2', type:'selector', x:460, y:260},
+            // Vacuum if dirt nearby
+            {id:'vseq', type:'sequence', x:300, y:360},
+              {id:'dirt', type:'c_dirt_near',x:220, y:450, p1:'20'},
+              {id:'vac',  type:'a_vacuum',   x:380, y:450, p1:'15'},
+            // Otherwise wander
+            {id:'wnd',  type:'a_wander',   x:620, y:360, p1:'0.8', p2:'10'},
+    ],
+    edges:[
+      ['root','top'],['top','bat'],['top','rep'],
+      ['bat','bi'],['bat','bg'],['bi','bk'],
+      ['rep','sel2'],['sel2','vseq'],['sel2','wnd'],
+      ['vseq','dirt'],['vseq','vac'],
+    ],
+    robots:1},
+
+  // ══════════════════════════════════════════════════════════════════
+  // MULTI-ROBOT COORDINATION SCENES
+  // ══════════════════════════════════════════════════════════════════
+
+  // ── 9. LEADER-FOLLOWER ──────────────────────────────────────────
+  leader_follower:{
+    text:'⭐⭐⭐ R1 is the Leader: explores waypoints and broadcasts its position. R2 is the Follower: reads the topic and navigates to R1\'s last known position. Demonstrates topic-based spatial coordination.',
+    robots:2,
+    env:{
+      walls:[{x:150,y:50,w:8,h:70,label:'W1'},{x:260,y:60,w:8,h:70,label:'W2'}],
+      waypoints:[{id:'P1',x:80,y:70},{id:'P2',x:200,y:50},{id:'P3',x:310,y:80},{id:'Base',x:35,y:140}],
+      packages:[], chargingStations:[{id:'Base',x:35,y:140,rate:20,label:'Base'}],
+    },
+    bts:[
+      { name:'Leader (R1)', tpl:[
+        {id:'root', type:'root',     x:300, y:10},
+        {id:'rep',  type:'repeat',   x:300, y:80, p1:'999'},
+          {id:'mseq', type:'mem_seq',  x:300, y:170},
+            {id:'n1',   type:'a_nav_to', x:100, y:270, p1:'P1'},
+            {id:'pub1', type:'a_pub_topic',x:220,y:270, p1:'/leader_pos', p2:'P1'},
+            {id:'n2',   type:'a_nav_to', x:360, y:270, p1:'P2'},
+            {id:'pub2', type:'a_pub_topic',x:480,y:270, p1:'/leader_pos', p2:'P2'},
+            {id:'n3',   type:'a_nav_to', x:620, y:270, p1:'P3'},
+            {id:'pub3', type:'a_pub_topic',x:740,y:270, p1:'/leader_pos', p2:'P3'},
+      ], edges:[
+        ['root','rep'],['rep','mseq'],
+        ['mseq','n1'],['mseq','pub1'],['mseq','n2'],['mseq','pub2'],['mseq','n3'],['mseq','pub3'],
+      ]},
+      { name:'Follower (R2)', tpl:[
+        {id:'root', type:'root',     x:200, y:10},
+        {id:'rep',  type:'repeat',   x:200, y:80, p1:'999'},
+          {id:'seq',  type:'sequence', x:200, y:170},
+            {id:'sub',  type:'a_sub_topic',x:80, y:270, p1:'/leader_pos', p2:'follow_target'},
+            {id:'nav',  type:'a_nav_to', x:280, y:270, p1:'follow_target'},
+      ], edges:[
+        ['root','rep'],['rep','seq'],['seq','sub'],['seq','nav'],
+      ]},
+    ],
+    tpl:[], edges:[],
+  },
+
+  // ── 10. TASK ALLOCATION ─────────────────────────────────────────
+  task_alloc:{
+    text:'⭐⭐⭐ 3 robots bid for 3 zones using global BB. Each robot sets its bid (/bid_RN=zone), waits, then checks if it won (no conflicts). Demonstrates distributed task allocation without a central coordinator.',
+    robots:3,
+    env:{
+      walls:[{x:150,y:30,w:8,h:70,label:'W1'},{x:250,y:70,w:8,h:70,label:'W2'}],
+      waypoints:[{id:'Z1',x:80,y:80},{id:'Z2',x:200,y:65},{id:'Z3',x:310,y:90},{id:'Base',x:35,y:150}],
+      packages:[], chargingStations:[{id:'Base',x:35,y:150,rate:20,label:'Base'}],
+      collectionZones:[
+        {x:55,y:55,w:55,h:55,label:'Zone 1',collected:0,capacity:5},
+        {x:175,y:40,w:55,h:55,label:'Zone 2',collected:0,capacity:5},
+        {x:285,y:65,w:55,h:55,label:'Zone 3',collected:0,capacity:5},
+      ],
+    },
+    bts:[
+      { name:'Robot 1', tpl:[
+        {id:'root', type:'root',    x:300, y:10},
+        {id:'top',  type:'selector',x:300, y:80},
+          {id:'bat',  type:'sequence',x:60,  y:160},
+            {id:'bi',   type:'inverter',x:20,  y:240},
+              {id:'bk',   type:'c_battery',x:20,y:320, p1:'20'},
+            {id:'bg',   type:'a_charge', x:120,y:240, p1:'Base'},
+          {id:'main', type:'mem_seq',x:540, y:160},
+            {id:'bid',  type:'a_set_bb',  x:280,y:260, p1:'/bid_R1', p2:'Z1', p3:'global'},
+            {id:'w',    type:'a_wait',    x:380,y:260, p1:'3'},
+            {id:'chk',  type:'c_bb_cmp',  x:480,y:260, p1:'/bid_R2 != Z1 AND /bid_R3 != Z1'},
+            {id:'nav',  type:'a_nav_to',  x:580,y:260, p1:'Z1'},
+            {id:'sc',   type:'a_scan',    x:700,y:260},
+      ], edges:[
+        ['root','top'],['top','bat'],['top','main'],
+        ['bat','bi'],['bat','bg'],['bi','bk'],
+        ['main','bid'],['main','w'],['main','chk'],['main','nav'],['main','sc'],
+      ]},
+      { name:'Robot 2', tpl:[
+        {id:'root', type:'root',    x:300, y:10},
+        {id:'top',  type:'selector',x:300, y:80},
+          {id:'bat',  type:'sequence',x:60,  y:160},
+            {id:'bi',   type:'inverter',x:20,  y:240},
+              {id:'bk',   type:'c_battery',x:20,y:320, p1:'20'},
+            {id:'bg',   type:'a_charge', x:120,y:240, p1:'Base'},
+          {id:'main', type:'mem_seq',x:540, y:160},
+            {id:'bid',  type:'a_set_bb',  x:280,y:260, p1:'/bid_R2', p2:'Z2', p3:'global'},
+            {id:'w',    type:'a_wait',    x:380,y:260, p1:'3'},
+            {id:'chk',  type:'c_bb_cmp',  x:480,y:260, p1:'/bid_R1 != Z2 AND /bid_R3 != Z2'},
+            {id:'nav',  type:'a_nav_to',  x:580,y:260, p1:'Z2'},
+            {id:'sc',   type:'a_scan',    x:700,y:260},
+      ], edges:[
+        ['root','top'],['top','bat'],['top','main'],
+        ['bat','bi'],['bat','bg'],['bi','bk'],
+        ['main','bid'],['main','w'],['main','chk'],['main','nav'],['main','sc'],
+      ]},
+      { name:'Robot 3', tpl:[
+        {id:'root', type:'root',    x:300, y:10},
+        {id:'top',  type:'selector',x:300, y:80},
+          {id:'bat',  type:'sequence',x:60,  y:160},
+            {id:'bi',   type:'inverter',x:20,  y:240},
+              {id:'bk',   type:'c_battery',x:20,y:320, p1:'20'},
+            {id:'bg',   type:'a_charge', x:120,y:240, p1:'Base'},
+          {id:'main', type:'mem_seq',x:540, y:160},
+            {id:'bid',  type:'a_set_bb',  x:280,y:260, p1:'/bid_R3', p2:'Z3', p3:'global'},
+            {id:'w',    type:'a_wait',    x:380,y:260, p1:'3'},
+            {id:'chk',  type:'c_bb_cmp',  x:480,y:260, p1:'/bid_R1 != Z3 AND /bid_R2 != Z3'},
+            {id:'nav',  type:'a_nav_to',  x:580,y:260, p1:'Z3'},
+            {id:'sc',   type:'a_scan',    x:700,y:260},
+      ], edges:[
+        ['root','top'],['top','bat'],['top','main'],
+        ['bat','bi'],['bat','bg'],['bi','bk'],
+        ['main','bid'],['main','w'],['main','chk'],['main','nav'],['main','sc'],
+      ]},
+    ],
+    tpl:[], edges:[],
+  },
+
+  // ── 11. PARALLEL PATROL ─────────────────────────────────────────
+  parallel_patrol:{
+    text:'⭐⭐⭐ Parallel node demo. R1 runs Navigate AND Scan simultaneously. The robot moves toward Goal while the Scan branch fires every tick — monitoring its environment while en route. P1 (threshold) set to 1: succeeds when at least 1 child succeeds.',
+    env:{
+      walls:[{x:150,y:50,w:8,h:90,label:'W1'}],
+      waypoints:[{id:'Goal',x:290,y:100},{id:'Base',x:35,y:140}],
+      packages:[], chargingStations:[{id:'Base',x:35,y:140,rate:20,label:'Base'}],
+    },
+    tpl:[
+      {id:'root', type:'root',     x:220, y:10},
+      {id:'par',  type:'parallel', x:220, y:80, p1:'1'},
+        {id:'nav',  type:'a_nav_to', x:80,  y:180, p1:'Goal'},
+        {id:'sc',   type:'a_scan',   x:360, y:180},
+    ],
+    edges:[['root','par'],['par','nav'],['par','sc']],
+    robots:1},
+
+  // ══════════════════════════════════════════════════════════════════
+  // DYNAMIC / ADVERSARIAL SCENES
+  // ══════════════════════════════════════════════════════════════════
+
+  // ── 12. DYNAMIC OBSTACLE MAZE ───────────────────────────────────
+  dynamic_maze:{
+    text:'⭐⭐⭐ Navigate a maze with 2 moving obstacles. The robot must reach Goal without getting trapped. VFH nav handles moving obstacles reactively. Watch the robot oscillate near obstacles and recover.',
+    env:{
+      walls:[
+        {x:100,y:40,w:8,h:70,label:'W1'},{x:200,y:80,w:8,h:70,label:'W2'},
+        {x:100,y:40,w:110,h:8,label:'W3'},{x:200,y:140,w:100,h:8,label:'W4'},
+      ],
+      dynObstacles:[
+        {x:110,y:60,w:18,h:18,vx:0,vy:1.5,label:'D1'},
+        {x:210,y:95,w:18,h:18,vx:1.0,vy:0,label:'D2'},
+      ],
+      waypoints:[{id:'Goal',x:310,y:100},{id:'Base',x:35,y:140}],
+      packages:[], chargingStations:[{id:'Base',x:35,y:140,rate:20,label:'Base'}],
+    },
+    tpl:[
+      {id:'root', type:'root',     x:200, y:10},
+      {id:'top',  type:'selector', x:200, y:80},
+        {id:'avoid',type:'sequence', x:80,  y:170},
+          {id:'obs',  type:'c_obstacle',x:40, y:260, p1:'25',p2:'0'},
+          {id:'col',  type:'a_col_avoid',x:160,y:260},
+        {id:'nav',  type:'a_nav_to', x:360, y:170, p1:'Goal'},
+    ],
+    edges:[
+      ['root','top'],['top','avoid'],['top','nav'],
+      ['avoid','obs'],['avoid','col'],
+    ],
+    robots:1},
+
+  // ── 13. TIMED CORRIDOR ──────────────────────────────────────────
+  timed_corridor:{
+    text:'⭐⭐⭐ A wall (W4) blocks the central corridor from tick 20 to tick 60. R1 must reach EX2 on the far side. Use Timeout or Check BB with /tick to decide when to attempt the crossing. The wall auto-disappears at tick 60.',
+    env:{
+      walls:[
+        {x:160,y:30,w:8,h:60,label:'W1'},{x:160,y:110,w:8,h:60,label:'W2'},
+        {x:160,y:85,w:8,h:30,label:'W4', hidden:true, waitTicks:20, timeoutTicks:40},
+      ],
+      waypoints:[{id:'EX1',x:80,y:90},{id:'EX2',x:280,y:90},{id:'Base',x:35,y:150}],
+      packages:[], chargingStations:[{id:'Base',x:35,y:150,rate:20,label:'Base'}],
+    },
+    tpl:[
+      {id:'root', type:'root',     x:300, y:10},
+      {id:'mseq', type:'mem_seq',  x:300, y:80},
+        {id:'n1',   type:'a_nav_to', x:120, y:170, p1:'EX1'},
+        {id:'w',    type:'a_wait',   x:260, y:170, p1:'25'},
+        {id:'n2',   type:'a_nav_to', x:400, y:170, p1:'EX2'},
+        {id:'nb',   type:'a_nav_to', x:540, y:170, p1:'Base'},
+    ],
+    edges:[
+      ['root','mseq'],
+      ['mseq','n1'],['mseq','w'],['mseq','n2'],['mseq','nb'],
+    ],
+    robots:1},
+
+  // ── 14. ADVERSARIAL PURSUIT ─────────────────────────────────────
+  pursuit:{
+    text:'⭐⭐⭐⭐ R1 (Evader) must reach the Safe Zone while R2 (Pursuer) broadcasts its position and chases R1. R1 uses ally-detection to steer toward the zone when pursuer is nearby. Demonstrates reactive escape.',
+    robots:2,
+    env:{
+      walls:[{x:160,y:50,w:8,h:60,label:'W1'},{x:260,y:70,w:8,h:60,label:'W2'}],
+      waypoints:[{id:'SZ',x:310,y:140},{id:'Start',x:40,y:80},{id:'Base',x:35,y:150}],
+      packages:[], chargingStations:[{id:'Base',x:35,y:150,rate:20,label:'Base'}],
+      collectionZones:[{x:285,y:120,w:60,h:50,label:'Safe Zone',collected:0,capacity:1}],
+    },
+    bts:[
+      { name:'Evader (R1)', tpl:[
+        {id:'root', type:'root',    x:220, y:10},
+        {id:'top',  type:'selector',x:220, y:80},
+          // If ally (pursuer) nearby — rush to safe zone directly
+          {id:'esc',  type:'sequence',x:80,  y:170},
+            {id:'ally', type:'c_ally',   x:40,  y:260},
+            {id:'nsz',  type:'a_nav_to', x:160, y:260, p1:'SZ'},
+          // Otherwise patrol normally
+          {id:'rep',  type:'repeat',  x:420, y:170, p1:'999'},
+            {id:'mseq', type:'mem_seq', x:420, y:260},
+              {id:'n1',   type:'a_nav_to',x:300, y:360, p1:'Start'},
+              {id:'n2',   type:'a_nav_to',x:440, y:360, p1:'SZ'},
+      ], edges:[
+        ['root','top'],['top','esc'],['top','rep'],
+        ['esc','ally'],['esc','nsz'],
+        ['rep','mseq'],['mseq','n1'],['mseq','n2'],
+      ]},
+      { name:'Pursuer (R2)', tpl:[
+        {id:'root', type:'root',    x:220, y:10},
+        {id:'rep',  type:'repeat',  x:220, y:80, p1:'999'},
+          {id:'seq',  type:'sequence',x:220, y:170},
+            {id:'pub',  type:'a_pub_topic',x:80, y:270, p1:'/pursuer_pos', p2:'chasing'},
+            {id:'nav',  type:'a_wander',   x:280,y:270, p1:'1.3', p2:'5'},
+      ], edges:[
+        ['root','rep'],['rep','seq'],['seq','pub'],['seq','nav'],
+      ]},
+    ],
+    tpl:[], edges:[],
+  },
+
+  // ══════════════════════════════════════════════════════════════════
+  // EXPLORATION & MAPPING SCENES
+  // ══════════════════════════════════════════════════════════════════
+
+  // ── 15. SYSTEMATIC EXPLORATION ──────────────────────────────────
+  sys_explore:{
+    text:'⭐⭐ R1 systematically visits all waypoints using Explore Frontier, then returns to Base. Watch the coverage metric build up. The robot visits the nearest unvisited waypoint each time.',
+    env:{
+      walls:[{x:120,y:50,w:8,h:50,label:'W1'},{x:220,y:80,w:8,h:60,label:'W2'},{x:300,y:40,w:8,h:50,label:'W3'}],
+      waypoints:[
+        {id:'A',x:65,y:70},{id:'B',x:160,y:50},{id:'C',x:170,y:130},
+        {id:'D',x:260,y:50},{id:'E',x:260,y:130},{id:'F',x:340,y:90},
+        {id:'Base',x:35,y:150},
+      ],
+      packages:[], chargingStations:[{id:'Base',x:35,y:150,rate:20,label:'Base'}],
+    },
+    tpl:[
+      {id:'root', type:'root',    x:220, y:10},
+      {id:'top',  type:'selector',x:220, y:80},
+        {id:'bat',  type:'sequence',x:60,  y:160},
+          {id:'bi',   type:'inverter',x:20,  y:240},
+            {id:'bk',   type:'c_battery',x:20,y:320, p1:'20'},
+          {id:'bg',   type:'a_charge', x:120,y:240, p1:'Base'},
+        {id:'mseq', type:'mem_seq', x:450, y:160},
+          {id:'exp',  type:'a_explore', x:300,y:260},
+          {id:'scan', type:'a_scan',    x:440,y:260},
+          {id:'nb',   type:'a_nav_to',  x:580,y:260, p1:'Base'},
+    ],
+    edges:[
+      ['root','top'],['top','bat'],['top','mseq'],
+      ['bat','bi'],['bat','bg'],['bi','bk'],
+      ['mseq','exp'],['mseq','scan'],['mseq','nb'],
+    ],
+    robots:1},
+
+  // ── 16. MULTI-ROBOT COVERAGE ────────────────────────────────────
+  coverage:{
+    text:'⭐⭐⭐ 3 robots explore the environment in parallel, each responsible for a different sector. They broadcast when their sector is done. Uses per-robot zone assignment via global BB.',
+    robots:3,
+    env:{
+      walls:[{x:150,y:30,w:8,h:140,label:'Div1'},{x:260,y:30,w:8,h:140,label:'Div2'}],
+      waypoints:[
+        {id:'S1a',x:65,y:60},{id:'S1b',x:65,y:110},
+        {id:'S2a',x:195,y:60},{id:'S2b',x:195,y:110},
+        {id:'S3a',x:300,y:60},{id:'S3b',x:300,y:110},
+        {id:'Base',x:35,y:160},
+      ],
+      packages:[], chargingStations:[{id:'Base',x:35,y:160,rate:20,label:'Base'}],
+    },
+    bts:[
+      { name:'Sector 1 (R1)', tpl:[
+        {id:'root', type:'root',    x:300, y:10},
+        {id:'top',  type:'selector',x:300, y:80},
+          {id:'bat',  type:'sequence',x:60,  y:160},
+            {id:'bi',   type:'inverter',x:20,  y:240},
+              {id:'bk',   type:'c_battery',x:20,y:320, p1:'20'},
+            {id:'bg',   type:'a_charge', x:120,y:240, p1:'Base'},
+          {id:'mseq', type:'mem_seq', x:540, y:160},
+            {id:'n1',   type:'a_nav_to', x:300,y:260, p1:'S1a'},
+            {id:'s1',   type:'a_scan',   x:420,y:260},
+            {id:'n2',   type:'a_nav_to', x:540,y:260, p1:'S1b'},
+            {id:'s2',   type:'a_scan',   x:660,y:260},
+            {id:'pub',  type:'a_pub_topic',x:780,y:260, p1:'/sector1_done', p2:'true'},
+            {id:'nb',   type:'a_nav_to', x:900,y:260, p1:'Base'},
+      ], edges:[
+        ['root','top'],['top','bat'],['top','mseq'],
+        ['bat','bi'],['bat','bg'],['bi','bk'],
+        ['mseq','n1'],['mseq','s1'],['mseq','n2'],['mseq','s2'],['mseq','pub'],['mseq','nb'],
+      ]},
+      { name:'Sector 2 (R2)', tpl:[
+        {id:'root', type:'root',    x:300, y:10},
+        {id:'top',  type:'selector',x:300, y:80},
+          {id:'bat',  type:'sequence',x:60,  y:160},
+            {id:'bi',   type:'inverter',x:20,  y:240},
+              {id:'bk',   type:'c_battery',x:20,y:320, p1:'20'},
+            {id:'bg',   type:'a_charge', x:120,y:240, p1:'Base'},
+          {id:'mseq', type:'mem_seq', x:540, y:160},
+            {id:'n1',   type:'a_nav_to', x:300,y:260, p1:'S2a'},
+            {id:'s1',   type:'a_scan',   x:420,y:260},
+            {id:'n2',   type:'a_nav_to', x:540,y:260, p1:'S2b'},
+            {id:'s2',   type:'a_scan',   x:660,y:260},
+            {id:'pub',  type:'a_pub_topic',x:780,y:260, p1:'/sector2_done', p2:'true'},
+            {id:'nb',   type:'a_nav_to', x:900,y:260, p1:'Base'},
+      ], edges:[
+        ['root','top'],['top','bat'],['top','mseq'],
+        ['bat','bi'],['bat','bg'],['bi','bk'],
+        ['mseq','n1'],['mseq','s1'],['mseq','n2'],['mseq','s2'],['mseq','pub'],['mseq','nb'],
+      ]},
+      { name:'Sector 3 (R3)', tpl:[
+        {id:'root', type:'root',    x:300, y:10},
+        {id:'top',  type:'selector',x:300, y:80},
+          {id:'bat',  type:'sequence',x:60,  y:160},
+            {id:'bi',   type:'inverter',x:20,  y:240},
+              {id:'bk',   type:'c_battery',x:20,y:320, p1:'20'},
+            {id:'bg',   type:'a_charge', x:120,y:240, p1:'Base'},
+          {id:'mseq', type:'mem_seq', x:540, y:160},
+            {id:'n1',   type:'a_nav_to', x:300,y:260, p1:'S3a'},
+            {id:'s1',   type:'a_scan',   x:420,y:260},
+            {id:'n2',   type:'a_nav_to', x:540,y:260, p1:'S3b'},
+            {id:'s2',   type:'a_scan',   x:660,y:260},
+            {id:'pub',  type:'a_pub_topic',x:780,y:260, p1:'/sector3_done', p2:'true'},
+            {id:'nb',   type:'a_nav_to', x:900,y:260, p1:'Base'},
+      ], edges:[
+        ['root','top'],['top','bat'],['top','mseq'],
+        ['bat','bi'],['bat','bg'],['bi','bk'],
+        ['mseq','n1'],['mseq','s1'],['mseq','n2'],['mseq','s2'],['mseq','pub'],['mseq','nb'],
+      ]},
+    ],
+    tpl:[], edges:[],
+  },
+
+  // ══════════════════════════════════════════════════════════════════
+  // TASK ALLOCATION & PRIORITY SCENES
+  // ══════════════════════════════════════════════════════════════════
+
+  // ── 17. PRIORITY RESCUE ─────────────────────────────────────────
+  priority_rescue:{
+    text:'⭐⭐⭐⭐ 3 victims with different urgency. R1 uses a Utility Selector to rescue the highest-priority victim first (V_CRIT > V_MOD > V_LOW). Priority values are set via utility scores on each rescue branch.',
+    env:{
+      walls:[{x:150,y:50,w:8,h:60,label:'W1'},{x:250,y:70,w:8,h:60,label:'W2'}],
+      waypoints:[{id:'Base',x:35,y:150}],
+      victims:[
+        {id:'V_CRIT',x:80,y:70,  rescued:false,color:'#cc0000',label:'CRITICAL'},
+        {id:'V_MOD', x:200,y:60, rescued:false,color:'#ff8800',label:'MODERATE'},
+        {id:'V_LOW', x:300,y:100,rescued:false,color:'#008800',label:'LOW'},
+      ],
+      packages:[], chargingStations:[{id:'Base',x:35,y:150,rate:20,label:'Base'}],
+    },
+    tpl:[
+      {id:'root', type:'root',      x:300, y:10},
+      {id:'top',  type:'selector',  x:300, y:80},
+        // Battery guard
+        {id:'bat',  type:'sequence', x:60,  y:160},
+          {id:'bi',   type:'inverter', x:20,  y:240},
+            {id:'bk',   type:'c_battery',x:20, y:320, p1:'20'},
+          {id:'bg',   type:'a_charge', x:120, y:240, p1:'Base'},
+        // Utility Selector for priority rescue
+        {id:'usel', type:'utility_sel',x:600, y:160},
+          // Critical victim (highest score)
+          {id:'s1',   type:'sequence', x:300, y:260},
+            {id:'vc1',  type:'c_victim', x:240, y:360, p1:'150'},
+            {id:'r1',   type:'a_rescue', x:380, y:360},
+          // Moderate victim
+          {id:'s2',   type:'sequence', x:600, y:260},
+            {id:'vc2',  type:'c_victim', x:540, y:360, p1:'150'},
+            {id:'r2',   type:'a_rescue', x:680, y:360},
+          // Low priority victim
+          {id:'s3',   type:'sequence', x:900, y:260},
+            {id:'vc3',  type:'c_victim', x:840, y:360, p1:'150'},
+            {id:'r3',   type:'a_rescue', x:980, y:360},
+    ],
+    edges:[
+      ['root','top'],['top','bat'],['top','usel'],
+      ['bat','bi'],['bat','bg'],['bi','bk'],
+      ['usel','s1'],['usel','s2'],['usel','s3'],
+      ['s1','vc1'],['s1','r1'],
+      ['s2','vc2'],['s2','r2'],
+      ['s3','vc3'],['s3','r3'],
+    ],
+    robots:1},
+}; // end CHALL
+
+const CHALL_ORDERED = {
+  text:'Three robots must collect and deliver packages P1→P2→P3→P4 strictly in order. Use Check BB ""/next_to_deliver == N"" to gate each pickup. Order violations are tracked in /order_violations.',
+  robots:3,
+  env:{
+    walls:[
+      {x:120,y:40,w:8,h:60,label:'W1'},
+      {x:220,y:80,w:60,h:8,label:'W2'},
+      {x:290,y:40,w:8,h:50,label:'W3'},
+    ],
+    waypoints:[
+      {id:'Base',x:35,y:140},
+      {id:'DropZone',x:185,y:140},
+      {id:'Z1',x:60,y:60},
+      {id:'Z2',x:175,y:50},
+      {id:'Z3',x:260,y:110},
+      {id:'Z4',x:330,y:60},
+    ],
+    packages:[
+      {x:55,y:55,  collected:false,label:'P1'},
+      {x:170,y:45, collected:false,label:'P2'},
+      {x:255,y:105,collected:false,label:'P3'},
+      {x:325,y:55, collected:false,label:'P4'},
+    ],
+    collectionZones:[{x:155,y:115,w:70,h:50,label:'Drop Zone',collected:0,capacity:10}],
+    chargingStations:[{id:'Base',x:35,y:140,rate:20,label:'Base'}],
+    victims:[],dirt:[],
+  },
+  // Per-robot BTs with empty canvas — students design the check logic
+  // We initialise the global counter via a global param
+  _initGlobals:{ '/next_to_deliver':1, '/order_violations':0, '/ordered_delivery':true },
+  bts:[
+    { name:'R1 Deliver',
+      tpl:[
+        {id:'root', type:'root',      x:300, y:10},
+        {id:'top',  type:'selector',  x:300, y:80},
+          // Battery guard
+          {id:'bat',  type:'sequence', x:60,  y:160},
+            {id:'bi',   type:'inverter', x:20,  y:240},
+              {id:'bk',   type:'c_battery',x:20,y:320,p1:'20'},
+            {id:'bg',   type:'a_charge', x:120,y:240,p1:'Base'},
+          // Ordered delivery loop
+          {id:'loop', type:'mem_seq', x:540, y:160},
+            // Check if P1 is next
+            {id:'chk1', type:'c_bb_cmp', x:280,y:240,p1:'/next_to_deliver == 1'},
+            {id:'nav1', type:'a_nav_to', x:400,y:240,p1:'Z1'},
+            {id:'pk1',  type:'a_pickup', x:510,y:240},
+            {id:'navd1',type:'a_nav_to', x:620,y:240,p1:'DropZone'},
+            {id:'dr1',  type:'a_dropoff',x:730,y:240},
+            {id:'inc1', type:'a_bb_inc', x:840,y:240,p1:'/next_to_deliver',p2:'1'},
+            {id:'navb1',type:'a_nav_to', x:950,y:240,p1:'Base'},
+      ],
+      edges:[
+        ['root','top'],['top','bat'],['top','loop'],
+        ['bat','bi'],['bat','bg'],['bi','bk'],
+        ['loop','chk1'],['loop','nav1'],['loop','pk1'],
+        ['loop','navd1'],['loop','dr1'],['loop','inc1'],['loop','navb1'],
+      ]
+    },
+    { name:'R2 Deliver',
+      tpl:[
+        {id:'root', type:'root',      x:300, y:10},
+        {id:'top',  type:'selector',  x:300, y:80},
+          {id:'bat',  type:'sequence', x:60,  y:160},
+            {id:'bi',   type:'inverter', x:20,  y:240},
+              {id:'bk',   type:'c_battery',x:20,y:320,p1:'20'},
+            {id:'bg',   type:'a_charge', x:120,y:240,p1:'Base'},
+          {id:'loop', type:'mem_seq', x:540, y:160},
+            {id:'chk2', type:'c_bb_cmp', x:280,y:240,p1:'/next_to_deliver == 2'},
+            {id:'nav2', type:'a_nav_to', x:400,y:240,p1:'Z2'},
+            {id:'pk2',  type:'a_pickup', x:510,y:240},
+            {id:'navd2',type:'a_nav_to', x:620,y:240,p1:'DropZone'},
+            {id:'dr2',  type:'a_dropoff',x:730,y:240},
+            {id:'inc2', type:'a_bb_inc', x:840,y:240,p1:'/next_to_deliver',p2:'1'},
+            {id:'navb2',type:'a_nav_to', x:950,y:240,p1:'Base'},
+      ],
+      edges:[
+        ['root','top'],['top','bat'],['top','loop'],
+        ['bat','bi'],['bat','bg'],['bi','bk'],
+        ['loop','chk2'],['loop','nav2'],['loop','pk2'],
+        ['loop','navd2'],['loop','dr2'],['loop','inc2'],['loop','navb2'],
+      ]
+    },
+    { name:'R3 Deliver',
+      tpl:[
+        {id:'root', type:'root',      x:300, y:10},
+        {id:'top',  type:'selector',  x:300, y:80},
+          {id:'bat',  type:'sequence', x:60,  y:160},
+            {id:'bi',   type:'inverter', x:20,  y:240},
+              {id:'bk',   type:'c_battery',x:20,y:320,p1:'20'},
+            {id:'bg',   type:'a_charge', x:120,y:240,p1:'Base'},
+          {id:'loop', type:'mem_seq', x:540, y:160},
+            // R3 handles both P3 and P4
+            {id:'sel3', type:'selector', x:280,y:240},
+              {id:'chk3', type:'c_bb_cmp',x:220,y:320,p1:'/next_to_deliver == 3'},
+              {id:'chk4', type:'c_bb_cmp',x:380,y:320,p1:'/next_to_deliver == 4'},
+            {id:'nav3', type:'a_nav_to', x:510,y:240,p1:'pkg:nearest'},
+            {id:'pk3',  type:'a_pickup', x:620,y:240},
+            {id:'navd3',type:'a_nav_to', x:730,y:240,p1:'DropZone'},
+            {id:'dr3',  type:'a_dropoff',x:840,y:240},
+            {id:'inc3', type:'a_bb_inc', x:950,y:240,p1:'/next_to_deliver',p2:'1'},
+            {id:'navb3',type:'a_nav_to',x:1060,y:240,p1:'Base'},
+      ],
+      edges:[
+        ['root','top'],['top','bat'],['top','loop'],
+        ['bat','bi'],['bat','bg'],['bi','bk'],
+        ['loop','sel3'],['loop','nav3'],['loop','pk3'],
+        ['loop','navd3'],['loop','dr3'],['loop','inc3'],['loop','navb3'],
+        ['sel3','chk3'],['sel3','chk4'],
+      ]
+    },
+  ],
+  tpl:[],edges:[],
 };
 
-// ── OPERATION QUICK RESCUE (student challenge — no BT templates) ──
 const CHALL_OQR = {
   text:'🚨 Operation Quick Rescue — Expert challenge. Design three BTs (R1 Scout, R2 Medic, R3 Guard) from scratch. W4 blocks the corridor from tick 15–40. V2 is time-critical: appears tick 20, gone at tick 35.',
   robots:3,
@@ -6824,6 +7705,93 @@ function loadChallenge(key){
     logMsg('<span class="li">// 🚨 Operation Quick Rescue loaded. Environment ready. Design your 3 BTs! See wiki/Challenge-Operation-Quick-Rescue.md for the full spec.</span>');
     return;
   }
+  // Generic dispatcher for any challenge in CHALL with a bts:[] array
+  if(CHALL[key]&&CHALL[key].bts){
+    const ch=CHALL[key];
+    document.getElementById('cprompt').textContent=ch.text||'';
+    const eenv=ch.env||{};
+    ENV.walls=(eenv.walls||[]).map(w=>({...w}));
+    ENV.dynObstacles=(eenv.dynObstacles||[]).map(o=>({...o}));
+    ENV.collectionZones=(eenv.collectionZones||[]).map(c=>({...c}));
+    ENV.waypoints=(eenv.waypoints||[]).map(w=>({...w}));
+    ENV.packages=(eenv.packages||[]).map(p=>({...p}));
+    ENV.chargingStations=(eenv.chargingStations||[]).map(c=>({...c}));
+    ENV.lightSources=(eenv.lightSources||[]).map(l=>({...l}));
+    ENV.victims=(eenv.victims||[]).map(v=>({...v}));
+    ENV.dirt=(eenv.dirt||[]).map(d=>({...d}));
+    const numR=ch.robots||ch.bts.length;
+    while(robots.length<numR) addRobot();
+    while(robots.length>numR) robots.pop();
+    syncRobotUI(); robots.forEach(resetRobotState);
+    if(ch._initGlobals) Object.entries(ch._initGlobals).forEach(([k,v])=>{ GLOBAL_PARAMS[k]=v; });
+    const bar=document.getElementById('bt-tabs-bar');
+    document.querySelectorAll(`.bt-tab[data-challenge="${key}"]`).forEach(t=>t.remove());
+    ch.bts.forEach((btDef,ri)=>{
+      const btId=`${key}_r${ri+1}`;
+      [...Object.keys(nodes)].forEach(id=>{nodes[id]?.el?.remove();delete nodes[id];}); edges.length=0;
+      btLibrary[btId]={name:btDef.name||`R${ri+1}`,nodes:{},edges:[]};
+      activeBTId=btId;
+      const idMap={};
+      (btDef.tpl||[]).forEach(nd=>{
+        const nid=createNode(nd.type,nd.x,nd.y,-1); idMap[nd.id]=nid;
+        const n2=nodes[nid];
+        if(nd.p1!==undefined)n2.p1=nd.p1; if(nd.p2!==undefined)n2.p2=nd.p2; if(nd.p3!==undefined)n2.p3=nd.p3;
+        if(nd.utility!==undefined)n2.utility=nd.utility; if(nd.params)n2.params={...nd.params};
+        n2.el.querySelector('.nl').textContent=n2.label; updateBadge(nid);
+      });
+      (btDef.edges||[]).forEach(([f,t])=>{const fi=idMap[f],ti=idMap[t];if(fi&&ti&&!nodes[fi].children.includes(ti)){nodes[fi].children.push(ti);edges.push({from:fi,to:ti});}});
+      saveBTSnapshot(btId); robBTAssign[ri]=btId;
+      if(bar){const tab=document.createElement('div');tab.className='bt-tab';tab.dataset.btid=btId;tab.dataset.challenge=key;tab.textContent=`R${ri+1}: ${btDef.name||'BT'}`;tab.onclick=()=>switchBT(btId,tab);const addBtn=bar.querySelector('.bt-tab-add');if(addBtn)bar.insertBefore(tab,addBtn);else bar.appendChild(tab);}
+    });
+    const firstId=`${key}_r1`; const firstTab=document.querySelector(`.bt-tab[data-btid="${firstId}"]`);
+    switchBT(firstId,firstTab);
+    setTimeout(()=>fitCanvas(),50); drawSim();
+    logMsg(`<span class="li">// ✅ ${ch.text?.slice(0,80)||key} loaded.</span>`);
+    return;
+  }
+
+  if(key==='ordered_delivery'){
+    const ch=CHALL_ORDERED;
+    document.getElementById('cprompt').textContent=ch.text;
+    // Set up environment
+    ENV.walls=(ch.env.walls||[]).map(w=>({...w}));
+    ENV.dynObstacles=[]; ENV.collectionZones=(ch.env.collectionZones||[]).map(c=>({...c}));
+    ENV.waypoints=(ch.env.waypoints||[]).map(w=>({...w}));
+    ENV.packages=(ch.env.packages||[]).map(p=>({...p}));
+    ENV.chargingStations=(ch.env.chargingStations||[]).map(c=>({...c}));
+    ENV.victims=[]; ENV.dirt=[];
+    // Initialise global params
+    if(ch._initGlobals) Object.entries(ch._initGlobals).forEach(([k,v])=>{ GLOBAL_PARAMS[k]=v; });
+    // Robots
+    while(robots.length<ch.robots)addRobot();
+    while(robots.length>ch.robots)robots.pop();
+    syncRobotUI(); robots.forEach(resetRobotState);
+    // Build per-robot BT tabs
+    const bar=document.getElementById('bt-tabs-bar');
+    document.querySelectorAll('.bt-tab[data-challenge="ordered_delivery"]').forEach(t=>t.remove());
+    ch.bts.forEach((btDef,ri)=>{
+      const btId=`ordered_delivery_r${ri+1}`;
+      [...Object.keys(nodes)].forEach(id=>{nodes[id]?.el?.remove();delete nodes[id];}); edges.length=0;
+      btLibrary[btId]={name:btDef.name,nodes:{},edges:[]};
+      activeBTId=btId;
+      const idMap={};
+      (btDef.tpl||[]).forEach(nd=>{
+        const nid=createNode(nd.type,nd.x,nd.y,-1); idMap[nd.id]=nid;
+        const n2=nodes[nid];
+        if(nd.p1!==undefined)n2.p1=nd.p1; if(nd.p2!==undefined)n2.p2=nd.p2;
+        n2.el.querySelector('.nl').textContent=n2.label; updateBadge(nid);
+      });
+      (btDef.edges||[]).forEach(([f,t])=>{const fi=idMap[f],ti=idMap[t];if(fi&&ti&&!nodes[fi].children.includes(ti)){nodes[fi].children.push(ti);edges.push({from:fi,to:ti});}});
+      saveBTSnapshot(btId); robBTAssign[ri]=btId;
+      if(bar){const tab=document.createElement('div');tab.className='bt-tab';tab.dataset.btid=btId;tab.dataset.challenge='ordered_delivery';tab.textContent=`R${ri+1}: ${btDef.name}`;tab.onclick=()=>switchBT(btId,tab);const addBtn=bar.querySelector('.bt-tab-add');if(addBtn)bar.insertBefore(tab,addBtn);else bar.appendChild(tab);}
+    });
+    const firstId='ordered_delivery_r1'; const firstTab=document.querySelector(`.bt-tab[data-btid="${firstId}"]`);
+    switchBT(firstId,firstTab);
+    setTimeout(()=>fitCanvas(),50); drawSim();
+    logMsg('<span class="li">// 📋 Ordered Delivery loaded. Robots must deliver P1→P2→P3→P4 in order. /next_to_deliver starts at 1.</span>');
+    return;
+  }
+
   if(key==='foraging'){
     const ch=CHALL_FORAGING;
     document.getElementById('cprompt').textContent=ch.text;
