@@ -15,7 +15,7 @@
 
 **[BT-Playground-PRO](https://herolab-uga.github.io/robotics-bt-playground/)** is a fully self-contained, single-file web application for designing, visualising, and simulating Behavior Trees (BTs) on mobile robots. It requires no installation, no build step, and no server — open `index.html` in any modern browser and start building.
 
-Developed at the **[HeRo Lab](https://herolab.uga.edu)** at the University of Georgia in collaboration with Claude Assistant, BT Playground Pro makes BT concepts tangible through live simulation and is designed for use in graduate AI and robotics courses, research prototyping, and self-guided learning.
+Developed at the **[HeRo Lab](https://herolab.org)** at the University of Georgia in collaboration with Claude Assistant, BT Playground Pro makes BT concepts tangible through live simulation and is designed for use in graduate AI and robotics courses, research prototyping, and self-guided learning.
 
 ---
 
