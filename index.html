@@ -493,6 +493,8 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
     </div>
     <button class="btn bg bsm" onclick="clearAll()" title="Clear canvas">✕ Clear</button>
     <button class="btn bg bsm" onclick="toggleSearch()" title="Search nodes, BTs, logs, messages (Ctrl+F)">🔍 Search</button>
+    <button class="btn bg bsm" id="undo-btn" onclick="btUndo()" title="Undo last BT edit (Ctrl+Z)" disabled>↶</button>
+    <button class="btn bg bsm" id="redo-btn" onclick="btRedo()" title="Redo (Ctrl+Y or Ctrl+Shift+Z)" disabled>↷</button>
     <button class="btn bg bsm" id="bt-lasso-btn" onclick="toggleBtLasso()" title="Toggle lasso/select mode — drag on empty canvas to select nodes. Shift+drag always works.">⬚ Select</button>
     <button class="btn bg bsm" onclick="selectAllNodes()" title="Select all nodes (Ctrl+A)">Select All</button>
     <button class="btn bg bsm" onclick="copySelected()" title="Copy selected subtree (Ctrl+C)">⎘ Copy</button>
@@ -532,6 +534,7 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
 
   <div class="pgh-sub">Composite</div>
   <div class="pn" draggable="true" ondragstart="pdrag(event,'sequence')"    onclick="addCenter('sequence')"><div class="pi" style="background:#deeaf9;color:#1a4a9a">→</div><div><div class="pnm">Sequence</div><div class="pds">All children must succeed</div></div></div>
+  <div class="pn" draggable="true" ondragstart="pdrag(event,'reactive_seq')" onclick="addCenter('reactive_seq')"><div class="pi" style="background:#deeaf9;color:#1a4a9a">⟲→</div><div><div class="pnm">Reactive Sequence</div><div class="pds">Re-checks all children every tick</div></div></div>
   <div class="pn" draggable="true" ondragstart="pdrag(event,'selector')"    onclick="addCenter('selector')"><div class="pi" style="background:#ede0f8;color:#5a1a9a">?</div><div><div class="pnm">Selector</div><div class="pds">First success wins</div></div></div>
   <div class="pn" draggable="true" ondragstart="pdrag(event,'parallel')"    onclick="addCenter('parallel')"><div class="pi" style="background:#d4f0e2;color:#0a5a2a">∥</div><div><div class="pnm">Parallel</div><div class="pds">Run all; P1=required successes</div></div></div>
   <div class="pn" draggable="true" ondragstart="pdrag(event,'mem_seq')"     onclick="addCenter('mem_seq')"><div class="pi" style="background:#deeaf9;color:#1a4a9a">M→</div><div><div class="pnm">Mem. Sequence</div><div class="pds">Resume from last RUNNING</div></div></div>
@@ -932,7 +935,7 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
       <div class="pr" id="pp1r" style="display:none"><div class="prl" id="pp1l">Param 1</div><input class="pri" id="pp1" type="text" oninput="updateP1(this.value)"></div>
       <div class="pr" id="pp2r" style="display:none"><div class="prl" id="pp2l">Param 2</div><input class="pri" id="pp2" type="text" oninput="updateP2(this.value)"></div>
       <div class="pr" id="pp3r" style="display:none"><div class="prl" id="pp3l">Param 3</div><input class="pri" id="pp3" type="text" oninput="updateP3(this.value)"></div>
-      <div class="pr" id="putilr"><div class="prl">⚡ Utility Score</div><input class="pri" id="putil" type="number" min="-9999" max="9999" oninput="updateUtil(this.value)" title="Utility score for this node. Used by Utility Selector. Negative values act as penalties."></div>
+      <div class="pr" id="putilr"><div class="prl">⚡ Utility Score</div><input class="pri" id="putil" type="text" placeholder="number, or BB variable name" oninput="updateUtil(this.value)" title="A number (negative = penalty), or the name of a blackboard variable to read every tick: u_charge, bb:u_charge, or /shared_score for a global. Used by Utility Selector / Utility Sequence."></div>
       <div class="pr"><div class="prl">Last Status</div><div id="pst" style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3)">—</div></div>
       <!-- Custom Params (ROS-style local/global) -->
       <div class="pr">
@@ -1125,11 +1128,12 @@ input[type=range]{accent-color:var(--acc);width:60px;vertical-align:middle;curso
 // ═══════════════════════════════════════════
 const ND = {
   root:       {l:'Root',          cat:'composite',ic:'🌳',sh:'ROOT',desc:'The top-level entry point. Tick result here = overall BT outcome (SUCCESS/FAILURE/RUNNING). Every BT should start with exactly one Root node.'},
-  sequence:   {l:'Sequence',      cat:'composite',bg:'#0d1f4a',bd:'#3b82f6',ic:'→',sh:'SEQ',desc:'All children must succeed (left-to-right).'},
+  sequence:   {l:'Sequence',      cat:'composite',ic:'→',sh:'SEQ',desc:'All children must succeed, left to right. While a child is RUNNING the Sequence resumes from that child; children that already succeeded are not re-ticked. Starts over on FAILURE, on completion, or if a higher-priority branch interrupts it.'},
+  reactive_seq:{l:'Reactive Seq.', cat:'composite',ic:'⟲→',sh:'RSEQ',desc:'Sequence that re-ticks every child from the left on every tick. Use when the first children are conditions that must keep holding while a later action runs.'},
   selector:   {l:'Selector',      cat:'composite',bg:'#1e0a4a',bd:'#9333ea',ic:'?',sh:'SEL',desc:'First child to succeed wins.'},
   parallel:   {l:'Parallel',      cat:'composite',ic:'∥',sh:'PAR',desc:'Ticks ALL children every tick. P1 = required success count (default ⌈N/2⌉). SUCCESS when ≥P1 succeed; FAILURE when unreachable.',p1:'Threshold',p1d:''},
   utility_sel:{l:'Utility Sel.',  cat:'composite',bg:'#2a1200',bd:'#fb923c',ic:'U?',sh:'UTL',desc:'Selects child with highest utility score.',p1:'Policy',p1d:'max'},
-  utility_seq:{l:'Utility Seq.',  cat:'composite',bg:'#2a1a00',bd:'#fbbf24',ic:'U→',sh:'UTS',desc:'Executes children sorted by utility score descending.'},
+  utility_seq:{l:'Utility Seq.',  cat:'composite',ic:'U→',sh:'UTS',desc:'Runs all children in descending utility-score order. A RUNNING child keeps the floor and finished children are not re-ticked until the whole sequence completes.'},
   inverter:   {l:'Inverter',      cat:'decorator',bg:'#3a0505',bd:'#f87171',ic:'¬',sh:'DEC',desc:'Flips SUCCESS↔FAILURE.'},
   repeat:     {l:'Repeat N',      cat:'decorator',bg:'#3a1000',bd:'#fb923c',ic:'↺',sh:'DEC',desc:'Repeats child N times.',p1:'Count',p1d:'3'},
   retry:      {l:'Retry',         cat:'decorator',bg:'#3a1800',bd:'#fde68a',ic:'⟳',sh:'DEC',desc:'Retries child up to N times on FAILURE.',p1:'Max',p1d:'3'},
@@ -1158,7 +1162,7 @@ const ND = {
   a_setbb:    {l:'Set BB',        cat:'action',   bg:'#011a0a',bd:'#22c55e',ic:'✎',sh:'DO',desc:'Write blackboard key=value.',p1:'Key',p1d:'x',p2:'Value',p2d:'1'},
   // Navigation actions
   a_plan_path:{l:'Plan Path',     cat:'action',   bg:'#021520',bd:'#22d3ee',ic:'🗺',sh:'NAV',desc:'Compute A* path to waypoint. Stores path in blackboard.',p1:'Goal',p1d:'B'},
-  a_nav_to:   {l:'Navigate To',   cat:'action',   ic:'🧭',sh:'NAV',desc:'Navigate to any object or position with obstacle avoidance. P1: any label or X. P2: Y (when P1 is a number). "x:120,y:80" in P1 also works. Config Params (tune per-node): kH (heading gain, def 1.0), look (look-ahead px, def 36), avoid (obstacle weight, def 1.2), N (VFH dirs, def 36), arrivalDist (px, def 10).',p1:'Target / X',p1d:'B',p2:'Y (if coords)',p2d:''},
+  a_nav_to:   {l:'Navigate To',   cat:'action',   ic:'🧭',sh:'NAV',desc:'Navigate to any object or position with obstacle avoidance. P1: any label or X. P2: Y (when P1 is a number). "x:120,y:80" in P1 also works. P1 may also be the NAME of a blackboard variable holding a label or coordinates (my_target or bb:my_target; /name for a global), and P1+P2 may name two variables holding X and Y (victim_x, victim_y). Config Params (tune per-node): kH (heading gain, def 1.0), look (look-ahead px, def 36), avoid (obstacle weight, def 1.2), N (VFH dirs, def 36), arrivalDist (px, def 10).',p1:'Target / X',p1d:'B',p2:'Y (if coords)',p2d:''},
   a_col_avoid:{l:'Collision Avoid',cat:'action',  bg:'#021520',bd:'#22d3ee',ic:'🛑',sh:'NAV',desc:'Emergency stop and reroute when collision imminent. Clears obstacle.'},
   a_move_direct:{l:'Move To (direct)',cat:'action',  ic:'➤',sh:'GO',desc:'Move directly to a target ignoring obstacles (teleports toward target each tick). P1=label/coords, P2=Y if P1 is X. SUCCESS on arrival. Use when no obstacle blocking.',p1:'Target / X',p1d:'A',p2:'Y (if coords)',p2d:''},
   a_wander:   {l:'Wander',          cat:'action',   ic:'🌀',sh:'WND',desc:'Random walk. P1=speed multiplier (default 1.0), P2=direction change interval in ticks (default 8). Avoids obstacles. Always RUNNING.',p1:'Speed mult',p1d:'1.0',p2:'Dir change (ticks)',p2d:'8'},
@@ -1351,7 +1355,7 @@ function resetRobotState(r){
   const base=ENV.waypoints.find(w=>w.id==='Base')||{x:35,y:140};
   r.wx=base.x+r.idx*22; r.wy=base.y; r.angle=0;
   r.bb={battery:80-r.idx*5,obstacle:false,at_goal:false,package_found:false,carrying:false,target_wp:['A','B','C'][r.idx]||'A',victims_found:0,packages_delivered:0,packages_carried:0};
-  r.health=100;
+  r.health=100; r._autoDelivered=false; r.carriedPkg=null;
   r.inbox=[];
   r.memState={}; r.repeatC={}; r.retryC={}; r.timeoutC={}; r.cooldownC={}; r.waitC={};
   r.visitedWps=new Set(); r.trail=[];
@@ -1410,10 +1414,11 @@ function updateComm(){
 // ═══════════════════════════════════════════
 function uid(){return 'n'+(++nidx);}
 
-function createNode(type,x,y,robotAs){
+function createNode(type,x,y,robotAs,forceId){
   const def=ND[type]; if(!def) return null;
   if(robotAs===undefined) robotAs=-1;
-  const id=uid();
+  const id=(forceId&&!nodes[forceId])?forceId:uid();
+  { const m=/^n(\d+)$/.exec(id); if(m) nidx=Math.max(nidx,+m[1]); } // keep the id counter ahead of restored ids
   x=Math.round(x/16)*16; y=Math.round(y/16)*16;
   // Per-category light-theme colors: border accent, header tint, icon color
   const CAT_PALETTE = {
@@ -1521,7 +1526,7 @@ function saveBTSnapshot(btId){
   btLibrary[btId]={
     name: btLibrary[btId]?.name||btId,
     nodes: Object.fromEntries(Object.entries(nodes).map(([k,v])=>
-      [k,{id:v.id,type:v.type,x:v.x,y:v.y,label:v.label,p1:v.p1,p2:v.p2,p3:v.p3,note:v.note||'',robotAs:v.robotAs,children:[...v.children],status:'idle',utility:v.utility,params:v.params}]
+      [k,{id:v.id,type:v.type,x:v.x,y:v.y,label:v.label,p1:v.p1,p2:v.p2,p3:v.p3,note:v.note||'',robotAs:v.robotAs,children:[...v.children],status:'idle',utility:v.utility,params:v.params,batDrain:v.batDrain}]
     )),
     edges: edges.map(e=>({...e})),
   };
@@ -1535,12 +1540,12 @@ function loadBTSnapshot(btId){
   const snap=btLibrary[btId];
   // recreate nodes
   Object.values(snap.nodes).forEach(nd=>{
-    const id=createNode(nd.type,nd.x,nd.y,nd.robotAs??-1);
-    // override autogenerated id — remap
+    const id=createNode(nd.type,nd.x,nd.y,nd.robotAs??-1,nd.id); // keep the saved id so per-robot memory stays valid
+    // record id mapping (identity when the saved id was free)
     snap._idMap=snap._idMap||{};
     snap._idMap[nd.id]=id;
     const n=nodes[id];
-    n.label=nd.label; n.p1=nd.p1||''; n.p2=nd.p2||''; n.p3=nd.p3||''; n.note=nd.note||''; n.utility=nd.utility!==undefined?nd.utility:0; if(nd.params)n.params={...nd.params};
+    n.label=nd.label; n.p1=nd.p1||''; n.p2=nd.p2||''; n.p3=nd.p3||''; n.note=nd.note||''; n.utility=nd.utility!==undefined?nd.utility:0; if(nd.params)n.params={...nd.params}; if(nd.batDrain!==undefined)n.batDrain=nd.batDrain;
     n.el.querySelector('.nl').textContent=n.label;
     const ndesc=document.getElementById(id+'desc');
     if(ndesc){ndesc.textContent=n.note;ndesc.style.display=n.note&&showDescOnCanvas?'block':'none';}
@@ -2547,7 +2552,8 @@ function showProps(id){
     if(pp1r&&pp1r.parentElement) pp1r.parentElement.insertBefore(logicHintEl,pp1r);
   }
   const LOGIC_DOCS={
-    sequence:'<b>Sequence (→)</b>: Ticks children L→R. Returns RUNNING/FAILURE immediately on first non-SUCCESS child. All must succeed for SUCCESS.',
+    sequence:'<b>Sequence (→)</b>: Ticks children L→R. Resumes from the RUNNING child on the next tick. FAILURE or an interruption starts it over. All must succeed for SUCCESS.',
+    reactive_seq:'<b>Reactive Sequence (⟲→)</b>: Re-ticks every child from the left each tick, so earlier conditions are re-checked while a later action runs.',
     selector:'<b>Selector (?)</b>: Ticks children L→R. Returns RUNNING/SUCCESS immediately on first non-FAILURE child. Returns FAILURE when all fail.',
     parallel:'<b>Parallel (∥)</b>: Ticks ALL children every tick. SUCCESS when ≥⌈N/2⌉ succeed. FAILURE when enough fail.',
     mem_seq:'<b>Mem.Sequence (M→)</b>: Like Sequence but remembers position. Skips already-succeeded children. Resumes from last RUNNING child. Resets on FAILURE or final SUCCESS.',
@@ -2641,7 +2647,13 @@ function updateP1(v){if(selId&&nodes[selId])nodes[selId].p1=v;}
 function updateP2(v){if(selId&&nodes[selId])nodes[selId].p2=v;}
 function updateP3(v){if(selId&&nodes[selId])nodes[selId].p3=v;}
 function updateRobotAs(v){if(selId&&nodes[selId]){nodes[selId].robotAs=v;updateBadge(selId);}}
-function updateUtil(v){if(selId&&nodes[selId]){nodes[selId].utility=parseInt(v)||50;refreshUtilityDisplay(selId);}}
+function updateUtil(v){
+  if(!selId||!nodes[selId]) return;
+  const t=String(v).trim();
+  // number -> fixed score; anything else -> name of a BB variable read every tick
+  nodes[selId].utility = t==='' ? 0 : (isNaN(Number(t)) ? t : Number(t));
+  refreshUtilityDisplay(selId);
+}
 function stcol(s){return s==='success'?'var(--acc)':s==='failure'?'var(--danger)':s==='running'?'var(--warn)':'var(--text3)';}
 
 function updateNote(v){
@@ -2668,11 +2680,27 @@ function toggleSFR(){
   });
 }
 
+// A node's utility score is either a number or the NAME of a blackboard variable
+// ("u_charge", "bb:u_charge", or "/shared_score" for a global). A named score is read
+// from the ticking robot's blackboard every tick, so each robot can have its own value.
+function utilityIsKey(u){ return typeof u==='string' && u.trim()!=='' && isNaN(Number(u)); }
+function utilityKeyName(u){ return String(u).trim().replace(/^bb[:.]/,''); }
+function resolveUtility(n, rob){
+  const u=n?n.utility:0;
+  if(typeof u==='number') return u;
+  if(u===undefined||u===null||String(u).trim()==='') return 0;
+  if(!utilityIsKey(u)) return Number(u);
+  const k=utilityKeyName(u), bb=(rob&&rob.bb)||{};
+  const v=k.startsWith('/') ? GLOBAL_PARAMS[k] : (bb[k]!==undefined ? bb[k] : GLOBAL_PARAMS['/'+k]);
+  const f=(typeof v==='boolean') ? (v?1:0) : parseFloat(v);
+  return isNaN(f) ? 0 : f;
+}
+
 function refreshUtilityDisplay(id){
   const n=nodes[id]; if(!n)return;
   const def=ND[n.type];
   const uel=document.getElementById(id+'u');
-  const score=utilityScores[id]!==undefined?utilityScores[id]:n.utility;
+  const score=utilityScores[id]!==undefined?utilityScores[id]:(utilityIsKey(n.utility)?'bb.'+utilityKeyName(n.utility):n.utility);
   if((def.cat==='composite'&&(n.type==='utility_sel'||n.type==='utility_seq'))||n.type==='a_setutil'){
     if(uel){uel.style.display='block';uel.textContent=`score: ${score}`;}
     n.el.classList.add('has-utility');
@@ -3018,9 +3046,10 @@ function tickBT(){
     if(!rob.bb.carrying) return;
     (ENV.collectionZones||[]).forEach(cz=>{
       if(rob.wx>=cz.x&&rob.wx<=cz.x+cz.w&&rob.wy>=cz.y&&rob.wy<=cz.y+cz.h){
-        // auto drop-off in collection zone
-        rob.bb.carrying=false; cz.collected=(cz.collected||0)+1;
-        logMsg(`<span class="li">// 🏁 ${rob.name} delivered to ${cz.label||'zone'} (${cz.collected}/${cz.capacity||'∞'})</span>`);
+        // auto drop-off on entering a collection zone (same routine the Drop Off action uses)
+        if(!rob.bb.carrying) return;
+        _deliverToZone(rob,cz);
+        rob._autoDelivered=true; // lets a following Drop Off node report SUCCESS
       }
     });
   });
@@ -3061,7 +3090,8 @@ function _resolveNavTarget(paramStr, rob, _depth){
   // ── BB indirection: if s is a BB key (local or global), resolve its value ──
   // This allows Navigate To P1="my_target" where bb.my_target = "P2" or "x:100,y:80"
   if(_depth===undefined){
-    const bbVal = rob?.bb?.[s] ?? GLOBAL_PARAMS?.['/' + s] ?? GLOBAL_PARAMS?.[s];
+    const bk = s.replace(/^bb[:.]/,''); // "bb:my_target" and "my_target" both name the BB variable
+    const bbVal = rob?.bb?.[bk] ?? GLOBAL_PARAMS?.['/' + bk] ?? GLOBAL_PARAMS?.[bk];
     if(bbVal !== undefined && bbVal !== null && bbVal !== s){
       const resolved = _resolveNavTarget(bbVal, rob, 1); // one level of indirection
       if(resolved) return resolved;
@@ -3137,11 +3167,22 @@ function _resolveNavTarget(paramStr, rob, _depth){
 
 // Resolve nav target from P1 + optional P2 (explicit Y coord).
 // If P1 is a bare number and P2 is set, treat as (P1, P2) = (x, y).
+// If v names a blackboard variable (optionally written bb:name), return that variable's value; otherwise v itself.
+function derefBB(v, rob){
+  if(v===undefined||v===null) return v;
+  const s=String(v).trim(); if(s==='') return v;
+  const k=s.replace(/^bb[:.]/,'');
+  const bv=rob&&rob.bb&&rob.bb[k]!==undefined ? rob.bb[k] : (GLOBAL_PARAMS['/'+k]!==undefined ? GLOBAL_PARAMS['/'+k] : GLOBAL_PARAMS[k]);
+  return (bv!==undefined&&bv!==null&&typeof bv!=='object') ? bv : (s.startsWith('bb:')||s.startsWith('bb.') ? k : v);
+}
 function _resolveNavTargetWithXY(p1str, p2str, rob){
   const s=String(p1str||'').trim();
-  // If P2 is provided and P1 looks like a number → treat as x,y
-  if(p2str!==undefined&&p2str!==''&&!isNaN(parseFloat(s))&&!isNaN(parseFloat(p2str))){
-    return {x:parseFloat(s), y:parseFloat(p2str)};
+  // P1 = X and P2 = Y: each may be a number or a BB variable holding a number (e.g. victim_x / victim_y)
+  if(p2str!==undefined&&String(p2str).trim()!==''){
+    const num=v=>{ const t=String(v).trim(); if(t==='') return NaN; if(!isNaN(Number(t))) return Number(t);
+                   const d=derefBB(t,rob); return (d!==t&&String(d).trim()!==''&&!isNaN(Number(d))) ? Number(d) : NaN; };
+    const x=num(s), y=num(p2str);
+    if(!isNaN(x)&&!isNaN(y)) return {x,y};
   }
   // Otherwise resolve normally (handles all label types + "x:N,y:N")
   return _resolveNavTarget(s, rob);
@@ -3744,6 +3785,125 @@ function searchJump(el){
   }
 }
 
+// ═══════════════════════════════════════════
+// UNDO / REDO for the BT editor (per BT tab)
+// A checkpoint is the whole tree as JSON. Checkpoints are taken around user input,
+// so every kind of edit (add, delete, move, connect, edit params, paste) is covered.
+// ═══════════════════════════════════════════
+const UNDO_MAX=100;
+const _undoHist={};            // btId -> {stack:[{full,lite}], idx}
+let _undoBusy=false, _undoTimer=null;
+
+function _btCaptureState(){
+  return {
+    nodes:Object.values(nodes).map(v=>({id:v.id,type:v.type,x:v.x,y:v.y,label:v.label,p1:v.p1,p2:v.p2,p3:v.p3,
+      note:v.note||'',robotAs:v.robotAs,utility:v.utility,batDrain:v.batDrain,
+      params:v.params?{...v.params}:undefined,children:[...v.children].sort()})),
+    edges:edges.map(e=>({from:e.from,to:e.to})),
+  };
+}
+function _undoEntry(){
+  const st=_btCaptureState();
+  // "lite" ignores utility scores, which Set Utility / Utility Change rewrite while the tree runs
+  return {full:JSON.stringify(st), lite:JSON.stringify({nodes:st.nodes.map(n=>({...n,utility:0})),edges:st.edges})};
+}
+function _undoUpdateBtns(){
+  const h=_undoHist[activeBTId];
+  const u=document.getElementById('undo-btn'), r=document.getElementById('redo-btn');
+  if(u) u.disabled=!(h&&h.idx>0);
+  if(r) r.disabled=!(h&&h.idx<h.stack.length-1);
+}
+// Record the current tree if it differs from the newest checkpoint. withUtility: also treat a utility-score change as an edit.
+function undoCheckpoint(withUtility){
+  if(_undoBusy) return;
+  if(typeof replayMode!=='undefined'&&replayMode) return;
+  const e=_undoEntry();
+  const h=_undoHist[activeBTId];
+  if(!h){ _undoHist[activeBTId]={stack:[e],idx:0}; _undoUpdateBtns(); return; }
+  const top=h.stack[h.idx];
+  if(withUtility===true ? e.full===top.full : e.lite===top.lite){ _undoUpdateBtns(); return; }
+  h.stack.length=h.idx+1;       // a new edit discards the redo branch
+  h.stack.push(e);
+  if(h.stack.length>UNDO_MAX) h.stack.shift();
+  h.idx=h.stack.length-1;
+  _undoUpdateBtns();
+}
+function _undoSchedule(){ clearTimeout(_undoTimer); _undoTimer=setTimeout(()=>undoCheckpoint(),200); }
+
+function _btRestoreState(st){
+  _undoBusy=true;
+  try{
+    const counts={...(createNode._typeCounts||{})};
+    const keepSel=selId;
+    [...Object.keys(nodes)].forEach(id=>{ if(nodes[id].el) nodes[id].el.remove(); delete nodes[id]; });
+    edges.length=0; esvg.querySelectorAll('.ep').forEach(e=>e.remove());
+    selId=null;
+    st.nodes.forEach(nd=>{
+      const id=createNode(nd.type,nd.x,nd.y,nd.robotAs??-1,nd.id); if(!id) return;
+      const n=nodes[id];
+      n.x=nd.x; n.y=nd.y; n.el.style.left=nd.x+'px'; n.el.style.top=nd.y+'px';
+      n.label=nd.label; n.p1=nd.p1??''; n.p2=nd.p2??''; n.p3=nd.p3??''; n.note=nd.note||'';
+      n.utility=nd.utility??0;
+      if(nd.batDrain!==undefined) n.batDrain=nd.batDrain;
+      if(nd.params) n.params={...nd.params};
+      n.el.querySelector('.nl').textContent=n.label;
+      const d=document.getElementById(id+'desc');
+      if(d){ d.textContent=n.note; d.style.display=n.note&&showDescOnCanvas?'block':'none'; }
+      updateBadge(id);
+    });
+    st.edges.forEach(e=>{
+      if(nodes[e.from]&&nodes[e.to]&&!nodes[e.from].children.includes(e.to)){
+        nodes[e.from].children.push(e.to); edges.push({from:e.from,to:e.to});
+      }
+    });
+    createNode._typeCounts=counts; // restoring must not inflate the "Sequence 7" label counters
+    drawEdges(); updateNodeCount(); liveValidate();
+    if(keepSel&&nodes[keepSel]) selectNode(keepSel); else showProps(null);
+  } finally { _undoBusy=false; }
+}
+function _undoApply(h,word){
+  _btRestoreState(JSON.parse(h.stack[h.idx].full));
+  h.stack[h.idx]=_undoEntry();   // store exactly what is on the canvas now
+  saveBTSnapshot(activeBTId);
+  _undoUpdateBtns();
+  logMsg(`<span class="li">// ${word} (${h.idx+1}/${h.stack.length})</span>`);
+}
+function btUndo(){
+  undoCheckpoint(true);          // capture anything not yet recorded
+  const h=_undoHist[activeBTId];
+  if(!h||h.idx<=0) return;
+  h.idx--; _undoApply(h,'↶ Undo');
+}
+function btRedo(){
+  undoCheckpoint(true);
+  const h=_undoHist[activeBTId];
+  if(!h||h.idx>=h.stack.length-1) return;
+  h.idx++; _undoApply(h,'↷ Redo');
+}
+// Checkpoint before an interaction (so the first edit after a load has a baseline) and shortly after it.
+['mousedown','keydown','dragstart'].forEach(ev=>document.addEventListener(ev,()=>undoCheckpoint(),true));
+['mouseup','keyup','change','input','drop'].forEach(ev=>document.addEventListener(ev,_undoSchedule,true));
+document.addEventListener('keydown',e=>{
+  if(!(e.ctrlKey||e.metaKey)) return;
+  const t=e.target;
+  if(t&&t.matches&&t.matches('input,textarea,select,[contenteditable="true"]')) return; // keep native text undo in fields
+  const k=(e.key||'').toLowerCase();
+  if(k==='z'&&!e.shiftKey){ e.preventDefault(); btUndo(); }
+  else if(k==='y'||(k==='z'&&e.shiftKey)){ e.preventDefault(); btRedo(); }
+});
+// Loading a scene starts a fresh history; editing a utility score is an edit worth its own step.
+{
+  const _load=loadChallenge;
+  loadChallenge=function(key){
+    const r=_load(key);
+    Object.keys(_undoHist).forEach(k=>delete _undoHist[k]);
+    setTimeout(()=>undoCheckpoint(),150);
+    return r;
+  };
+  const _uu=updateUtil;
+  updateUtil=function(v){ const r=_uu(v); clearTimeout(_undoTimer); _undoTimer=setTimeout(()=>undoCheckpoint(true),200); return r; };
+}
+
 function toggleTestHarness(){
   const el=document.getElementById('test-harness');
   if(!el) return;
@@ -4001,7 +4161,7 @@ function tickNode(id,rob,depth){
 
   // ── Cumulative utility: node's own score + children's cumulative scores ──
   // Base score: use utilityScores[id] if set by a_setutil, else n.utility (default 0 for leaf, sum for composite)
-  const ownScore = utilityScores[id]!==undefined ? utilityScores[id] : (n.utility||0);
+  const ownScore = utilityScores[id]!==undefined ? utilityScores[id] : resolveUtility(n,rob);
   // Add children's scores (already computed since they were ticked first)
   const childSum = (n.children||[]).reduce((s,c)=>{
     const cu=nodeUtility[c];
@@ -4092,12 +4252,31 @@ function tickComposite(id,rob,depth){
     return 'failure';
   }
   if(n.type==='sequence'){
-    // Sequence: tick children in order.
-    // FAILURE → stop, return FAILURE.  RUNNING → stop, return RUNNING.  SUCCESS → continue.
+    // Sequence: tick children left-to-right.
+    //   SUCCESS -> move on to the next child (same tick).
+    //   RUNNING -> return RUNNING and resume from THIS child next tick
+    //              (children that already succeeded are not re-ticked while a later one is running).
+    //   FAILURE -> return FAILURE and start over from the first child.
+    // If the Sequence is not ticked for a tick (a higher-priority branch took over) it is halted
+    // and starts over from the first child. Mem.Sequence keeps its place across interruptions.
+    let st=rob.memState[id];
+    if(!st||st.t!==tick-1) st={i:0,t:tick};
+    st.t=tick;
+    for(let i=Math.min(st.i,n.children.length); i<n.children.length; i++){
+      const r=tickNode(n.children[i],rob,depth+1);
+      if(r==='running'){ st.i=i; rob.memState[id]=st; return 'running'; }
+      if(r==='failure'){ rob.memState[id]=null; return 'failure'; }
+    }
+    rob.memState[id]=null;
+    return n.children.length?'success':'failure';
+  }
+  if(n.type==='reactive_seq'){
+    // Reactive Sequence: re-ticks every child from the left on every tick.
+    // Use when earlier children are conditions that must keep holding while a later action runs.
     for(const c of n.children){
       const r=tickNode(c,rob,depth+1);
       if(r==='failure') return 'failure';
-      if(r==='running') return 'running'; // block here, don't tick remaining
+      if(r==='running') return 'running';
     }
     return n.children.length?'success':'failure';
   }
@@ -4137,7 +4316,7 @@ function tickComposite(id,rob,depth){
       }
     });
     const scored=n.children.map(c=>({
-      c, sc: utilityScores[c]!==undefined?utilityScores[c]:(nodes[c]?.utility||50)
+      c, sc: utilityScores[c]!==undefined?utilityScores[c]:(utilityIsKey(nodes[c]?.utility)?resolveUtility(nodes[c],rob):(Number(nodes[c]?.utility)||50))
     }));
     scored.sort((a,b)=>b.sc-a.sc);
     if(n.type==='utility_sel'){
@@ -4149,7 +4328,20 @@ function tickComposite(id,rob,depth){
       }
       return 'failure';
     } else {
-      for(const {c} of scored){const r=tickNode(c,rob,depth+1);if(r!=='success')return r;}
+      // Utility Sequence: highest score first, but a child that is RUNNING keeps the floor and
+      // children that already succeeded are not re-ticked until the whole sequence finishes.
+      let st=rob.memState[id];
+      if(!st||st.t!==tick-1) st={done:[],run:null,t:tick};
+      st.t=tick;
+      let order=scored.map(o=>o.c).filter(c=>st.done.indexOf(c)<0);
+      if(st.run&&order.indexOf(st.run)>0) order=[st.run,...order.filter(c=>c!==st.run)];
+      for(const c of order){
+        const r=tickNode(c,rob,depth+1);
+        if(r==='running'){ st.run=c; rob.memState[id]=st; return 'running'; }
+        if(r==='failure'){ rob.memState[id]=null; return 'failure'; }
+        st.done.push(c); st.run=null;
+      }
+      rob.memState[id]=null;
       return scored.length?'success':'failure';
     }
   }
@@ -4272,9 +4464,9 @@ function _evalBBExpr(expr, bb){
 function tickCond(id,rob){
   const n=nodes[id]; if(!n)return 'failure';
   const bb=rob.bb;
-  const p1=resolveParam(n, n.p1||'', rob);
-  const p2=resolveParam(n, n.p2||'', rob);
-  const p3=resolveParam(n, n.p3||'', rob);
+  const p1=resolveParam(n, n.p1||'', rob, !!P1_IS_KEY[n.type]);
+  const p2=resolveParam(n, n.p2||'', rob, !!P2_IS_KEY[n.type]);
+  const p3=resolveParam(n, n.p3||'', rob, !!P3_IS_KEY[n.type]);
   switch(n.type){
     case 'c_battery': return bb.battery>(parseInt(n.p1)||25)?'success':'failure';
     case 'c_obstacle':{
@@ -4467,6 +4659,28 @@ function tickCond(id,rob){
   }
 }
 
+// Deliver the package a robot is carrying into a collection zone.
+// Single code path for both the Drop Off action and the automatic delivery on entering a zone,
+// so counters, the ordered-delivery check and the carried-package state always agree.
+function _deliverToZone(rob,cz){
+  const bb=rob.bb, dropped=rob.carriedPkg||{};
+  bb.carrying=false; rob.carriedPkg=null;
+  cz.collected=(cz.collected||0)+1;
+  bb.packages_delivered=(bb.packages_delivered||0)+1;
+  if(GLOBAL_PARAMS['/ordered_delivery']===true && dropped.label!==undefined){
+    const expectedN=GLOBAL_PARAMS['/next_to_deliver']||1;
+    const deliveredN=parseInt(String(dropped.label).replace(/\D/g,''))||0;
+    if(deliveredN!==expectedN){
+      GLOBAL_PARAMS['/order_violations']=(GLOBAL_PARAMS['/order_violations']||0)+1;
+      logMsg(`<span class="lr">[${rob.name}] ⚠ ORDER VIOLATION! Delivered ${dropped.label} but expected P${expectedN}. Violations: ${GLOBAL_PARAMS['/order_violations']}</span>`);
+      return;
+    }
+    logMsg(`<span class="lc">[${rob.name}] 📥 ✅ Delivered ${dropped.label} in correct order (#${expectedN}) to ${cz.label||'zone'} (zone total: ${cz.collected})</span>`);
+    return;
+  }
+  logMsg(`<span class="lc">[${rob.name}] 📥 ✅ Delivered ${dropped.label!==undefined?dropped.label:'pkg'} to ${cz.label||'zone'} (zone total: ${cz.collected})</span>`);
+}
+
 function tickAct(id,rob){
   const n=nodes[id]; if(!n)return 'failure';
   const bb=rob.bb;
@@ -4477,13 +4691,13 @@ function tickAct(id,rob){
     bb.battery=Math.max(0,bb.battery-perNodeDrain);
   }
   // Resolve p1/p2 from node params if they reference a param key
-  const p1=resolveParam(n, n.p1||'', rob);
-  const p2=resolveParam(n, n.p2||'', rob);
-  const p3=resolveParam(n, n.p3||'', rob);
+  const p1=resolveParam(n, n.p1||'', rob, !!P1_IS_KEY[n.type]);
+  const p2=resolveParam(n, n.p2||'', rob, !!P2_IS_KEY[n.type]);
+  const p3=resolveParam(n, n.p3||'', rob, !!P3_IS_KEY[n.type]);
 
   switch(n.type){
     case 'a_charge':{
-      const dockId=p1||'Base'; bb.target_wp=dockId;
+      const dockId=String(derefBB(p1||'Base',rob)); bb.target_wp=dockId; // station id may come from a BB variable
       const cs=(ENV.chargingStations||[]).find(c=>c.id===dockId);
       const wp=ENV.waypoints.find(w=>w.id===dockId)||ENV.waypoints.find(w=>w.id==='Base');
       const target=cs?{x:cs.x,y:cs.y}:wp?{x:wp.x,y:wp.y}:null;
@@ -4529,39 +4743,26 @@ function tickAct(id,rob){
       bb.package_found=false;
       bb.packages_carried=(bb.packages_carried||0)+1;
       rob.carriedPkg={x:pkg.p.x,y:pkg.p.y,label:pkg.p.label,color:'#e08c00'};
+      rob._autoDelivered=false;
       logMsg(`<span class="lc">[${rob.name}] ✋ Picked up ${pkg.p.label!==undefined?pkg.p.label:'pkg'} at (${Math.round(pkg.p.x)},${Math.round(pkg.p.y)})</span>`);
       return 'success';
     }
 
     case 'a_dropoff':{
-      if(!bb.carrying) return 'failure'; // not carrying anything — genuine failure signal
-      bb.carrying=false;
+      if(!bb.carrying){
+        // The package was already delivered automatically when the robot entered a collection zone
+        // (since its last pick-up): the drop is done, so report SUCCESS rather than failing the branch.
+        if(rob._autoDelivered){ rob._autoDelivered=false; return 'success'; }
+        return 'failure'; // genuinely nothing to drop
+      }
       const dropped=rob.carriedPkg||{};
-      rob.carriedPkg=null;
-
-      // Check if inside a collection zone — if so, package is collected (stays gone)
+      // Inside a collection zone the package is delivered (stays gone); elsewhere it is just put down.
       const inZone=(ENV.collectionZones||[]).find(cz=>
         rob.wx>=cz.x&&rob.wx<=cz.x+cz.w&&rob.wy>=cz.y&&rob.wy<=cz.y+cz.h);
-
       if(inZone){
-        // ✅ Delivered to collection zone — counts as a delivery
-        inZone.collected=(inZone.collected||0)+1;
-        bb.packages_delivered=(bb.packages_delivered||0)+1;
-        // ── Ordered delivery: check if sequence was respected ──
-        if(GLOBAL_PARAMS['/ordered_delivery']===true && dropped.label){
-          const expectedN=GLOBAL_PARAMS['/next_to_deliver']||1;
-          const deliveredN=parseInt(String(dropped.label).replace(/\D/g,''))||0;
-          if(deliveredN!==expectedN){
-            GLOBAL_PARAMS['/order_violations']=(GLOBAL_PARAMS['/order_violations']||0)+1;
-            logMsg(`<span class="lr">[${rob.name}] ⚠ ORDER VIOLATION! Delivered ${dropped.label} but expected P${expectedN}. Violations: ${GLOBAL_PARAMS['/order_violations']}</span>`);
-          } else {
-            logMsg(`<span class="lc">[${rob.name}] 📥 ✅ Delivered ${dropped.label} in correct order (#${expectedN}) to ${inZone.label||'zone'} (zone total: ${inZone.collected})</span>`);
-          }
-        } else {
-          logMsg(`<span class="lc">[${rob.name}] 📥 ✅ Delivered ${dropped.label||'pkg'} to ${inZone.label||'zone'} (zone total: ${inZone.collected})</span>`);
-        }
+        _deliverToZone(rob,inZone);
       } else {
-        // Dropped outside any zone — package reappears uncollected; not counted as delivered
+        bb.carrying=false; rob.carriedPkg=null;
         ENV.packages.push({
           x: rob.wx, y: rob.wy,
           collected: false,
@@ -4572,7 +4773,6 @@ function tickAct(id,rob){
         });
         logMsg(`<span class="li">[${rob.name}] 📦 Dropped ${dropped.label||'pkg'} at (${Math.round(rob.wx)},${Math.round(rob.wy)}) — not in a collection zone</span>`);
       }
-
       // Drop animation ring
       if(!ENV._drops) ENV._drops=[];
       ENV._drops.push({x:rob.wx, y:rob.wy, t:0, label:dropped.label});
@@ -4750,20 +4950,27 @@ function tickAct(id,rob){
         logMsg(`<span class="lr">// ⚡ UtilityChange: no node with label "${targetLabel}". Available: ${Object.values(nodes).map(n=>'"'+n.label+'"').join(', ')}</span>`);
         return 'failure';
       }
-      const cur=target.utility||0;
+      const cur=resolveUtility(target,rob);
+      let nv;
       switch(op){
-        case 'set': target.utility=val; break;
-        case 'add': target.utility=cur+val; break;
-        case 'sub': target.utility=cur-val; break;
-        case 'mul': target.utility=cur*val; break;
-        case 'div': target.utility=(val!==0)?cur/val:cur; break;
-        default:    target.utility=cur+val; break; // default to add
+        case 'set': nv=val; break;
+        case 'sub': nv=cur-val; break;
+        case 'mul': nv=cur*val; break;
+        case 'div': nv=(val!==0)?cur/val:cur; break;
+        default:    nv=cur+val; break; // 'add' and anything unrecognised
       }
-      target.utility=Math.round(target.utility*1000)/1000; // avoid float drift
-      utilityScores[target.id]=target.utility;
+      nv=Math.round(nv*1000)/1000; // avoid float drift
+      if(utilityIsKey(target.utility)){
+        // score is bound to a BB variable: change the variable, keep the binding
+        const k=utilityKeyName(target.utility);
+        if(k.startsWith('/')) GLOBAL_PARAMS[k]=nv; else bb[k]=nv;
+      } else {
+        target.utility=nv;
+      }
+      utilityScores[target.id]=nv;
       // Update the UI utility badge if visible
-      const uel=document.getElementById(target.id+'u');
-      if(uel){uel.style.display='block';uel.textContent=`u:${target.utility}`;}
+      const uel=_tickingActiveBT?document.getElementById(target.id+'u'):null;
+      if(uel){uel.style.display='block';uel.textContent=`u:${nv}`;}
       return 'success';
     }
     // ── CUSTOM PROCESS ──
@@ -5013,8 +5220,9 @@ function tickAct(id,rob){
 
     case 'a_dock':{
       // Dock: precise slow approach to charging station or waypoint
-      const cs=(ENV.chargingStations||[]).find(c=>c.id===(p1||'Base'));
-      const wp=cs?null:ENV.waypoints.find(w=>w.id===(p1||'Base'));
+      const dockTo=String(derefBB(p1||'Base',rob)); // station id may come from a BB variable
+      const cs=(ENV.chargingStations||[]).find(c=>c.id===dockTo);
+      const wp=cs?null:ENV.waypoints.find(w=>w.id===dockTo);
       const target=cs?{x:cs.x,y:cs.y}:wp?{x:wp.x,y:wp.y}:null;
       if(!target) return 'failure';
       bb.target_wp=p1||'Base';
@@ -5122,15 +5330,21 @@ function resolveMsgKey(str, bb){
 function pval(v){if(v==='true')return true;if(v==='false')return false;const n=parseFloat(v);return isNaN(n)?v:n;}
 
 // Resolve a param value: if it starts with ~ or /, look up in params/global
-function resolveParam(node, val, rob){
+// Node types whose parameter is the NAME of a blackboard key or topic (something to write to / look up),
+// not a value. For these a leading "/" means "global key", and must not be swapped for the key's value.
+const P1_IS_KEY={a_set_bb:1,a_setbb:1,a_bb_inc:1,a_bb_true:1,a_bb_false:1,a_bb_num:1,a_bb_str:1,a_bb_clamp:1,a_bb_map:1,
+                 a_pub_topic:1,a_sub_topic:1,c_topic:1,c_get_bb:1,c_msg:1};
+const P2_IS_KEY={a_calc_expr:1,c_get_bb:1,c_num:1,a_sub_topic:1,c_msg:1};
+const P3_IS_KEY={a_calc_dist:1};
+function resolveParam(node, val, rob, isKeyName){
   if(!val) return val;
   // ~param_name → local node param
   if(val.startsWith('~')){
     const key=val.slice(1);
     if(node.params && key in node.params) return String(node.params[key]);
   }
-  // /param_name → global param
-  if(val.startsWith('/')){
+  // /param_name → global param value (skipped when the parameter names a key)
+  if(!isKeyName && val.startsWith('/')){
     if(GLOBAL_PARAMS[val] !== undefined) return String(GLOBAL_PARAMS[val]);
   }
   return val;
@@ -7007,7 +7221,7 @@ const CHALL={
             {id:'vseq',  type:'sequence', x:380, y:260},
               {id:'vdet',  type:'c_victim', x:280, y:360, p1:'200', p2:'0'},
               {id:'vpub',  type:'a_pub_topic',x:400,y:360, p1:'/victim_found', p2:'true'},
-              {id:'vnav',  type:'a_nav_to', x:540, y:360, p1:'victim_x'},
+              {id:'vnav',  type:'a_nav_to', x:540, y:360, p1:'victim_x', p2:'victim_y'},
             // Otherwise explore
             {id:'mseq',  type:'mem_seq',  x:780, y:260},
               {id:'n1',    type:'a_nav_to', x:620, y:360, p1:'EX1'},
@@ -7066,7 +7280,7 @@ const CHALL={
     tpl:[
       {id:'root', type:'root',       x:260, y:10},
       // Top-level Sequence: first update scores, then run the utility selector
-      {id:'top',  type:'sequence',   x:260, y:80},
+      {id:'top',  type:'reactive_seq',x:260, y:80},
       // Custom Process updates utility scores dynamically before the selector runs
       {id:'cproc',type:'a_custom',   x:120, y:170,
         p1:`// Update utility scores based on current state
@@ -7355,7 +7569,7 @@ bb.u_explore = (!bb.package_found && bb.battery > 50) ? 55 : 15;`},
       { name:'Follower (R2)', tpl:[
         {id:'root', type:'root',     x:200, y:10},
         {id:'rep',  type:'repeat',   x:200, y:80, p1:'999'},
-          {id:'seq',  type:'sequence', x:200, y:170},
+          {id:'seq',  type:'reactive_seq',x:200, y:170},
             {id:'sub',  type:'a_sub_topic',x:80, y:270, p1:'/leader_pos', p2:'follow_target'},
             {id:'nav',  type:'a_nav_to', x:280, y:270, p1:'follow_target'},
       ], edges:[
@@ -7545,7 +7759,7 @@ bb.u_explore = (!bb.package_found && bb.battery > 50) ? 55 : 15;`},
       { name:'Pursuer (R2)', tpl:[
         {id:'root', type:'root',    x:220, y:10},
         {id:'rep',  type:'repeat',  x:220, y:80, p1:'999'},
-          {id:'seq',  type:'sequence',x:220, y:170},
+          {id:'seq',  type:'reactive_seq',x:220, y:170},
             {id:'pub',  type:'a_pub_topic',x:80, y:270, p1:'/pursuer_pos', p2:'chasing'},
             {id:'nav',  type:'a_wander',   x:280,y:270, p1:'1.3', p2:'5'},
       ], edges:[
